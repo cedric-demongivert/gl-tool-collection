@@ -49,5 +49,5 @@ export interface Collection<T> extends Iterable<T> {
   */
   equals (other : any) : boolean
 
-  * [Symbol.iterator] () : Iterator<T>
+  [Symbol.iterator] () : Iterator<T>
 }

@@ -12,7 +12,7 @@ export interface Pack<T> extends ReallocableCollection<T> {
   * pack are setted to its default value that depends of the pack implementation
   * and the kind of values it store.
   */
-  public size : number
+  size : number
 
   /**
   * Swap two elements of this pack.
@@ -20,7 +20,7 @@ export interface Pack<T> extends ReallocableCollection<T> {
   * @param first - The first element to swap.
   * @param second - The second element to swap.
   */
-  public swap (first : number, second : number) : void
+  swap (first : number, second : number) : void
 
   /**
   * Set the given value at the given index.
@@ -35,7 +35,7 @@ export interface Pack<T> extends ReallocableCollection<T> {
   * @param index - Where to set the given value.
   * @param value - The value to set.
   */
-  public set (index : number, value : T) : void
+  set (index : number, value : T) : void
 
   /**
   * Insert the given value at the given location.
@@ -52,7 +52,7 @@ export interface Pack<T> extends ReallocableCollection<T> {
   * @param index - Where to insert the given value.
   * @param value - The value to insert.
   */
-  public insert (index : number, value : T) : void
+  insert (index : number, value : T) : void
 
   /**
   * Push the given value at the end of this pack.
@@ -65,7 +65,7 @@ export interface Pack<T> extends ReallocableCollection<T> {
   *
   * @param value - The value to push.
   */
-  public push (value : T) : void
+  push (value : T) : void
 
   /**
   * Delete the element at the given index.
@@ -75,7 +75,7 @@ export interface Pack<T> extends ReallocableCollection<T> {
   *
   * @param index - Where to delete an element.
   */
-  public delete (index : number) : void
+  delete (index : number) : void
 
   /**
   * Warp out the element at the given location by replacing it with the last
@@ -83,10 +83,10 @@ export interface Pack<T> extends ReallocableCollection<T> {
   *
   * @param index - Where to warp out an element.
   */
-  public warp (index : number) : void
+  warp (index : number) : void
 
   /**
   * Empty this pack of its elements.
   */
-  public clear () : void
+  clear () : void
 }
