@@ -1,6 +1,7 @@
 import { equals } from '../equals'
 
 import { Pack } from '../pack/Pack'
+import { Packs } from '../pack/Packs'
 
 import { ReallocableCircularBuffer } from './ReallocableCircularBuffer'
 import { CircularBuffer } from './CircularBuffer'
@@ -10,6 +11,11 @@ export class PackCircularBuffer<T> implements ReallocableCircularBuffer<T> {
   private _start : number
   private _size : number
 
+  /**
+  * Create a new circular buffer uppon an existing pack implementation.
+  *
+  * @param elements - A pack to use for storing this circular buffer elements.
+  */
   public constructor (elements : Pack<T>) {
     this._elements = elements
     this._start = 0
@@ -35,14 +41,25 @@ export class PackCircularBuffer<T> implements ReallocableCircularBuffer<T> {
   * @see ReallocableCollection.reallocate
   */
   public reallocate (capacity : number) : void {
+    const next : Pack<T> = Packs.copy(this._elements)
+    next.reallocate(capacity)
 
+    const nextSize : number = Math.min(capacity, this._size)
+
+    for (let index = 0; index < capacity && index < this._size; ++index) {
+      next.set(nextSize - index - 1, this.get(this._size - index - 1))
+    }
+
+    this._elements = next
+    this._size = nextSize
+    this._start = 0
   }
 
   /**
   * @see ReallocableCollection.fit
   */
   public fit () : void {
-
+    this.reallocate(this._size)
   }
 
   /**

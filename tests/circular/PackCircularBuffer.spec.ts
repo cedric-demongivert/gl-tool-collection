@@ -2,6 +2,7 @@ import { PackCircularBuffer } from '../../src/ts/circular/PackCircularBuffer'
 import { ArrayPack } from '../../src/ts/pack/ArrayPack'
 
 import { isCircularBuffer } from './CircularBuffer'
+import { isReallocableCircularBuffer } from './ReallocableCircularBuffer'
 
 const chars : Array<string> = [
   'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
@@ -21,6 +22,12 @@ function randomString () : string {
 
 describe('#PackCircularBuffer', function () {
   isCircularBuffer<string>(
+    (capacity : number) => new PackCircularBuffer<string>(
+      new ArrayPack<string>(capacity)
+    )
+  ).of(randomString)
+
+  isReallocableCircularBuffer<string>(
     (capacity : number) => new PackCircularBuffer<string>(
       new ArrayPack<string>(capacity)
     )
