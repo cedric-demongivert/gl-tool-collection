@@ -1,6 +1,7 @@
 import { Pack } from './Pack'
 import { TypedArrayPack } from './TypedArrayPack'
 import { ArrayPack } from './ArrayPack'
+import { PackCircularBuffer } from '../circular/PackCircularBuffer'
 
 export class Packs {
   static copy <T> (pack : Pack<T>) : Pack<T> {
@@ -45,5 +46,9 @@ export class Packs {
 
   static float64 (capacity : number) : Pack<number> {
     return new TypedArrayPack(Float64Array, capacity)
+  }
+
+  static circular <T> (pack : Pack<T>) : PackCircularBuffer<T> {
+    return new PackCircularBuffer(pack)
   }
 }
