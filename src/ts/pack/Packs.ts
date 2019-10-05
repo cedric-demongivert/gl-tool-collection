@@ -19,7 +19,7 @@ export class Packs {
     if (pack == null) {
       return null
     } else {
-      return new (pack.constructor as any)(capacity)
+      return (pack as any).instantiate(capacity)
     }
   }
 

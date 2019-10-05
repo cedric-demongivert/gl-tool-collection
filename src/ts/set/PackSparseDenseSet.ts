@@ -1,7 +1,8 @@
-import { Packs } from '../pack/Packs'
 import { Pack } from '../pack/Pack'
 
 import { SparseDenseSet } from './SparseDenseSet'
+
+type PackFactory<T> = (capacity : number) => Pack<T>
 
 export class PackSparseDenseSet implements SparseDenseSet {
   /**
@@ -10,11 +11,16 @@ export class PackSparseDenseSet implements SparseDenseSet {
   * @param toCopy - A sparse set to copy.
   */
   static copy (toCopy : PackSparseDenseSet) : PackSparseDenseSet {
-    return new PackSparseDenseSet(
-      toCopy._dense, toCopy.capacity
-    )
+    const copy = new PackSparseDenseSet(toCopy._packFactory, toCopy.capacity)
+
+    for (let index = 0, size = toCopy.size; index < size; ++index) {
+      copy.add(toCopy.get(index))
+    }
+
+    return copy
   }
 
+  private _packFactory: PackFactory<number>
   private _sparse: Pack<number>
   private _dense: Pack<number>
   private _size: number
@@ -25,14 +31,13 @@ export class PackSparseDenseSet implements SparseDenseSet {
   * @param pack - Kind of pack to use for storing this set state.
   * @param capacity - Initial storing capacity of the sparse set.
   */
-  public constructor (dense : Pack<number>, capacity : number) {
-    this._sparse = Packs.create(dense, capacity)
-    this._dense = Packs.create(dense, capacity)
-
-    for (let index = 0, size = dense.size; index < size; ++index) {
-      this.add(dense.get(index))
-    }
-
+  public constructor (
+    packFactory : PackFactory<number>,
+    capacity : number
+  ) {
+    this._packFactory = packFactory
+    this._sparse = packFactory(capacity)
+    this._dense = packFactory(capacity)
     this._size = 0
   }
 
@@ -127,8 +132,8 @@ export class PackSparseDenseSet implements SparseDenseSet {
     const oldSparse : Pack<number> = this._sparse
     const oldSize : number = this._size
 
-    this._dense = Packs.create(oldDense, capacity)
-    this._sparse = Packs.create(oldSparse, capacity)
+    this._dense = this._packFactory(capacity)
+    this._sparse = this._packFactory(capacity)
     this._size = 0
 
     for (let index = 0; index < oldSize; ++index) {

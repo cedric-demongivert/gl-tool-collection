@@ -5,6 +5,8 @@ import { PackSet } from './PackSet'
 import { SparseDenseSet } from './SparseDenseSet'
 import { PackSparseDenseSet } from './PackSparseDenseSet'
 
+type PackFactory<T> = (capacity : number) => Pack<T>
+
 export class Sets {
   static SparseDense : any = class {
     static copy <T> (pack : SparseDenseSet) : SparseDenseSet {
@@ -16,10 +18,10 @@ export class Sets {
     }
 
     static fromPack (
-      pack : Pack<number>,
+      factory : PackFactory<number>,
       capacity : number
     ) : SparseDenseSet {
-      return new PackSparseDenseSet(pack, capacity)
+      return new PackSparseDenseSet(factory, capacity)
     }
   }
 
