@@ -12,6 +12,17 @@ export class Packs {
     }
   }
 
+  static create <T, Collection extends Pack<T>> (
+    pack : Collection,
+    capacity : number
+  ) : Collection {
+    if (pack == null) {
+      return null
+    } else {
+      return new (pack.constructor as any)(capacity)
+    }
+  }
+
   static any <T> (capacity : number) : Pack<T> {
     return new ArrayPack<T>(capacity)
   }
@@ -46,9 +57,5 @@ export class Packs {
 
   static float64 (capacity : number) : Pack<number> {
     return new TypedArrayPack(Float64Array, capacity)
-  }
-
-  static circular <T> (pack : Pack<T>) : PackCircularBuffer<T> {
-    return new PackCircularBuffer(pack)
   }
 }
