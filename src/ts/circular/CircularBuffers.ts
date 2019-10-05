@@ -7,7 +7,7 @@ export class CircularBuffers {
     if (buffer == null) {
       return null
     } else {
-      return (buffer.constructor as any).copy(pack)
+      return (buffer.constructor as any).copy(buffer)
     }
   }
 
