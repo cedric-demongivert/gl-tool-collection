@@ -78,6 +78,15 @@ export interface Pack<T> extends ReallocableCollection<T> {
   delete (index : number) : void
 
   /**
+  * Sort the content of this pack.
+  *
+  * This method act like Array#sort except that a comparator MUST be specified.
+  *
+  * @param comparator - A comparison function to use.
+  */
+  sort (comparator : (left : T, right : T) => number)
+
+  /**
   * Warp out the element at the given location by replacing it with the last
   * element of this array. This operation will decrease the size of this pack.
   *

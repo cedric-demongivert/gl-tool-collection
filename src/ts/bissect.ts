@@ -1,8 +1,6 @@
 import { Collection } from './Collection'
 
-type Comparator<T> = (left : T, right : T) => number
-
-function defaultComparator <T> (left : T, right : T) : number {
+function defaultComparator (left : any, right : any) : number {
   return left < right ? -1 : (left > right ? 1 : 0)
 }
 
@@ -18,10 +16,10 @@ function defaultComparator <T> (left : T, right : T) : number {
 * @param value - A value to search.
 * @param [comparator = defaultComparator] - A comparison function to use.
 */
-export function bissect<T> (
-  collection : Collection<T>,
-  value : T,
-  comparator : Comparator<T> = defaultComparator
+export function bissect<Item, Search> (
+  collection : Collection<Item>,
+  value : Search,
+  comparator : (left : Search, right : Item) => number = defaultComparator
 ) {
   let left = 0
   let right = collection.size
@@ -29,7 +27,7 @@ export function bissect<T> (
   while (left !== right) {
     const cursor = left + ((right - left) >>> 1)
     const comparison = comparator(value, collection.get(cursor))
-  
+
     if (comparison === 0) {
       return cursor
     } else if (comparison === 1) {

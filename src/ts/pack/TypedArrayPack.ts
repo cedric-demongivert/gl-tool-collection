@@ -137,6 +137,13 @@ export class TypedArrayPack implements Pack<number> {
   }
 
   /**
+  * @see Pack.sort
+  */
+  public sort (comparator : (left : number, right : number) => number) : void {
+    this._elements.sort(comparator)
+  }
+
+  /**
   * @see Pack.swap
   */
   public swap (first : number, second : number) : void {

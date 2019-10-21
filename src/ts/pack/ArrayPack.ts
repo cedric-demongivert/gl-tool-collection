@@ -113,6 +113,13 @@ export class ArrayPack<T> implements Pack<T> {
   }
 
   /**
+  * @see Pack.sort
+  */
+  public sort (comparator : (left : T, right : T) => number) : void {
+    this._elements.sort(comparator)
+  }
+
+  /**
   * @see Pack.swap
   */
   public swap (first : number, second : number) : void {
