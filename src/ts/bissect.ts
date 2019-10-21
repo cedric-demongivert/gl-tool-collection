@@ -19,10 +19,12 @@ function defaultComparator (left : any, right : any) : number {
 export function bissect<Item, Search> (
   collection : Collection<Item>,
   value : Search,
-  comparator : (left : Search, right : Item) => number = defaultComparator
+  comparator : (left : Search, right : Item) => number = defaultComparator,
+  offset : number = 0,
+  size : number = collection.size
 ) {
-  let left = 0
-  let right = collection.size
+  let left = offset
+  let right = offset + size
 
   while (left !== right) {
     const cursor = left + ((right - left) >>> 1)
