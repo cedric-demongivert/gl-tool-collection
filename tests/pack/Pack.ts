@@ -201,6 +201,33 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
     })
   })
 
+  describe('#sort', function () {
+    it('sort the elements of the pack', function () {
+      const pack : Pack<T> = new PackClass(256)
+      const elements : Array<T> = new Array()
+
+      for (let index = 0; index < 128; ++index) {
+        elements[index] = generator()
+        pack.push(elements[index])
+      }
+
+      expect([...pack]).toEqual(elements)
+      expect(pack.capacity).toBe(256)
+      expect(pack.size).toBe(128)
+
+      pack.sort(function (a : any, b : any) : number {
+        return a < b ? -1 : (a > b ? 1 : 0)
+      })
+      elements.sort(function (a : any, b : any) : number {
+        return a < b ? -1 : (a > b ? 1 : 0)
+      })
+
+      expect([...pack]).toEqual(elements)
+      expect(pack.capacity).toBe(256)
+      expect(pack.size).toBe(128)
+    })
+  })
+
   describe('#fit', function () {
     it('reduce the pack capacity to its size', function () {
       const pack : Pack<T> = new PackClass(110)

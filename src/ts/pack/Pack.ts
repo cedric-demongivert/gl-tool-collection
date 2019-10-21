@@ -1,6 +1,9 @@
 import { ReallocableCollection } from '../ReallocableCollection'
+import { Sequence } from '../Sequence'
 
-export interface Pack<T> extends ReallocableCollection<T> {
+export interface Pack<Element>
+         extends ReallocableCollection<Element>, Sequence<Element>
+{
   /**
   * Return the number of elements in this pack or update the current size of
   * this pack.
@@ -35,7 +38,7 @@ export interface Pack<T> extends ReallocableCollection<T> {
   * @param index - Where to set the given value.
   * @param value - The value to set.
   */
-  set (index : number, value : T) : void
+  set (index : number, value : Element) : void
 
   /**
   * Insert the given value at the given location.
@@ -52,7 +55,12 @@ export interface Pack<T> extends ReallocableCollection<T> {
   * @param index - Where to insert the given value.
   * @param value - The value to insert.
   */
-  insert (index : number, value : T) : void
+  insert (index : number, value : Element) : void
+
+  /**
+  * @see Array.sort
+  */
+  sort (comparator : (left : Element, right : Element) => number) : void
 
   /**
   * Push the given value at the end of this pack.
@@ -65,7 +73,7 @@ export interface Pack<T> extends ReallocableCollection<T> {
   *
   * @param value - The value to push.
   */
-  push (value : T) : void
+  push (value : Element) : void
 
   /**
   * Delete the element at the given index.
@@ -76,15 +84,6 @@ export interface Pack<T> extends ReallocableCollection<T> {
   * @param index - Where to delete an element.
   */
   delete (index : number) : void
-
-  /**
-  * Sort the content of this pack.
-  *
-  * This method act like Array#sort except that a comparator MUST be specified.
-  *
-  * @param comparator - A comparison function to use.
-  */
-  sort (comparator : (left : T, right : T) => number)
 
   /**
   * Warp out the element at the given location by replacing it with the last

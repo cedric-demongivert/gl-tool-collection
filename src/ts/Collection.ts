@@ -1,25 +1,41 @@
 /**
 * A collection of values.
 */
-export interface Collection<T> extends Iterable<T> {
+export interface Collection<Element> extends Iterable<Element> {
   /**
   * @return True if this instance is a collection.
   */
   readonly isCollection : boolean
 
   /**
+  * Return the number of elements stored into this collection.
+  *
+  * A collection may be non-finite and for such cases this getter MUST return
+  * Number.POSITIVE_INFINITY. For finite collections, this getter will return
+  * an integer equal to the number of elements that it currently store.
+  *
   * @return The number of elements stored into this collection.
   */
   readonly size : number
 
   /**
-  * Return an element of the collection by using an index.
+  * Return the element at the given index in the sequence of element described
+  * by the iterator of this collection.
   *
-  * @param index - Index of the element to return.
+  * A collection may not be randomly accessible, and, in such cases, this method
+  * may use the iterator exposed by this collection to access the requested
+  * element. Randomly acessing elements of a non randomly accessible collection
+  * may result in poor performances.
   *
-  * @return The element at the given index.
+  * @param index - Index of the element to return in the sequence of element
+  *                described by the iterator of this collection
+  *
+  * @return The element at the given index in the sequence of element described
+  *         by the iterator of this collection.
+  *
+  * @see https://en.wikipedia.org/wiki/Random_access
   */
-  get (index : number) : T
+  get (index : number) : Element
 
   /**
   * Return true if this collection contains the given element.
@@ -28,19 +44,26 @@ export interface Collection<T> extends Iterable<T> {
   *
   * @return True if the given element exists into this collection.
   */
-  has (element : T) : boolean
+  has (element : Element) : boolean
 
   /**
-  * Return the index of first element equal to the given one.
+  * Return the index of first element equal to the given one in the sequence of
+  * element described by the iterator of this collection.
   *
   * If the given element does not exists into this collection, this method will
-  * return a negative index if the given element is not into this collection.
+  * return a negative index.
+  *
+  * A collection may not be randomly accessible, and, in such cases, this method
+  * may use the iterator exposed by this collection to find the requested
+  * element. Randomly acessing elements of a non randomly accessible collection
+  * may result in poor performances.
   *
   * @param element - An element to search for.
   *
-  * @return True if the given element exists into this collection.
+  * @return The index of first element equal to the given one in the sequence of
+  *         element described by the iterator of this collection.
   */
-  indexOf (element : T) : number
+  indexOf (element : Element) : number
 
   /**
   * Return true if both instances are equals.
@@ -49,5 +72,8 @@ export interface Collection<T> extends Iterable<T> {
   */
   equals (other : any) : boolean
 
-  [Symbol.iterator] () : Iterator<T>
+  /**
+  * @return An iterator over each elements of this collection.
+  */
+  [Symbol.iterator] () : Iterator<Element>
 }

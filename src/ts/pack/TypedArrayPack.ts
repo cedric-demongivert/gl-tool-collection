@@ -1,5 +1,6 @@
 import { Pack } from './Pack'
 import { equals } from '../equals'
+import { quicksort } from '../quicksort'
 
 type TypedArrayConstructor = new (capacity : number) => any
 
@@ -140,7 +141,7 @@ export class TypedArrayPack implements Pack<number> {
   * @see Pack.sort
   */
   public sort (comparator : (left : number, right : number) => number) : void {
-    this._elements.sort(comparator)
+    quicksort(this, comparator, 0, this._size)
   }
 
   /**

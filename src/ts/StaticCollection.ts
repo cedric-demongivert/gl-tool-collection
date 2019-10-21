@@ -2,10 +2,13 @@ import { Collection } from './Collection'
 
 /**
 * A collection that have a fixed capacity of elements.
+*
+* A static collection can't be non-finite.
 */
-export interface StaticCollection<T> extends Collection<T> {
+export interface StaticCollection<Element> extends Collection<Element> {
   /**
-  * @return The number of elements that this collection can store without reallocating memory.
+  * @return The maximum number of elements that this collection can store with
+  *         its available memory.
   */
   readonly capacity : number
 }

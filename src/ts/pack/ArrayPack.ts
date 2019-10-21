@@ -1,5 +1,6 @@
 import { Pack } from './Pack'
 import { equals } from '../equals'
+import { quicksort } from '../quicksort'
 
 export class ArrayPack<T> implements Pack<T> {
   static DEFAULT_VALUE : any = null
@@ -116,7 +117,7 @@ export class ArrayPack<T> implements Pack<T> {
   * @see Pack.sort
   */
   public sort (comparator : (left : T, right : T) => number) : void {
-    this._elements.sort(comparator)
+    quicksort(this, comparator, 0, this._size)
   }
 
   /**
