@@ -32,7 +32,7 @@ export function bissect<Item, Search> (
 
     if (comparison === 0) {
       return cursor
-    } else if (comparison === 1) {
+    } else if (comparison > 0) {
       left = cursor + 1
     } else {
       right = cursor
