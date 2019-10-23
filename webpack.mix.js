@@ -18,7 +18,8 @@ mix.ts('src/ts/index.ts', 'dist')
      'externals': externals,
      'output': {
        'library': pckg.name,
-       'libraryTarget': 'umd'
+       'libraryTarget': 'umd',
+       'globalObject': 'this' // webpack bug
      },
      'plugins': [
        new TypedocWebpackPlugin({ 'target': 'es6', 'mode': 'file' }, './src/ts')
