@@ -23,21 +23,25 @@ export function bissect<Item, Search> (
   offset : number = 0,
   size : number = collection.size
 ) {
-  let left = offset
-  let right = offset + size
+  if (size > 0) {
+    let left = offset
+    let right = offset + size
 
-  while (left !== right) {
-    const cursor = left + ((right - left) >>> 1)
-    const comparison = comparator(value, collection.get(cursor))
+    while (left !== right) {
+      const cursor = left + ((right - left) >>> 1)
+      const comparison = comparator(value, collection.get(cursor))
 
-    if (comparison === 0) {
-      return cursor
-    } else if (comparison > 0) {
-      left = cursor + 1
-    } else {
-      right = cursor
+      if (comparison === 0) {
+        return cursor
+      } else if (comparison > 0) {
+        left = cursor + 1
+      } else {
+        right = cursor
+      }
     }
-  }
 
-  return - (left + 1)
+    return - (left + 1)
+  } else {
+    return -1
+  }
 }
