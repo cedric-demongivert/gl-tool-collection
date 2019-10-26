@@ -23,6 +23,10 @@ export class Packs {
     }
   }
 
+  static like <T> (existing : Pack<T>, capacity : number) : Pack<T> {
+    return existing.allocate(capacity)
+  }
+
   static any <T> (capacity : number) : Pack<T> {
     return new ArrayPack<T>(capacity)
   }

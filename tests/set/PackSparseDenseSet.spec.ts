@@ -10,6 +10,6 @@ function randomNumber () : number {
 
 describe('#PackSparseDenseSet', function () {
   isSet<number>(
-    () => new PackSparseDenseSet(x => new ArrayPack<number>(x), 2000)
+    () => new PackSparseDenseSet(new ArrayPack<number>(2000))
   ).of(randomNumber)
 })

@@ -1,4 +1,4 @@
-import { Pack } from '../pack/Pack'
+import { Pack, Packs } from '../pack/Pack'
 
 import { Set } from './Set'
 import { PackSet } from './PackSet'
@@ -10,27 +10,28 @@ type PackFactory<T> = (capacity : number) => Pack<T>
 export class Sets {
   static SparseDense : any = class {
     static copy <T> (pack : SparseDenseSet) : SparseDenseSet {
-      if (pack == null) {
-        return null
-      } else {
-        return (pack.constructor as any).copy(pack)
-      }
+      return pack == null ? null : (pack.constructor as any).copy(pack)
     }
 
-    static fromPack (
-      factory : PackFactory<number>,
-      capacity : number
-    ) : SparseDenseSet {
-      return new PackSparseDenseSet(factory, capacity)
+    static uint32 (capacity : number) : SparseDenseSet {
+      return new PackSparseDenseSet(Packs.uint32(capacity))
+    }
+
+    static uint16 (capacity : number) : SparseDenseSet {
+      return new PackSparseDenseSet(Packs.uint16(capacity))
+    }
+
+    static uint8 (capacity : number) : SparseDenseSet {
+      return new PackSparseDenseSet(Packs.uint8(capacity))
+    }
+
+    static any (capacity : number) : SparseDenseSet {
+      return new PackSparseDenseSet(Packs.any(capacity))
     }
   }
 
   static copy <T> (pack : Set<T>) : Set<T> {
-    if (pack == null) {
-      return null
-    } else {
-      return (pack.constructor as any).copy(pack)
-    }
+    return pack == null ? null : (pack.constructor as any).copy(pack)
   }
 
   static fromPack <T> (pack : Pack<T>) : Set<T> {

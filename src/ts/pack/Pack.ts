@@ -94,6 +94,15 @@ export interface Pack<Element>
   warp (index : number) : void
 
   /**
+  * Allocate a new pack of the same type of this one with the given capacity.
+  *
+  * @param capacity - Capacity of the new pack to instantiate.
+  *
+  * @return A new pack instance of the same type of this one with the given capacity.
+  */
+  allocate (capacity : number) : Pack<T>
+
+  /**
   * Empty this pack of its elements.
   */
   clear () : void

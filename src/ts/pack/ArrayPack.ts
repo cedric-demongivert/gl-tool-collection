@@ -204,6 +204,13 @@ export class ArrayPack<T> implements Pack<T> {
   }
 
   /**
+  * @see Pack.allocate
+  */
+  public allocate (capacity : number) : ArrayPack<T> {
+    return new ArrayPack(capacity)
+  }
+
+  /**
   * @see Pack.clear
   */
   public clear () : void {

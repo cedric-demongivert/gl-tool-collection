@@ -117,6 +117,13 @@ export class TypedArrayPack implements Pack<number> {
   }
 
   /**
+  * @see Pack.allocate
+  */
+  public allocate (capacity : number) : TypedArrayPack {
+    return new TypedArrayPack(this._TypedArrayClass, capacity)
+  }
+
+  /**
   * @see ReallocableCollection.fit
   */
   public fit () : void {
