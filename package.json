@@ -1,6 +1,6 @@
 {
   "name": "@cedric-demongivert/gl-tool-collection",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "A collection library for the gl-tool suit.",
   "main": "index.js",
   "browserslist": "> 0.25%, not dead",
