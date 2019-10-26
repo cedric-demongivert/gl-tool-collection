@@ -100,7 +100,7 @@ export interface Pack<Element>
   *
   * @return A new pack instance of the same type of this one with the given capacity.
   */
-  allocate (capacity : number) : Pack<T>
+  allocate (capacity : number) : Pack<Element>
 
   /**
   * Empty this pack of its elements.

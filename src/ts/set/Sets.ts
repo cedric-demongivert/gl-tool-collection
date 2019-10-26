@@ -1,4 +1,5 @@
-import { Pack, Packs } from '../pack/Pack'
+import { Pack } from '../pack/Pack'
+import { Packs } from '../pack/Packs'
 
 import { Set } from './Set'
 import { PackSet } from './PackSet'
