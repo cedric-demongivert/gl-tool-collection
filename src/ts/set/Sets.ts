@@ -29,6 +29,16 @@ export class Sets {
     static any (capacity : number) : SparseDenseSet {
       return new PackSparseDenseSet(Packs.any(capacity))
     }
+
+    static adaptative (capacity : number) : SparseDenseSet {
+      if (capacity <= 0xff) {
+        return new PackSparseDenseSet(Packs.uint8(capacity))
+      } else if (capacity <= 0xffff) {
+        return new PackSparseDenseSet(Packs.uint16(capacity))
+      } else {
+        return new PackSparseDenseSet(Packs.uint32(capacity))
+      }
+    }
   }
 
   static copy <T> (pack : Set<T>) : Set<T> {
