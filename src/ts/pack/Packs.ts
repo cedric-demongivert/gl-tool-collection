@@ -43,6 +43,16 @@ export class Packs {
     return new TypedArrayPack(Uint32Array, capacity)
   }
 
+  static upTo (maximum : number, capacity : number) : Pack<number> {
+    if (maximum <= 0xff) {
+      return new TypedArrayPack(Uint8Array, capacity)
+    } else if (maximum <= 0xffff) {
+      return new TypedArrayPack(Uint16Array, capacity)
+    } else {
+      return new TypedArrayPack(Uint32Array, capacity)
+    }
+  }
+
   static int8 (capacity : number) : Pack<number> {
     return new TypedArrayPack(Int8Array, capacity)
   }
