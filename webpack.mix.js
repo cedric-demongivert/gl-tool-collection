@@ -16,6 +16,9 @@ mix.ts('src/ts/index.ts', 'dist')
    .disableNotifications()
    .webpackConfig({
      'externals': externals,
+     'optimization': {
+    		'minimize': false
+     },
      'output': {
        'library': pckg.name,
        'libraryTarget': 'umd',
