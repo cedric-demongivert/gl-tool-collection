@@ -1,6 +1,6 @@
 {
   "name": "@cedric-demongivert/gl-tool-collection",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "A collection library for the gl-tool suit.",
   "main": "./index.js",
   "types": "./types/index.d.ts",
@@ -28,6 +28,5 @@
     "typedoc-webpack-plugin": "^1.1.4",
     "webpack": "^4.33.0"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }
