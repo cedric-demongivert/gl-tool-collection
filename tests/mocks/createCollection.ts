@@ -1,4 +1,4 @@
-import { Collection } from '../../src/ts/Collection'
+import { Collection } from '../../src/Collection'
 
 export function createCollection <T> () : Collection<T> {
   const result : any = {

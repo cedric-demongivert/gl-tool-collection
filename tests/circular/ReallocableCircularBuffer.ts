@@ -2,7 +2,7 @@
 
 import {
   ReallocableCircularBuffer
-} from '../../src/ts/circular/ReallocableCircularBuffer'
+} from '../../src/circular/ReallocableCircularBuffer'
 import { pickUnique } from '../pickUnique'
 
 type ReallocableCircularBufferFactory<T> = (

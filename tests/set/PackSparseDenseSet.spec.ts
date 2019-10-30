@@ -1,6 +1,6 @@
 /** eslint-env jest */
-import { PackSparseDenseSet } from '../../src/ts/set/PackSparseDenseSet'
-import { ArrayPack } from '../../src/ts/pack/ArrayPack'
+import { PackSparseDenseSet } from '../../src/set/PackSparseDenseSet'
+import { ArrayPack } from '../../src/pack/ArrayPack'
 
 import { isSet } from './Set'
 

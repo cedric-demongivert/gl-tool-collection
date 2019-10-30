@@ -1,7 +1,7 @@
 /** eslint-env jest */
 
-import { Collection } from '../src/ts/Collection'
-import { View } from '../src/ts/View'
+import { Collection } from '../src/Collection'
+import { View } from '../src/View'
 
 import { createCollection } from './mocks/createCollection'
 

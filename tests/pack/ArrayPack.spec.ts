@@ -1,4 +1,4 @@
-import { ArrayPack } from '../../src/ts/pack/ArrayPack'
+import { ArrayPack } from '../../src/pack/ArrayPack'
 
 import { isPack } from './Pack'
 

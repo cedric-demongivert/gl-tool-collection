@@ -1,6 +1,6 @@
 /** eslint-env jest */
 
-import { Pack } from '../../src/ts/pack/Pack'
+import { Pack } from '../../src/pack/Pack'
 
 import { pickUnique } from '../pickUnique'
 

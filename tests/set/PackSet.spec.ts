@@ -1,5 +1,5 @@
-import { PackSet } from '../../src/ts/set/PackSet'
-import { ArrayPack } from '../../src/ts/pack/ArrayPack'
+import { PackSet } from '../../src/set/PackSet'
+import { ArrayPack } from '../../src/pack/ArrayPack'
 
 import { isSet } from './Set'
 

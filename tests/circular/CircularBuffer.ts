@@ -1,6 +1,6 @@
 /** eslint-env jest */
 
-import { CircularBuffer } from '../../src/ts/circular/CircularBuffer'
+import { CircularBuffer } from '../../src/circular/CircularBuffer'
 
 import { pickUnique } from '../pickUnique'
 

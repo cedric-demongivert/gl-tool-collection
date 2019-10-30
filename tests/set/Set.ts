@@ -1,6 +1,6 @@
 /** eslint-env jest */
 
-import { Set as LibrarySet } from '../../src/ts/set/Set'
+import { Set as LibrarySet } from '../../src/set/Set'
 
 import { pickUnique } from '../pickUnique'
 

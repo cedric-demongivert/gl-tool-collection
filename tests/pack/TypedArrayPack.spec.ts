@@ -1,4 +1,4 @@
-import { TypedArrayPack } from '../../src/ts/pack/TypedArrayPack'
+import { TypedArrayPack } from '../../src/pack/TypedArrayPack'
 
 import { isPack } from './Pack'
 

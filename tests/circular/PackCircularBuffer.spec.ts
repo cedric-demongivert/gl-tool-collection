@@ -1,5 +1,5 @@
-import { PackCircularBuffer } from '../../src/ts/circular/PackCircularBuffer'
-import { ArrayPack } from '../../src/ts/pack/ArrayPack'
+import { PackCircularBuffer } from '../../src/circular/PackCircularBuffer'
+import { ArrayPack } from '../../src/pack/ArrayPack'
 
 import { isCircularBuffer } from './CircularBuffer'
 import { isReallocableCircularBuffer } from './ReallocableCircularBuffer'
