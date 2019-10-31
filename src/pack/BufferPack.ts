@@ -2,9 +2,10 @@ import { Pack } from './Pack'
 import { equals } from '../equals'
 import { quicksort } from '../quicksort'
 
-type TypedArrayConstructor = new (capacity : number) => any
+type TypedArray = Int8Array | Uint8Array | Int16Array | Uint16Array | Int32Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array
+type TypedArrayAllocator<Buffer extends TypedArray> = new (capacity : number) => Buffer
 
-export class TypedArrayPack implements Pack<number> {
+export class BufferPack<Buffer extends TypedArray> implements Pack<number> {
   static DEFAULT_VALUE : number = 0
 
   /**
@@ -12,10 +13,10 @@ export class TypedArrayPack implements Pack<number> {
   *
   * @param toCopy - A pack to copy.
   */
-  static copy (toCopy : TypedArrayPack) : TypedArrayPack {
-    const result : TypedArrayPack = new TypedArrayPack(
-      toCopy.TypedArrayClass, toCopy.capacity
-    )
+  static copy <Buffer extends TypedArray> (
+    toCopy : BufferPack<Buffer>
+  ) : BufferPack<Buffer> {
+    const result : BufferPack<Buffer> = toCopy.allocate(toCopy.capacity)
 
     result.size = toCopy.size
 
@@ -26,48 +27,32 @@ export class TypedArrayPack implements Pack<number> {
     return result
   }
 
-  private _TypedArrayClass : TypedArrayConstructor
-  private _elements : any
+  private _elements : Buffer
   private _size : number
 
   /**
-  * Instantiate a new pack of values based upon a javascript typed array.
+  * Wrap an existing buffer into a new pack instance.
   *
-  * @param TypedArrayClass - The constructor to use for instantiating the underlying typed array of this pack.
-  * @param [capacity=16] - The number of elements to preallocate.
+  * @param buffer - The buffer to wrap, the resulting pack will have the capacity of the given buffer.
+  * @param [size = 0] - Initial number of elements in the pack.
   */
-  public constructor (
-    TypedArrayClass : TypedArrayConstructor,
-    capacity : number = 16
-  ) {
-    this._TypedArrayClass = TypedArrayClass
-    this._elements = new TypedArrayClass(capacity)
-    this._size = 0
+  public constructor (buffer : Buffer, size : number = 0) {
+    this._elements = buffer
+    this._size = size
   }
 
   /**
-  * @return The constructor used for instantiating the underlying typed array of this pack.
+  * @return The underlying typed array.
   */
-  public get TypedArrayClass () : TypedArrayConstructor {
-    return this._TypedArrayClass
+  public get array () : Buffer {
+    return this._elements
   }
 
   /**
-  * Change the constructor used for instantiating the underlying typed array of this pack.
-  *
-  * This operation will fully reallocate this pack and cast all of its element
-  * from its previous buffer type to its new one.
-  *
-  * @param TypedArrayClass - The new constructor used for instantiating the underlying typed array of this pack.
+  * @return The underlying buffer.
   */
-  public set TypedArrayClass (TypedArrayClass : TypedArrayConstructor) {
-    const newElements : any = new TypedArrayClass(this._elements.length)
-
-    for (let index = 0, size = this._size; index < size; ++index) {
-      newElements[index] = this._elements[index]
-    }
-
-    this._elements = newElements
+  public get buffer () : ArrayBuffer {
+    return this._elements.buffer
   }
 
   /**
@@ -95,6 +80,13 @@ export class TypedArrayPack implements Pack<number> {
   }
 
   /**
+  * @return The constructor of the underlying typed array.
+  */
+  public get allocator () : TypedArrayAllocator<Buffer> {
+    return this._elements.constructor as TypedArrayAllocator<Buffer>
+  }
+
+  /**
   * @see StaticCollection.capacity
   */
   public get capacity () : number {
@@ -108,7 +100,7 @@ export class TypedArrayPack implements Pack<number> {
     const old : any = this._elements
     const oldSize : number = this._size
 
-    this._elements = new this._TypedArrayClass(capacity)
+    this._elements = new this.allocator(capacity)
     this._size = Math.min(this._size, capacity)
 
     for (let index = 0; index < oldSize; ++index) {
@@ -119,8 +111,8 @@ export class TypedArrayPack implements Pack<number> {
   /**
   * @see Pack.allocate
   */
-  public allocate (capacity : number) : TypedArrayPack {
-    return new TypedArrayPack(this._TypedArrayClass, capacity)
+  public allocate (capacity : number) : BufferPack<Buffer> {
+    return new BufferPack<Buffer>(new this.allocator(capacity))
   }
 
   /**

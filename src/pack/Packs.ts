@@ -1,5 +1,5 @@
 import { Pack } from './Pack'
-import { TypedArrayPack } from './TypedArrayPack'
+import { BufferPack } from './BufferPack'
 import { ArrayPack } from './ArrayPack'
 import { PackCircularBuffer } from '../circular/PackCircularBuffer'
 
@@ -31,45 +31,48 @@ export class Packs {
     return new ArrayPack<T>(capacity)
   }
 
-  static uint8 (capacity : number) : Pack<number> {
-    return new TypedArrayPack(Uint8Array, capacity)
+  static uint8 (capacity : number) : BufferPack<Uint8Array> {
+    return new BufferPack<Uint8Array>(new Uint8Array(capacity))
   }
 
-  static uint16 (capacity : number) : Pack<number> {
-    return new TypedArrayPack(Uint16Array, capacity)
+  static uint16 (capacity : number) : BufferPack<Uint16Array> {
+    return new BufferPack<Uint16Array>(new Uint16Array(capacity))
   }
 
-  static uint32 (capacity : number) : Pack<number> {
-    return new TypedArrayPack(Uint32Array, capacity)
+  static uint32 (capacity : number) : BufferPack<Uint32Array> {
+    return new BufferPack<Uint32Array>(new Uint32Array(capacity))
   }
 
-  static upTo (maximum : number, capacity : number) : Pack<number> {
+  static upTo (
+    maximum : number,
+    capacity : number
+  ) : BufferPack<Uint8Array | Uint16Array | Uint32Array> {
     if (maximum <= 0xff) {
-      return new TypedArrayPack(Uint8Array, capacity)
+      return new BufferPack<Uint8Array>(new Uint8Array(capacity))
     } else if (maximum <= 0xffff) {
-      return new TypedArrayPack(Uint16Array, capacity)
+      return new BufferPack<Uint16Array>(new Uint16Array(capacity))
     } else {
-      return new TypedArrayPack(Uint32Array, capacity)
+      return new BufferPack<Uint32Array>(new Uint32Array(capacity))
     }
   }
 
-  static int8 (capacity : number) : Pack<number> {
-    return new TypedArrayPack(Int8Array, capacity)
+  static int8 (capacity : number) : BufferPack<Int8Array> {
+    return new BufferPack<Int8Array>(new Int8Array(capacity))
   }
 
-  static int16 (capacity : number) : Pack<number> {
-    return new TypedArrayPack(Int16Array, capacity)
+  static int16 (capacity : number) : BufferPack<Int16Array> {
+    return new BufferPack<Int16Array>(new Int16Array(capacity))
   }
 
-  static int32 (capacity : number) : Pack<number> {
-    return new TypedArrayPack(Int32Array, capacity)
+  static int32 (capacity : number) : BufferPack<Int32Array> {
+    return new BufferPack<Int32Array>(new Int32Array(capacity))
   }
 
-  static float32 (capacity : number) : Pack<number> {
-    return new TypedArrayPack(Float32Array, capacity)
+  static float32 (capacity : number) : BufferPack<Float32Array> {
+    return new BufferPack<Float32Array>(new Float32Array(capacity))
   }
 
-  static float64 (capacity : number) : Pack<number> {
-    return new TypedArrayPack(Float64Array, capacity)
+  static float64 (capacity : number) : BufferPack<Float64Array> {
+    return new BufferPack<Float64Array>(new Float64Array(capacity))
   }
 }
