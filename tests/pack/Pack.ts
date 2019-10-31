@@ -4,26 +4,21 @@ import { Pack } from '../../src/pack/Pack'
 
 import { pickUnique } from '../pickUnique'
 
-interface PackConstructor<T> {
-  readonly DEFAULT_VALUE : any
+type PackFactory<T, Result extends Pack<T>> = (capacity : number) => Result
 
-  new (capacity : number) : Pack<T>
-
-  copy (toCopy : Pack<T>) : Pack<T>
+type SuiteConfiguration<T, TestedPack extends Pack<T>>  = {
+  factory: PackFactory<T, TestedPack>,
+  generator: () => T,
+  defaultValue: T,
+  copy: (toCopy : TestedPack) => TestedPack
 }
 
-export function isPack <T> (PackClass : PackConstructor<T>) {
-  return {
-    of (generator : () => T) {
-      return buildSuite(PackClass, generator)
-    }
-  }
-}
-
-function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
+export function isPack <T, TestedPack extends Pack<T>> (
+  configuration : SuiteConfiguration<T, TestedPack>
+) {
   describe('#constructor', function () {
     it('allows to instantiate an empty pack with an initial capacity', function () {
-      const pack : Pack<T> = new PackClass(125)
+      const pack : TestedPack = configuration.factory(125)
 
       expect(pack.capacity).toBe(125)
       expect([...pack]).toEqual([])
@@ -32,7 +27,7 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
 
   describe('#set size', function () {
     it('allows to expand the current size of the pack', function () {
-      const pack : Pack<T> = new PackClass(10)
+      const pack : TestedPack = configuration.factory(10)
 
       expect([...pack]).toEqual([])
       expect(pack.size).toBe(0)
@@ -40,35 +35,35 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
       pack.size = 3
 
       expect([...pack]).toEqual([
-        PackClass.DEFAULT_VALUE,
-        PackClass.DEFAULT_VALUE,
-        PackClass.DEFAULT_VALUE
+        configuration.defaultValue,
+        configuration.defaultValue,
+        configuration.defaultValue
       ])
       expect(pack.size).toBe(3)
 
       pack.size = 5
 
       expect([...pack]).toEqual([
-        PackClass.DEFAULT_VALUE,
-        PackClass.DEFAULT_VALUE,
-        PackClass.DEFAULT_VALUE,
-        PackClass.DEFAULT_VALUE,
-        PackClass.DEFAULT_VALUE
+        configuration.defaultValue,
+        configuration.defaultValue,
+        configuration.defaultValue,
+        configuration.defaultValue,
+        configuration.defaultValue
       ])
       expect(pack.size).toBe(5)
 
       pack.size = 3
 
       expect([...pack]).toEqual([
-        PackClass.DEFAULT_VALUE,
-        PackClass.DEFAULT_VALUE,
-        PackClass.DEFAULT_VALUE
+        configuration.defaultValue,
+        configuration.defaultValue,
+        configuration.defaultValue
       ])
       expect(pack.size).toBe(3)
     })
 
     it('expand the pack capacity if necessary', function () {
-      const pack : Pack<T> = new PackClass(2)
+      const pack : TestedPack = configuration.factory(2)
 
       expect([...pack]).toEqual([])
       expect(pack.size).toBe(0)
@@ -77,11 +72,11 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
       pack.size = 5
 
       expect([...pack]).toEqual([
-        PackClass.DEFAULT_VALUE,
-        PackClass.DEFAULT_VALUE,
-        PackClass.DEFAULT_VALUE,
-        PackClass.DEFAULT_VALUE,
-        PackClass.DEFAULT_VALUE
+        configuration.defaultValue,
+        configuration.defaultValue,
+        configuration.defaultValue,
+        configuration.defaultValue,
+        configuration.defaultValue
       ])
 
       expect(pack.size).toBe(5)
@@ -89,11 +84,11 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
     })
 
     it('erase existing data', function () {
-      const pack : Pack<T> = new PackClass(10)
+      const pack : TestedPack = configuration.factory(10)
       const elements : Array<T> = new Array()
 
       for (let index = 0; index < 5; ++index) {
-        elements[index] = generator()
+        elements[index] = configuration.generator()
       }
 
       expect([...pack]).toEqual([])
@@ -112,8 +107,8 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
         elements[0],
         elements[1],
         elements[2],
-        PackClass.DEFAULT_VALUE,
-        PackClass.DEFAULT_VALUE
+        configuration.defaultValue,
+        configuration.defaultValue
       ])
       expect(pack.size).toBe(5)
     })
@@ -121,11 +116,11 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
 
   describe('#reallocate', function () {
     it('allows to expand the current capacity of the pack', function () {
-      const pack : Pack<T> = new PackClass(10)
+      const pack : TestedPack = configuration.factory(10)
       const elements : Array<T> = new Array()
 
       for (let index = 0; index < 5; ++index) {
-        elements[index] = generator()
+        elements[index] = configuration.generator()
         pack.push(elements[index])
       }
 
@@ -147,11 +142,11 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
     })
 
     it('reduce the pack capacity', function () {
-      const pack : Pack<T> = new PackClass(110)
+      const pack : TestedPack = configuration.factory(110)
       const elements : Array<T> = new Array()
 
       for (let index = 0; index < 5; ++index) {
-        elements[index] = generator()
+        elements[index] = configuration.generator()
         pack.push(elements[index])
       }
 
@@ -173,11 +168,11 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
     })
 
     it('may truncate the pack content', function () {
-      const pack : Pack<T> = new PackClass(15)
+      const pack : TestedPack = configuration.factory(15)
       const elements : Array<T> = new Array()
 
       for (let index = 0; index < 10; ++index) {
-        elements[index] = generator()
+        elements[index] = configuration.generator()
         pack.push(elements[index])
       }
 
@@ -203,11 +198,11 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
 
   describe('#sort', function () {
     it('sort the elements of the pack', function () {
-      const pack : Pack<T> = new PackClass(256)
+      const pack : TestedPack = configuration.factory(256)
       const elements : Array<T> = new Array()
 
       for (let index = 0; index < 128; ++index) {
-        elements[index] = generator()
+        elements[index] = configuration.generator()
         pack.push(elements[index])
       }
 
@@ -230,11 +225,11 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
 
   describe('#fit', function () {
     it('reduce the pack capacity to its size', function () {
-      const pack : Pack<T> = new PackClass(110)
+      const pack : TestedPack = configuration.factory(110)
       const elements : Array<T> = new Array()
 
       for (let index = 0; index < 5; ++index) {
-        elements[index] = generator()
+        elements[index] = configuration.generator()
         pack.push(elements[index])
       }
 
@@ -252,7 +247,7 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
 
   describe('#isCollection', function () {
     it('returns true', function () {
-      const pack : Pack<T> = new PackClass(110)
+      const pack : TestedPack = configuration.factory(110)
 
       expect(pack.isCollection).toBeTruthy()
     })
@@ -260,11 +255,11 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
 
   describe('#get', function () {
     it('returns the nth element of the pack', function () {
-      const pack : Pack<T> = new PackClass(110)
+      const pack : TestedPack = configuration.factory(110)
       const elements : Array<T> = new Array()
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = generator()
+        elements[index] = configuration.generator()
         pack.push(elements[index])
       }
 
@@ -278,11 +273,11 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
 
   describe('#swap', function () {
     it('swap two elements of the pack', function () {
-      const pack : Pack<T> = new PackClass(110)
+      const pack : TestedPack = configuration.factory(110)
       const elements : Array<T> = new Array()
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = generator()
+        elements[index] = configuration.generator()
         pack.push(elements[index])
       }
 
@@ -302,13 +297,13 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
 
   describe('#set', function () {
     it('set a value of the pack', function () {
-      const pack : Pack<T> = new PackClass(110)
+      const pack : TestedPack = configuration.factory(110)
       const elements : Array<T> = new Array()
 
       pack.size = 20
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = generator()
+        elements[index] = configuration.generator()
         pack.set(index, elements[index])
       }
 
@@ -316,11 +311,11 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
     })
 
     it('can expand the size and the capacity of the pack', function () {
-      const pack : Pack<T> = new PackClass(5)
+      const pack : TestedPack = configuration.factory(5)
       const elements : Array<T> = new Array()
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = generator()
+        elements[index] = configuration.generator()
         pack.set(index * 5, elements[index])
       }
 
@@ -331,7 +326,7 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
         if (index % 5 == 0) {
           expect(pack.get(index)).toBe(elements[index / 5])
         } else {
-          expect(pack.get(index)).toBe(PackClass.DEFAULT_VALUE)
+          expect(pack.get(index)).toBe(configuration.defaultValue)
         }
       }
     })
@@ -339,17 +334,17 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
 
   describe('#insert', function () {
     it('insert a value into the pack', function () {
-      const pack : Pack<T> = new PackClass(30)
+      const pack : TestedPack = configuration.factory(30)
       const elements : Array<T> = new Array()
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = generator()
+        elements[index] = configuration.generator()
         pack.set(index, elements[index])
       }
 
       expect([...pack]).toEqual(elements)
 
-      const inserted : T = generator()
+      const inserted : T = configuration.generator()
 
       pack.insert(8, inserted)
 
@@ -367,17 +362,17 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
     })
 
     it('may reallocate the pack if necessary', function () {
-      const pack : Pack<T> = new PackClass(20)
+      const pack : TestedPack = configuration.factory(20)
       const elements : Array<T> = new Array()
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = generator()
+        elements[index] = configuration.generator()
         pack.set(index, elements[index])
       }
 
       expect([...pack]).toEqual(elements)
 
-      const inserted : T = generator()
+      const inserted : T = configuration.generator()
 
       pack.insert(8, inserted)
 
@@ -396,17 +391,17 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
     })
 
     it('only set the value if the index is out of the size of the pack', function () {
-      const pack : Pack<T> = new PackClass(20)
+      const pack : TestedPack = configuration.factory(20)
       const elements : Array<T> = new Array()
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = generator()
+        elements[index] = configuration.generator()
         pack.set(index, elements[index])
       }
 
       expect([...pack]).toEqual(elements)
 
-      const inserted : T = generator()
+      const inserted : T = configuration.generator()
 
       pack.insert(30, inserted)
 
@@ -415,7 +410,7 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
       }
 
       for (let index = 20; index < 29; ++index) {
-        expect(pack.get(index)).toBe(PackClass.DEFAULT_VALUE)
+        expect(pack.get(index)).toBe(configuration.defaultValue)
       }
 
       expect(pack.get(30)).toBe(inserted)
@@ -427,11 +422,11 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
 
   describe('#push', function () {
     it('insert a value at the end of the pack', function () {
-      const pack : Pack<T> = new PackClass(30)
+      const pack : TestedPack = configuration.factory(30)
       const elements : Array<T> = new Array()
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = generator()
+        elements[index] = configuration.generator()
         pack.push(elements[index])
       }
 
@@ -441,11 +436,11 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
     })
 
     it('may reallocate the pack if necessary', function () {
-      const pack : Pack<T> = new PackClass(5)
+      const pack : TestedPack = configuration.factory(5)
       const elements : Array<T> = new Array()
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = generator()
+        elements[index] = configuration.generator()
         pack.set(index, elements[index])
       }
 
@@ -457,11 +452,11 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
 
   describe('#delete', function () {
     it('delete a value of the pack', function () {
-      const pack : Pack<T> = new PackClass(30)
+      const pack : TestedPack = configuration.factory(30)
       const elements : Array<T> = new Array()
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = generator()
+        elements[index] = configuration.generator()
         pack.push(elements[index])
       }
 
@@ -486,11 +481,11 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
 
   describe('#warp', function () {
     it('warp a value of the pack', function () {
-      const pack : Pack<T> = new PackClass(30)
+      const pack : TestedPack = configuration.factory(30)
       const elements : Array<T> = new Array()
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = generator()
+        elements[index] = configuration.generator()
         pack.push(elements[index])
       }
 
@@ -517,8 +512,8 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
 
   describe('#has', function () {
     it('return true if the given value is in the pack', function () {
-      const pack : Pack<T> = new PackClass(30)
-      const elements : Array<T> = pickUnique(generator, 20)
+      const pack : TestedPack = configuration.factory(30)
+      const elements : Array<T> = pickUnique(configuration.generator, 20)
 
       for (let index = 0; index < 20; ++index) {
         expect(pack.has(elements[index])).toBeFalsy()
@@ -536,8 +531,8 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
 
   describe('#indexOf', function () {
     it('return the index of the given value of the pack', function () {
-      const pack : Pack<T> = new PackClass(30)
-      const elements : Array<T> = pickUnique(generator, 20)
+      const pack : TestedPack = configuration.factory(30)
+      const elements : Array<T> = pickUnique(configuration.generator, 20)
 
       for (let index = 0; index < 20; ++index) {
         expect(pack.indexOf(elements[index])).toBe(-1)
@@ -555,11 +550,11 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
 
   describe('#clear', function () {
     it('empty the pack', function () {
-      const pack : Pack<T> = new PackClass(30)
+      const pack : TestedPack = configuration.factory(30)
       const elements : Array<T> = new Array()
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = generator()
+        elements[index] = configuration.generator()
         pack.push(elements[index])
       }
 
@@ -573,12 +568,12 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
 
   describe('#equals', function () {
     it('return true if both collections have the same content', function () {
-      const pack : Pack<T> = new PackClass(30)
-      const copy : Pack<T> = new PackClass(30)
+      const pack : TestedPack = configuration.factory(30)
+      const copy : TestedPack = configuration.factory(30)
       const elements : Array<T> = new Array()
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = generator()
+        elements[index] = configuration.generator()
         pack.push(elements[index])
         copy.push(elements[index])
       }
@@ -587,12 +582,12 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
     })
 
     it('return true if both collections have the same content but different capacities', function () {
-      const pack : Pack<T> = new PackClass(30)
-      const copy : Pack<T> = new PackClass(60)
+      const pack : TestedPack = configuration.factory(30)
+      const copy : TestedPack = configuration.factory(60)
       const elements : Array<T> = new Array()
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = generator()
+        elements[index] = configuration.generator()
         pack.push(elements[index])
         copy.push(elements[index])
       }
@@ -601,41 +596,41 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
     })
 
     it('return false if both collections does not have the same content', function () {
-      const pack : Pack<T> = new PackClass(30)
-      const different : Pack<T> = new PackClass(30)
+      const pack : TestedPack = configuration.factory(30)
+      const different : TestedPack = configuration.factory(30)
       const elements : Array<T> = new Array()
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = generator()
+        elements[index] = configuration.generator()
         pack.push(elements[index])
-        different.push(index == 5 ? generator() : elements[index])
+        different.push(index == 5 ? configuration.generator() : elements[index])
       }
 
       expect(pack.equals(different)).toBeFalsy()
     })
 
     it('return false if both collections does not have the same size', function () {
-      const pack : Pack<T> = new PackClass(30)
-      const different : Pack<T> = new PackClass(30)
+      const pack : TestedPack = configuration.factory(30)
+      const different : TestedPack = configuration.factory(30)
       const elements : Array<T> = new Array()
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = generator()
+        elements[index] = configuration.generator()
         pack.push(elements[index])
-        different.push(index == 5 ? generator() : elements[index])
+        different.push(index == 5 ? configuration.generator() : elements[index])
       }
 
-      different.push(generator())
+      different.push(configuration.generator())
 
       expect(pack.equals(different)).toBeFalsy()
     })
 
     it('return false otherwise', function () {
-      const pack : Pack<T> = new PackClass(30)
+      const pack : TestedPack = configuration.factory(30)
       const elements : Array<T> = new Array()
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = generator()
+        elements[index] = configuration.generator()
         pack.push(elements[index])
       }
 
@@ -647,15 +642,15 @@ function buildSuite <T> (PackClass : PackConstructor<T>, generator : () => T) {
 
   describe('#copy', function () {
     it('return a copy of an existing pack', function () {
-      const pack : Pack<T> = new PackClass(30)
+      const pack : TestedPack = configuration.factory(30)
       const elements : Array<T> = new Array()
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = generator()
+        elements[index] = configuration.generator()
         pack.push(elements[index])
       }
 
-      const copy : Pack<T> = PackClass.copy(pack)
+      const copy : TestedPack = configuration.copy(pack)
 
       expect(pack.equals(copy)).toBeTruthy()
       expect(copy.capacity).toBe(pack.capacity)

@@ -19,5 +19,14 @@ function randomString () : string {
 }
 
 describe('#ArrayPack', function () {
-  isPack<string>(ArrayPack).of(randomString)
+  isPack<string, ArrayPack<string>>({
+    factory (capacity : number) : ArrayPack<string> {
+      return new ArrayPack<string>(capacity)
+    },
+    generator: randomString,
+    defaultValue: ArrayPack.DEFAULT_VALUE,
+    copy (pack : ArrayPack<string>) : ArrayPack<string> {
+      return ArrayPack.copy(pack)
+    }
+  })
 })

@@ -6,16 +6,15 @@ function randomNumber () : number {
   return Math.floor(Math.random() * 0xffffffff)
 }
 
-class Uint32Pack extends BufferPack<Uint32Array> {
-  static copy (toCopy : Uint32Pack) : BufferPack<Uint32Array> {
-    return BufferPack.copy(toCopy)
-  }
-
-  constructor (capacity : number) {
-    super(new Uint32Array(capacity))
-  }
-}
-
 describe('#BufferPack', function () {
-  isPack<number>(Uint32Pack).of(randomNumber)
+  isPack<number, BufferPack<Uint32Array>>({
+    factory (capacity : number) : BufferPack<Uint32Array> {
+      return new BufferPack<Uint32Array>(new Uint32Array(capacity))
+    },
+    generator: randomNumber,
+    defaultValue: BufferPack.DEFAULT_VALUE,
+    copy (pack : BufferPack<Uint32Array>) : BufferPack<Uint32Array> {
+      return BufferPack.copy(pack)
+    }
+  })
 })
