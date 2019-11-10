@@ -1,7 +1,8 @@
-import { Pack } from './Pack'
 import { equals } from '../equals'
 import { quicksort } from '../quicksort'
 import { Comparator } from '../Comparator'
+
+import { Pack } from './Pack'
 
 type TypedArray = Int8Array | Uint8Array | Int16Array | Uint16Array | Int32Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array
 type TypedArrayAllocator<Buffer extends TypedArray> = new (capacity : number) => Buffer
@@ -40,6 +41,48 @@ export class BufferPack<Buffer extends TypedArray> implements Pack<number> {
   public constructor (buffer : Buffer, size : number = 0) {
     this._elements = buffer
     this._size = size
+  }
+
+  /**
+  * @see Collection.isRandomlyAccessible
+  */
+  public get isRandomlyAccessible () : boolean {
+    return true
+  }
+
+  /**
+  * @see Collection.isSequentiallyAccessible
+  */
+  public get isSequentiallyAccessible () : boolean {
+    return false
+  }
+
+  /**
+  * @see Collection.isSet
+  */
+  public get isSet () : boolean {
+    return false
+  }
+
+  /**
+  * @see Collection.isStatic
+  */
+  public get isStatic () : boolean {
+    return true
+  }
+
+  /**
+  * @see Collection.isReallocable
+  */
+  public get isReallocable () : boolean {
+    return true
+  }
+
+  /**
+  * @see Collection.isSequence
+  */
+  public get isSequence () : boolean {
+    return true
   }
 
   /**

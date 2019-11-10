@@ -1,7 +1,7 @@
 import { ReallocableCollection } from '../ReallocableCollection'
-
 import { StaticHeap } from './StaticHeap'
 
-export interface ReallocableHeap<Value>
-       extends StaticHeap<Value>, ReallocableCollection<Value>
+export interface ReallocableHeap<Element>
+         extends StaticHeap<Element>,
+                 ReallocableCollection<Element>
 { }

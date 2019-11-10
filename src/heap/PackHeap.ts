@@ -1,14 +1,16 @@
+import { RandomlyAccessibleCollection } from '../RandomlyAccessibleCollection'
 import { Pack } from '../pack/Pack'
 import { Packs } from '../pack/Packs'
-
 import { Comparator } from '../Comparator'
-
 import { ReallocableHeap } from './ReallocableHeap'
 
 /**
 * A heap based uppon a pack collection.
 */
-export class PackHeap<Value> implements ReallocableHeap<Value>{
+export class PackHeap<Element>
+  implements ReallocableHeap<Element>,
+             RandomlyAccessibleCollection<Element>
+{
   /**
   * Copy an existing heap instance.
   *
@@ -16,15 +18,17 @@ export class PackHeap<Value> implements ReallocableHeap<Value>{
   *
   * @return A copy of the given heap instance.
   */
-  public static copy <Value> (toCopy : PackHeap<Value>) : PackHeap<Value> {
-    return new PackHeap<Value>(
+  public static copy <Element> (
+    toCopy : PackHeap<Element>
+  ) : PackHeap<Element> {
+    return new PackHeap<Element>(
       Packs.copy(toCopy._elements),
       toCopy._comparator
     )
   }
 
-  private _elements : Pack<Value>
-  private _comparator : Comparator<Value, Value>
+  private _elements : Pack<Element>
+  private _comparator : Comparator<Element, Element>
 
   /**
   * Instantiate a new empty heap.
@@ -33,18 +37,60 @@ export class PackHeap<Value> implements ReallocableHeap<Value>{
   * @param comparator - A comparator to use for sorting the heap.
   */
   public constructor (
-    elements : Pack<Value>,
-    comparator : Comparator<Value, Value>
+    elements : Pack<Element>,
+    comparator : Comparator<Element, Element>
   ) {
     this._comparator = comparator
     this._elements = elements
   }
 
   /**
+  * @see Collection.isRandomlyAccessible
+  */
+  public get isRandomlyAccessible () : boolean {
+    return true
+  }
+
+  /**
+  * @see Collection.isSequentiallyAccessible
+  */
+  public get isSequentiallyAccessible () : boolean {
+    return false
+  }
+
+  /**
+  * @see Collection.isSet
+  */
+  public get isSet () : boolean {
+    return false
+  }
+
+  /**
+  * @see Collection.isStatic
+  */
+  public get isStatic () : boolean {
+    return true
+  }
+
+  /**
+  * @see Collection.isReallocable
+  */
+  public get isReallocable () : boolean {
+    return true
+  }
+
+  /**
+  * @see Collection.isSequence
+  */
+  public get isSequence () : boolean {
+    return true
+  }
+
+  /**
   * @see Heap#next
   */
-  public next () : Value {
-    const result : Value = this._elements.get(0)
+  public next () : Element {
+    const result : Element = this._elements.get(0)
     this.delete(0)
     return result
   }
@@ -52,7 +98,7 @@ export class PackHeap<Value> implements ReallocableHeap<Value>{
   /**
   * @see Heap#add
   */
-  public push (value : Value) : void {
+  public push (value : Element) : void {
     this._elements.push(value)
     this.upliftAsPossible(this._elements.size - 1)
   }
@@ -136,21 +182,21 @@ export class PackHeap<Value> implements ReallocableHeap<Value>{
   /**
   * @see Collection#get
   */
-  public get (index : number) : Value {
+  public get (index : number) : Element {
     return this._elements.get(index)
   }
 
   /**
   * @see Collection#indexOf
   */
-  public indexOf (value : Value) : number {
+  public indexOf (value : Element) : number {
     return this._elements.indexOf(value)
   }
 
   /**
   * @see Collection#has
   */
-  public has (value : Value) : boolean {
+  public has (value : Element) : boolean {
     return this._elements.has(value)
   }
 
@@ -164,7 +210,7 @@ export class PackHeap<Value> implements ReallocableHeap<Value>{
   /**
   * @see Heap#get comparator
   */
-  public get comparator () : Comparator<Value, Value> {
+  public get comparator () : Comparator<Element, Element> {
     return this._comparator
   }
 

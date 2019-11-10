@@ -1,6 +1,10 @@
 import { ReallocableCollection } from '../ReallocableCollection'
 import { CircularBuffer } from './CircularBuffer'
 
-export interface ReallocableCircularBuffer<T>
-         extends CircularBuffer<T>, ReallocableCollection<T>
+/**
+* A circular buffer that allows to change its capacity on-the-fly.
+*/
+export interface ReallocableCircularBuffer<Element>
+         extends CircularBuffer<Element>,
+                 ReallocableCollection<Element>
 { }

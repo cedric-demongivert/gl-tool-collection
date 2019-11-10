@@ -7,7 +7,7 @@ import { SparseDenseSet } from './SparseDenseSet'
 import { PackSparseDenseSet } from './PackSparseDenseSet'
 
 export class Sets {
-  static SparseDense : any = class {
+  static SparseDense = class {
     static copy (pack : SparseDenseSet) : SparseDenseSet {
       return pack == null ? null : (pack.constructor as any).copy(pack)
     }

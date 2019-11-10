@@ -24,13 +24,19 @@ export function toArray <T> (
     )
   }
 
-  for (const value of collection) {
-    if (offset > 0) {
-      offset -= 1
-    } else if (result.length < length) {
-      result.push(value)
-    } else {
-      break
+  if (collection.isRandomlyAccessible) {
+    for (let index = offset; index < length; ++index) {
+      result.push(collection.get(index))
+    }
+  } else {
+    for (const value of collection) {
+      if (offset > 0) {
+        offset -= 1
+      } else if (result.length < length) {
+        result.push(value)
+      } else {
+        break
+      }
     }
   }
 

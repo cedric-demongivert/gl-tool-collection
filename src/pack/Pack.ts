@@ -1,9 +1,12 @@
 import { ReallocableCollection } from '../ReallocableCollection'
+import { RandomlyAccessibleCollection } from '../RandomlyAccessibleCollection'
 import { Sequence } from '../Sequence'
 import { Comparator } from '../Comparator'
 
 export interface Pack<Element>
-         extends ReallocableCollection<Element>, Sequence<Element>
+         extends Sequence<Element>,
+                 ReallocableCollection<Element>,
+                 RandomlyAccessibleCollection<Element>
 {
   /**
   * Return the number of elements in this pack or update the current size of

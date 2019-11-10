@@ -1,7 +1,6 @@
 import { Comparator } from '../Comparator'
 import { Packs } from '../pack/Packs'
 import { Pack } from '../pack/Pack'
-
 import { ReallocableHeap } from './ReallocableHeap'
 import { Heap } from './Heap'
 import { PackHeap } from './PackHeap'

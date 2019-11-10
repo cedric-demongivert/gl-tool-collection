@@ -1,12 +1,16 @@
 import { equals } from '../equals'
+import { RandomlyAccessibleCollection } from '../RandomlyAccessibleCollection'
 
 import { Pack } from '../pack/Pack'
 import { Packs } from '../pack/Packs'
 
 import { ReallocableCircularBuffer } from './ReallocableCircularBuffer'
 
-export class PackCircularBuffer<T> implements ReallocableCircularBuffer<T> {
-  private _elements : Pack<T>
+export class PackCircularBuffer<Element>
+  implements ReallocableCircularBuffer<Element>,
+             RandomlyAccessibleCollection<Element>
+{
+  private _elements : Pack<Element>
   private _start : number
   private _size : number
 
@@ -15,7 +19,7 @@ export class PackCircularBuffer<T> implements ReallocableCircularBuffer<T> {
   *
   * @param elements - A pack to use for storing this circular buffer elements.
   */
-  public constructor (elements : Pack<T>) {
+  public constructor (elements : Pack<Element>) {
     this._elements = elements
     this._start = 0
     this._size = elements.size
@@ -30,6 +34,48 @@ export class PackCircularBuffer<T> implements ReallocableCircularBuffer<T> {
   }
 
   /**
+  * @see Collection.isRandomlyAccessible
+  */
+  public get isRandomlyAccessible () : boolean {
+    return true
+  }
+
+  /**
+  * @see Collection.isSequentiallyAccessible
+  */
+  public get isSequentiallyAccessible () : boolean {
+    return false
+  }
+
+  /**
+  * @see Collection.isSet
+  */
+  public get isSet () : boolean {
+    return false
+  }
+
+  /**
+  * @see Collection.isStatic
+  */
+  public get isStatic () : boolean {
+    return true
+  }
+
+  /**
+  * @see Collection.isReallocable
+  */
+  public get isReallocable () : boolean {
+    return true
+  }
+
+  /**
+  * @see Collection.isSequence
+  */
+  public get isSequence () : boolean {
+    return true
+  }
+
+  /**
   * @see StaticCollection.capacity
   */
   public get capacity () : number {
@@ -40,7 +86,7 @@ export class PackCircularBuffer<T> implements ReallocableCircularBuffer<T> {
   * @see ReallocableCollection.reallocate
   */
   public reallocate (capacity : number) : void {
-    const next : Pack<T> = Packs.copy(this._elements)
+    const next : Pack<Element> = Packs.copy(this._elements)
     next.reallocate(capacity)
 
     const nextSize : number = Math.min(capacity, this._size)
@@ -78,16 +124,16 @@ export class PackCircularBuffer<T> implements ReallocableCircularBuffer<T> {
   /**
   * @see Collection.get
   */
-  public get (index : number) : T {
+  public get (index : number) : Element {
     return this._elements.get((this._start + index) % this._elements.capacity)
   }
 
   /**
   * @see CircularBuffer.pop
   */
-  public pop () : T {
+  public pop () : Element {
     const last : number = this._size - 1
-    const result : T = this.get(last)
+    const result : Element = this.get(last)
 
     this.delete(last)
 
@@ -97,8 +143,8 @@ export class PackCircularBuffer<T> implements ReallocableCircularBuffer<T> {
   /**
   * @see CircularBuffer.shift
   */
-  public shift () : T {
-    const result : T = this.get(0)
+  public shift () : Element {
+    const result : Element = this.get(0)
 
     this.delete(0)
 
@@ -118,7 +164,7 @@ export class PackCircularBuffer<T> implements ReallocableCircularBuffer<T> {
   /**
   * @see CircularBuffer.set
   */
-  public set (index : number, value : T) : void {
+  public set (index : number, value : Element) : void {
     if (index >= this._elements.capacity) {
       const offset : number = Math.min(
         index - this._elements.capacity + 1,
@@ -131,7 +177,7 @@ export class PackCircularBuffer<T> implements ReallocableCircularBuffer<T> {
     }
 
     while (index >= this._size) {
-      this.push((this._elements.constructor as any).DEFAULT_VALUE)
+      this.push((this._elements.constructor as any).DEFAULElement_VALUE)
     }
 
     this._elements.set((this._start + index) % this._elements.capacity, value)
@@ -140,7 +186,7 @@ export class PackCircularBuffer<T> implements ReallocableCircularBuffer<T> {
   /**
   * @see CircularBuffer.insert
   */
-  public insert (index : number, value : T) : void {
+  public insert (index : number, value : Element) : void {
     if (index >= this._size) {
       this.set(index, value)
     } else {
@@ -162,7 +208,7 @@ export class PackCircularBuffer<T> implements ReallocableCircularBuffer<T> {
   /**
   * @see CircularBuffer.push
   */
-  public push (value : T) : void {
+  public push (value : Element) : void {
     if (this._size < this._elements.capacity) {
       this._elements.set(
         (this._start + this._size) % this._elements.capacity,
@@ -200,14 +246,14 @@ export class PackCircularBuffer<T> implements ReallocableCircularBuffer<T> {
   /**
   * @see Collection.has
   */
-  public has (element : T) : boolean {
+  public has (element : Element) : boolean {
     return this.indexOf(element) >= 0
   }
 
   /**
   * @see Collection.indexOf
   */
-  public indexOf (element : T) : number {
+  public indexOf (element : Element) : number {
     for (let index = 0, length = this._size; index < length; ++index) {
       if (equals(
         this._elements.get((this._start + index) % this._elements.capacity),
@@ -231,7 +277,7 @@ export class PackCircularBuffer<T> implements ReallocableCircularBuffer<T> {
   /**
   * @see Collection.iterator
   */
-  public * [Symbol.iterator] () : Iterator<T> {
+  public * [Symbol.iterator] () : Iterator<Element> {
     for (let index = 0, length = this._size; index < length; ++index) {
       yield this._elements.get((this._start + index) % this._elements.capacity)
     }

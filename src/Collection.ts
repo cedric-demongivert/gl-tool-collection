@@ -3,9 +3,34 @@
 */
 export interface Collection<Element> extends Iterable<Element> {
   /**
-  * @return True if this instance is a collection.
+  * @return True if this collection is a set.
   */
-  readonly isCollection : boolean
+  readonly isSet : boolean
+
+  /**
+  * @see Sequence
+  */
+  readonly isSequence : boolean
+
+  /**
+  * @see RandomlyAccessibleCollection
+  */
+  readonly isRandomlyAccessible : boolean
+
+  /**
+  * @see SequentiallyAccessibleCollection
+  */
+  readonly isSequentiallyAccessible : boolean
+
+  /**
+  * @see StaticCollection
+  */
+  readonly isStatic : boolean
+
+  /**
+  * @see ReallocableCollection
+  */
+  readonly isReallocable : boolean
 
   /**
   * Return the number of elements stored into this collection.
@@ -13,6 +38,9 @@ export interface Collection<Element> extends Iterable<Element> {
   * A collection may be non-finite and for such cases this getter MUST return
   * Number.POSITIVE_INFINITY. For finite collections, this getter will return
   * an integer equal to the number of elements that it currently store.
+  *
+  * @see InfiniteCollection
+  * @see FiniteCollection
   *
   * @return The number of elements stored into this collection.
   */

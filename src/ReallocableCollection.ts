@@ -1,7 +1,7 @@
 import { StaticCollection } from './StaticCollection'
 
 /**
-* A static collection that is able to change is capacity on-the-fly.
+* A static collection that allows to change its capacity on-the-fly.
 */
 export interface ReallocableCollection<T> extends StaticCollection<T> {
   /**

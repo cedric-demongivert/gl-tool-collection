@@ -6,7 +6,8 @@ import { Sequence } from '../Sequence'
 * element is added beyond of its own capacity.
 */
 export interface CircularBuffer<Element>
-         extends StaticCollection<Element>, Sequence<Element> {
+         extends StaticCollection<Element>, Sequence<Element>
+{
   /**
   * @return True if the instance is an instance of circular buffer.
   */

@@ -8,6 +8,11 @@ export interface Heap<Value> extends Sequence<Value> {
   readonly comparator : Comparator<Value, Value>
 
   /**
+  * @return True if this object is a heap.
+  */
+  readonly isHeap : boolean
+
+  /**
   * Compare the content of two cell of the heap.
   *
   * @param left - Index of the cell to use as a left operand.
@@ -42,9 +47,4 @@ export interface Heap<Value> extends Sequence<Value> {
   * Empty this heap of its elements.
   */
   clear () : void
-
-  /**
-  * @return True if this object is a heap.
-  */
-  readonly isHeap : boolean
 }

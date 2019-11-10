@@ -1,8 +1,12 @@
 import { Pack } from '../pack/Pack'
 import { Packs } from '../pack/Packs'
 import { SparseDenseSet } from './SparseDenseSet'
+import { ReallocableSet } from './ReallocableSet'
 
-export class PackSparseDenseSet implements SparseDenseSet {
+export class PackSparseDenseSet
+  implements SparseDenseSet,
+             ReallocableSet<number>
+{
   /**
   * Return a copy of a given sparse set.
   *
@@ -34,17 +38,45 @@ export class PackSparseDenseSet implements SparseDenseSet {
   }
 
   /**
-  * @see Collection.isCollection
+  * @see Collection.isRandomlyAccessible
   */
-  public get isCollection () : boolean {
+  public get isRandomlyAccessible () : boolean {
     return true
   }
 
   /**
-  * @see Set.isSet
+  * @see Collection.isSequentiallyAccessible
+  */
+  public get isSequentiallyAccessible () : boolean {
+    return false
+  }
+
+  /**
+  * @see Collection.isSet
   */
   public get isSet () : boolean {
     return true
+  }
+
+  /**
+  * @see Collection.isStatic
+  */
+  public get isStatic () : boolean {
+    return true
+  }
+
+  /**
+  * @see Collection.isReallocable
+  */
+  public get isReallocable () : boolean {
+    return true
+  }
+
+  /**
+  * @see Collection.isSequence
+  */
+  public get isSequence () : boolean {
+    return false
   }
 
   /**

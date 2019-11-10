@@ -1,24 +1,23 @@
 import { Collection } from '../Collection'
 
-export interface Set<T> extends Collection<T> {
-  /**
-  * @return True if this collection is a set.
-  */
-  readonly isSet : boolean
-
+/**
+* A collection of elements without order and that does not allows duplicates of
+* elements.
+*/
+export interface Set<Element> extends Collection<Element> {
   /**
   * Add a new element to the collection.
   *
-  * @param value - The value to add to the collection.
+  * @param value - Elementhe value to add to the collection.
   */
-  add (value : T) : void
+  add (value : Element) : void
 
   /**
   * Remove an element from the collection.
   *
-  * @param value - The value to remove from the collection.
+  * @param value - Elementhe value to remove from the collection.
   */
-  delete (value : T) : void
+  delete (value : Element) : void
 
   /**
   * Empty the collection.

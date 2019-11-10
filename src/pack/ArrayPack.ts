@@ -1,7 +1,8 @@
-import { Pack } from './Pack'
 import { equals } from '../equals'
 import { quicksort } from '../quicksort'
 import { Comparator } from '../Comparator'
+
+import { Pack } from './Pack'
 
 export class ArrayPack<T> implements Pack<T> {
   static DEFAULT_VALUE : any = null
@@ -42,6 +43,48 @@ export class ArrayPack<T> implements Pack<T> {
     }
 
     this._size = 0
+  }
+
+  /**
+  * @see Collection.isRandomlyAccessible
+  */
+  public get isRandomlyAccessible () : boolean {
+    return true
+  }
+
+  /**
+  * @see Collection.isSequentiallyAccessible
+  */
+  public get isSequentiallyAccessible () : boolean {
+    return false
+  }
+
+  /**
+  * @see Collection.isSet
+  */
+  public get isSet () : boolean {
+    return false
+  }
+
+  /**
+  * @see Collection.isStatic
+  */
+  public get isStatic () : boolean {
+    return true
+  }
+
+  /**
+  * @see Collection.isReallocable
+  */
+  public get isReallocable () : boolean {
+    return true
+  }
+
+  /**
+  * @see Collection.isSequence
+  */
+  public get isSequence () : boolean {
+    return true
   }
 
   /**
