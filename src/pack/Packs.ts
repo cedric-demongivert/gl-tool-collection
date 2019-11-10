@@ -1,7 +1,6 @@
 import { Pack } from './Pack'
 import { BufferPack } from './BufferPack'
 import { ArrayPack } from './ArrayPack'
-import { PackCircularBuffer } from '../circular/PackCircularBuffer'
 
 export class Packs {
   static copy <T> (pack : Pack<T>) : Pack<T> {

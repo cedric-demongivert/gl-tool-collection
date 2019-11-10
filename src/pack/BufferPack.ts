@@ -1,6 +1,7 @@
 import { Pack } from './Pack'
 import { equals } from '../equals'
 import { quicksort } from '../quicksort'
+import { Comparator } from '../Comparator'
 
 type TypedArray = Int8Array | Uint8Array | Int16Array | Uint16Array | Int32Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array
 type TypedArrayAllocator<Buffer extends TypedArray> = new (capacity : number) => Buffer
@@ -137,9 +138,28 @@ export class BufferPack<Buffer extends TypedArray> implements Pack<number> {
   }
 
   /**
+  * @see Pack.pop
+  */
+  public pop () : number {
+    const last : number = this._size - 1
+    const value : number = this._elements[last]
+    this.delete(last)
+    return value
+  }
+
+  /**
+  * @see Pack.shift
+  */
+  public shift () : number {
+    const value : number = this._elements[0]
+    this.delete(0)
+    return value
+  }
+
+  /**
   * @see Pack.sort
   */
-  public sort (comparator : (left : number, right : number) => number) : void {
+  public sort (comparator : Comparator<number, number>) : void {
     quicksort(this, comparator, 0, this._size)
   }
 

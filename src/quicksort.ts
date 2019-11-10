@@ -1,13 +1,15 @@
+import { Comparator } from './Comparator'
+
 export function quicksort<Element> (
   collection : any,
-  comparator : (left : Element, right : Element) => number,
+  comparator : Comparator<Element, Element>,
   offset : number,
   size : number
 ) { rquicksort(collection, comparator, offset, offset + size - 1) }
 
 function rquicksort<Element> (
   collection : any,
-  comparator : (left : Element, right : Element) => number,
+  comparator : Comparator<Element, Element>,
   left : number,
   right : number
 ) {
@@ -20,7 +22,7 @@ function rquicksort<Element> (
 
 function partition<Element> (
   collection : any,
-  comparator : (left : Element, right : Element) => number,
+  comparator : Comparator<Element, Element>,
   left : number, right : number
 ) : number {
   const pivot : Element = collection.get((left + right) >>> 1)

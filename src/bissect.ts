@@ -1,4 +1,5 @@
 import { Collection } from './Collection'
+import { Comparator } from './Comparator'
 
 function defaultComparator (left : any, right : any) : number {
   return left < right ? -1 : (left > right ? 1 : 0)
@@ -19,7 +20,7 @@ function defaultComparator (left : any, right : any) : number {
 export function bissect<Item, Search> (
   collection : Collection<Item>,
   value : Search,
-  comparator : (left : Search, right : Item) => number = defaultComparator,
+  comparator : Comparator<Search, Item> = defaultComparator,
   offset : number = 0,
   size : number = collection.size
 ) {

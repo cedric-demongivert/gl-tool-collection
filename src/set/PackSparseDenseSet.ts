@@ -119,7 +119,6 @@ export class PackSparseDenseSet implements SparseDenseSet {
   */
   public reallocate (capacity : number) : void {
     const oldDense : Pack<number> = this._dense
-    const oldSparse : Pack<number> = this._sparse
 
     this._dense = this._dense.allocate(capacity)
     this._sparse = this._sparse.allocate(capacity)

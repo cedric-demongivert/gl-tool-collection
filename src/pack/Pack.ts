@@ -1,5 +1,6 @@
 import { ReallocableCollection } from '../ReallocableCollection'
 import { Sequence } from '../Sequence'
+import { Comparator } from '../Comparator'
 
 export interface Pack<Element>
          extends ReallocableCollection<Element>, Sequence<Element>
@@ -16,6 +17,20 @@ export interface Pack<Element>
   * and the kind of values it store.
   */
   size : number
+
+  /**
+  * Remove the last value of the pack and return it.
+  *
+  * @return The last value of the pack.
+  */
+  pop () : Element
+
+  /**
+  * Remove the first value of the pack and return it.
+  *
+  * @return The first value of the pack.
+  */
+  shift () : Element
 
   /**
   * Swap two elements of this pack.
@@ -60,7 +75,7 @@ export interface Pack<Element>
   /**
   * @see Array.sort
   */
-  sort (comparator : (left : Element, right : Element) => number) : void
+  sort (comparator : Comparator<Element, Element>) : void
 
   /**
   * Push the given value at the end of this pack.

@@ -4,7 +4,6 @@ import { Pack } from '../pack/Pack'
 import { Packs } from '../pack/Packs'
 
 import { ReallocableCircularBuffer } from './ReallocableCircularBuffer'
-import { CircularBuffer } from './CircularBuffer'
 
 export class PackCircularBuffer<T> implements ReallocableCircularBuffer<T> {
   private _elements : Pack<T>
@@ -81,6 +80,29 @@ export class PackCircularBuffer<T> implements ReallocableCircularBuffer<T> {
   */
   public get (index : number) : T {
     return this._elements.get((this._start + index) % this._elements.capacity)
+  }
+
+  /**
+  * @see CircularBuffer.pop
+  */
+  public pop () : T {
+    const last : number = this._size - 1
+    const result : T = this.get(last)
+
+    this.delete(last)
+
+    return result
+  }
+
+  /**
+  * @see CircularBuffer.shift
+  */
+  public shift () : T {
+    const result : T = this.get(0)
+
+    this.delete(0)
+
+    return result
   }
 
   /**

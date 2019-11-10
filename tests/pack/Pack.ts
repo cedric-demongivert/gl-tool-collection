@@ -1,6 +1,7 @@
 /** eslint-env jest */
 
 import { Pack } from '../../src/pack/Pack'
+import { toArray } from '../../src/toArray'
 
 import { pickUnique } from '../pickUnique'
 
@@ -21,7 +22,7 @@ export function isPack <T, TestedPack extends Pack<T>> (
       const pack : TestedPack = configuration.factory(125)
 
       expect(pack.capacity).toBe(125)
-      expect([...pack]).toEqual([])
+      expect(toArray(pack)).toEqual([])
     })
   })
 
@@ -29,12 +30,12 @@ export function isPack <T, TestedPack extends Pack<T>> (
     it('allows to expand the current size of the pack', function () {
       const pack : TestedPack = configuration.factory(10)
 
-      expect([...pack]).toEqual([])
+      expect(toArray(pack)).toEqual([])
       expect(pack.size).toBe(0)
 
       pack.size = 3
 
-      expect([...pack]).toEqual([
+      expect(toArray(pack)).toEqual([
         configuration.defaultValue,
         configuration.defaultValue,
         configuration.defaultValue
@@ -43,7 +44,7 @@ export function isPack <T, TestedPack extends Pack<T>> (
 
       pack.size = 5
 
-      expect([...pack]).toEqual([
+      expect(toArray(pack)).toEqual([
         configuration.defaultValue,
         configuration.defaultValue,
         configuration.defaultValue,
@@ -54,7 +55,7 @@ export function isPack <T, TestedPack extends Pack<T>> (
 
       pack.size = 3
 
-      expect([...pack]).toEqual([
+      expect(toArray(pack)).toEqual([
         configuration.defaultValue,
         configuration.defaultValue,
         configuration.defaultValue
@@ -65,13 +66,13 @@ export function isPack <T, TestedPack extends Pack<T>> (
     it('expand the pack capacity if necessary', function () {
       const pack : TestedPack = configuration.factory(2)
 
-      expect([...pack]).toEqual([])
+      expect(toArray(pack)).toEqual([])
       expect(pack.size).toBe(0)
       expect(pack.capacity).toBe(2)
 
       pack.size = 5
 
-      expect([...pack]).toEqual([
+      expect(toArray(pack)).toEqual([
         configuration.defaultValue,
         configuration.defaultValue,
         configuration.defaultValue,
@@ -91,7 +92,7 @@ export function isPack <T, TestedPack extends Pack<T>> (
         elements[index] = configuration.generator()
       }
 
-      expect([...pack]).toEqual([])
+      expect(toArray(pack)).toEqual([])
       expect(pack.size).toBe(0)
 
       pack.size = 5
@@ -103,7 +104,7 @@ export function isPack <T, TestedPack extends Pack<T>> (
       pack.size = 3
       pack.size = 5
 
-      expect([...pack]).toEqual([
+      expect(toArray(pack)).toEqual([
         elements[0],
         elements[1],
         elements[2],
@@ -124,19 +125,19 @@ export function isPack <T, TestedPack extends Pack<T>> (
         pack.push(elements[index])
       }
 
-      expect([...pack]).toEqual(elements)
+      expect(toArray(pack)).toEqual(elements)
       expect(pack.capacity).toBe(10)
       expect(pack.size).toBe(5)
 
       pack.reallocate(15)
 
-      expect([...pack]).toEqual(elements)
+      expect(toArray(pack)).toEqual(elements)
       expect(pack.capacity).toBe(15)
       expect(pack.size).toBe(5)
 
       pack.reallocate(32)
 
-      expect([...pack]).toEqual(elements)
+      expect(toArray(pack)).toEqual(elements)
       expect(pack.capacity).toBe(32)
       expect(pack.size).toBe(5)
     })
@@ -150,19 +151,19 @@ export function isPack <T, TestedPack extends Pack<T>> (
         pack.push(elements[index])
       }
 
-      expect([...pack]).toEqual(elements)
+      expect(toArray(pack)).toEqual(elements)
       expect(pack.capacity).toBe(110)
       expect(pack.size).toBe(5)
 
       pack.reallocate(32)
 
-      expect([...pack]).toEqual(elements)
+      expect(toArray(pack)).toEqual(elements)
       expect(pack.capacity).toBe(32)
       expect(pack.size).toBe(5)
 
       pack.reallocate(15)
 
-      expect([...pack]).toEqual(elements)
+      expect(toArray(pack)).toEqual(elements)
       expect(pack.capacity).toBe(15)
       expect(pack.size).toBe(5)
     })
@@ -176,13 +177,13 @@ export function isPack <T, TestedPack extends Pack<T>> (
         pack.push(elements[index])
       }
 
-      expect([...pack]).toEqual(elements)
+      expect(toArray(pack)).toEqual(elements)
       expect(pack.capacity).toBe(15)
       expect(pack.size).toBe(10)
 
       pack.reallocate(5)
 
-      expect([...pack]).toEqual([
+      expect(toArray(pack)).toEqual([
         elements[0], elements[1], elements[2], elements[3], elements[4]
       ])
       expect(pack.capacity).toBe(5)
@@ -190,7 +191,7 @@ export function isPack <T, TestedPack extends Pack<T>> (
 
       pack.reallocate(2)
 
-      expect([...pack]).toEqual([ elements[0], elements[1] ])
+      expect(toArray(pack)).toEqual([ elements[0], elements[1] ])
       expect(pack.capacity).toBe(2)
       expect(pack.size).toBe(2)
     })
@@ -206,7 +207,7 @@ export function isPack <T, TestedPack extends Pack<T>> (
         pack.push(elements[index])
       }
 
-      expect([...pack]).toEqual(elements)
+      expect(toArray(pack)).toEqual(elements)
       expect(pack.capacity).toBe(256)
       expect(pack.size).toBe(128)
 
@@ -217,7 +218,7 @@ export function isPack <T, TestedPack extends Pack<T>> (
         return a < b ? -1 : (a > b ? 1 : 0)
       })
 
-      expect([...pack]).toEqual(elements)
+      expect(toArray(pack)).toEqual(elements)
       expect(pack.capacity).toBe(256)
       expect(pack.size).toBe(128)
     })
@@ -233,13 +234,13 @@ export function isPack <T, TestedPack extends Pack<T>> (
         pack.push(elements[index])
       }
 
-      expect([...pack]).toEqual(elements)
+      expect(toArray(pack)).toEqual(elements)
       expect(pack.capacity).toBe(110)
       expect(pack.size).toBe(5)
 
       pack.fit()
 
-      expect([...pack]).toEqual(elements)
+      expect(toArray(pack)).toEqual(elements)
       expect(pack.capacity).toBe(5)
       expect(pack.size).toBe(5)
     })
@@ -263,7 +264,7 @@ export function isPack <T, TestedPack extends Pack<T>> (
         pack.push(elements[index])
       }
 
-      expect([...pack]).toEqual(elements)
+      expect(toArray(pack)).toEqual(elements)
 
       for (let index = 0; index < 20; ++index) {
         expect(pack.get(index)).toBe(elements[index])
@@ -281,7 +282,7 @@ export function isPack <T, TestedPack extends Pack<T>> (
         pack.push(elements[index])
       }
 
-      expect([...pack]).toEqual(elements)
+      expect(toArray(pack)).toEqual(elements)
 
       pack.swap(3, 8)
 
@@ -307,7 +308,7 @@ export function isPack <T, TestedPack extends Pack<T>> (
         pack.set(index, elements[index])
       }
 
-      expect([...pack]).toEqual(elements)
+      expect(toArray(pack)).toEqual(elements)
     })
 
     it('can expand the size and the capacity of the pack', function () {
@@ -342,7 +343,7 @@ export function isPack <T, TestedPack extends Pack<T>> (
         pack.set(index, elements[index])
       }
 
-      expect([...pack]).toEqual(elements)
+      expect(toArray(pack)).toEqual(elements)
 
       const inserted : T = configuration.generator()
 
@@ -370,7 +371,7 @@ export function isPack <T, TestedPack extends Pack<T>> (
         pack.set(index, elements[index])
       }
 
-      expect([...pack]).toEqual(elements)
+      expect(toArray(pack)).toEqual(elements)
 
       const inserted : T = configuration.generator()
 
@@ -399,7 +400,7 @@ export function isPack <T, TestedPack extends Pack<T>> (
         pack.set(index, elements[index])
       }
 
-      expect([...pack]).toEqual(elements)
+      expect(toArray(pack)).toEqual(elements)
 
       const inserted : T = configuration.generator()
 
@@ -430,7 +431,7 @@ export function isPack <T, TestedPack extends Pack<T>> (
         pack.push(elements[index])
       }
 
-      expect([...pack]).toEqual(elements)
+      expect(toArray(pack)).toEqual(elements)
       expect(pack.size).toBe(20)
       expect(pack.capacity).toBe(30)
     })
@@ -444,7 +445,7 @@ export function isPack <T, TestedPack extends Pack<T>> (
         pack.set(index, elements[index])
       }
 
-      expect([...pack]).toEqual(elements)
+      expect(toArray(pack)).toEqual(elements)
       expect(pack.size).toBe(20)
       expect(pack.capacity).toBe(20)
     })
@@ -460,7 +461,7 @@ export function isPack <T, TestedPack extends Pack<T>> (
         pack.push(elements[index])
       }
 
-      expect([...pack]).toEqual(elements)
+      expect(toArray(pack)).toEqual(elements)
       expect(pack.size).toBe(20)
       expect(pack.capacity).toBe(30)
 
@@ -489,7 +490,7 @@ export function isPack <T, TestedPack extends Pack<T>> (
         pack.push(elements[index])
       }
 
-      expect([...pack]).toEqual(elements)
+      expect(toArray(pack)).toEqual(elements)
       expect(pack.size).toBe(20)
       expect(pack.capacity).toBe(30)
 
@@ -548,6 +549,52 @@ export function isPack <T, TestedPack extends Pack<T>> (
     })
   })
 
+  describe('#pop', function () {
+    it('removes the last value of the pack and return it', function () {
+      const pack : TestedPack = configuration.factory(30)
+      const elements : Array<T> = new Array<T>()
+      const removed : Array<T> = new Array<T>()
+
+      for (let index = 0; index < 20; ++index) {
+        elements[index] = configuration.generator()
+        pack.push(elements[index])
+      }
+
+      expect(toArray(pack)).toEqual(elements)
+      expect(removed).toEqual([])
+
+      while (pack.size > 0) {
+        removed.push(pack.pop())
+      }
+
+      expect(toArray(pack)).toEqual([])
+      expect(removed).toEqual(elements.reverse())
+    })
+  })
+
+  describe('#shift', function () {
+    it('removes the first value of the pack and return it', function () {
+      const pack : TestedPack = configuration.factory(30)
+      const elements : Array<T> = new Array<T>()
+      const removed : Array<T> = new Array<T>()
+
+      for (let index = 0; index < 20; ++index) {
+        elements[index] = configuration.generator()
+        pack.push(elements[index])
+      }
+
+      expect(toArray(pack)).toEqual(elements)
+      expect(removed).toEqual([])
+
+      while (pack.size > 0) {
+        removed.push(pack.shift())
+      }
+
+      expect(toArray(pack)).toEqual([])
+      expect(removed).toEqual(elements)
+    })
+  })
+
   describe('#clear', function () {
     it('empty the pack', function () {
       const pack : TestedPack = configuration.factory(30)
@@ -558,11 +605,11 @@ export function isPack <T, TestedPack extends Pack<T>> (
         pack.push(elements[index])
       }
 
-      expect([...pack]).toEqual(elements)
+      expect(toArray(pack)).toEqual(elements)
 
       pack.clear()
 
-      expect([...pack]).toEqual([])
+      expect(toArray(pack)).toEqual([])
     })
   })
 

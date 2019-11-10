@@ -13,6 +13,20 @@ export interface CircularBuffer<Element>
   readonly isCircularBuffer : boolean
 
   /**
+  * Remove the last value of the buffer and return it.
+  *
+  * @return The last value of the buffer.
+  */
+  pop () : Element
+
+  /**
+  * Remove the first buffer of the pack and return it.
+  *
+  * @return The first value of the buffer.
+  */
+  shift () : Element
+
+  /**
   * Add the given value to the end of the buffer.
   *
   * @param value The value to add to the buffer.
