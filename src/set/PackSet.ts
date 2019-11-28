@@ -1,4 +1,5 @@
 import { RandomlyAccessibleCollection } from '../RandomlyAccessibleCollection'
+import { RandomAccessIterator } from '../iterator/RandomAccessIterator'
 import { Pack } from '../pack/Pack'
 import { Packs } from '../pack/Packs'
 
@@ -160,6 +161,27 @@ export class PackSet<Element>
   */
   public clear () : void {
     this._elements.clear()
+  }
+
+  /**
+  * @see Collection.first
+  */
+  public first () : Element {
+    return this._elements.first()
+  }
+
+  /**
+  * @see Collection.last
+  */
+  public last () : Element {
+    return this._elements.last()
+  }
+
+  /**
+  * @see Collection.iterator
+  */
+  public iterator () : RandomAccessIterator<Element> {
+    return this._elements.iterator()
   }
 
   /**

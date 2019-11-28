@@ -15,6 +15,7 @@ export { bissect } from './bissect'
 export { quicksort } from './quicksort'
 export { toArray } from './toArray'
 
+export * from './iterator'
 export * from './pack'
 export * from './set'
 export * from './circular'

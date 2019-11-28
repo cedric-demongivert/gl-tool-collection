@@ -2,6 +2,7 @@ import { ReallocableCollection } from '../ReallocableCollection'
 import { RandomlyAccessibleCollection } from '../RandomlyAccessibleCollection'
 import { Sequence } from '../Sequence'
 import { Comparator } from '../Comparator'
+import { RandomAccessIterator } from '../iterator/RandomAccessIterator'
 
 export interface Pack<Element>
          extends Sequence<Element>,
@@ -81,6 +82,18 @@ export interface Pack<Element>
   sort (comparator : Comparator<Element, Element>) : void
 
   /**
+  * Like Array.sort but on a given range of this pack.
+  *
+  * @param offset - Number of elements to ignore from the start of the pack.
+  * @param size - Number of elements to sort.
+  */
+  subSort (
+    offset : number,
+    size : number,
+    comparator : Comparator<Element, Element>
+  ) : void
+
+  /**
   * Push the given value at the end of this pack.
   *
   * This operation will increase the current pack size and as a consequence this
@@ -112,6 +125,13 @@ export interface Pack<Element>
   warp (index : number) : void
 
   /**
+  * Set all cells of this pack to the given value.
+  *
+  * @param value - The value to set to all cells of this pack.
+  */
+  fill (value : Element) : void
+
+  /**
   * Allocate a new pack of the same type of this one with the given capacity.
   *
   * @param capacity - Capacity of the new pack to instantiate.
@@ -119,6 +139,21 @@ export interface Pack<Element>
   * @return A new pack instance of the same type of this one with the given capacity.
   */
   allocate (capacity : number) : Pack<Element>
+
+  /**
+  * @return A symbol that represents the first element of this collection.
+  */
+  start () : Symbol
+
+  /**
+  * @return A symbol that represents the last element of this collection.
+  */
+  end () : Symbol
+
+  /**
+  * @see Collection.iterator
+  */
+  iterator () : RandomAccessIterator<Element>
 
   /**
   * Empty this pack of its elements.

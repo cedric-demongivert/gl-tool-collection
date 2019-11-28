@@ -23,13 +23,6 @@ export function isHeap <T, TestedHeap extends Heap<T>> (
     })
   })
 
-  describe('#isCollection', function () {
-    it('returns true', function () {
-      const heap : TestedHeap = configuration.factory(8)
-      expect(heap.isCollection).toBeTruthy()
-    })
-  })
-
   describe('#isHeap', function () {
     it('returns true', function () {
       const heap : TestedHeap = configuration.factory(8)

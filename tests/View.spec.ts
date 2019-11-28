@@ -95,21 +95,6 @@ describe('View', function () {
     })
   })
 
-  describe('#isCollection', function () {
-    it('return true', function () {
-      const mock : Collection<number> = createCollection()
-      const tags : View<number> = new View<number>(mock)
-
-      createCollection.isCollection(mock).mockReturnValue(true)
-      expect(tags.isCollection).toBeTruthy()
-      expect(createCollection.isCollection(mock)).toHaveBeenCalled()
-
-      createCollection.isCollection(mock).mockReturnValue(false)
-      expect(tags.isCollection).toBeFalsy()
-      expect(createCollection.isCollection(mock)).toHaveBeenCalledTimes(2)
-    })
-  })
-
   describe('#equals', function () {
     it('call the wrapped collection method and return the result', function () {
       const mock : Collection<number> = createCollection()

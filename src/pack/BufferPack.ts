@@ -1,6 +1,8 @@
 import { equals } from '../equals'
 import { quicksort } from '../quicksort'
 import { Comparator } from '../Comparator'
+import { START, END } from '../iterator/symbols'
+import { RandomAccessIterator } from '../iterator/RandomAccessIterator'
 
 import { Pack } from './Pack'
 
@@ -181,6 +183,15 @@ export class BufferPack<Buffer extends TypedArray> implements Pack<number> {
   }
 
   /**
+  * @see Pack.fill
+  */
+  public fill (element : number) : void {
+    for (let index = 0, size = this._size; index < size; ++index) {
+      this._elements[index] = element
+    }
+  }
+
+  /**
   * @see Pack.pop
   */
   public pop () : number {
@@ -188,6 +199,13 @@ export class BufferPack<Buffer extends TypedArray> implements Pack<number> {
     const value : number = this._elements[last]
     this.delete(last)
     return value
+  }
+
+  /**
+  * @see Pack.last
+  */
+  public last () : number {
+    return this._elements[this._size - 1]
   }
 
   /**
@@ -200,10 +218,28 @@ export class BufferPack<Buffer extends TypedArray> implements Pack<number> {
   }
 
   /**
+  * @see Pack.first
+  */
+  public first () : number {
+    return this._elements[0]
+  }
+
+  /**
   * @see Pack.sort
   */
   public sort (comparator : Comparator<number, number>) : void {
     quicksort(this, comparator, 0, this._size)
+  }
+
+  /**
+  * @see Pack.subSort
+  */
+  public subSort (
+    offset : number,
+    size : number,
+    comparator : Comparator<number, number>
+  ) : void {
+    quicksort(this, comparator, offset, size)
   }
 
   /**
@@ -294,6 +330,29 @@ export class BufferPack<Buffer extends TypedArray> implements Pack<number> {
   */
   public clear () : void {
     this._size = 0
+  }
+
+  /**
+  * @see Pack.start
+  */
+  public start () : Symbol {
+    return START
+  }
+
+  /**
+  * @see Pack.start
+  */
+  public end () : Symbol {
+    return END
+  }
+
+  /**
+  * @see Collection.iterator
+  */
+  public iterator () : RandomAccessIterator<number> {
+    const result : RandomAccessIterator<number> = new RandomAccessIterator()
+    result.reset(this)
+    return result
   }
 
   /**

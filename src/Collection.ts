@@ -1,3 +1,5 @@
+import { Iterator as CollectionIterator } from './iterator/Iterator'
+
 /**
 * A collection of values.
 */
@@ -66,6 +68,36 @@ export interface Collection<Element> extends Iterable<Element> {
   get (index : number) : Element
 
   /**
+  * Return the last element of the sequence of element described by the
+  * iterator of this collection.
+  *
+  * A collection may not be randomly accessible, and, in such cases, this method
+  * may iterate over the entire collection to retrieve the last element.
+  *
+  * If this collection contains a non-finite number of elements this method
+  * MUST return undefined.
+  *
+  * @return The last element of the sequence of element described by the
+  *         iterator of this collection.
+  */
+  last () : Element
+
+  /**
+  * Return the first element of the sequence of element described by the
+  * iterator of this collection.
+  *
+  * A collection may not be randomly accessible, and, in such cases, this method
+  * may iterate over the entire collection to retrieve the first element.
+  *
+  * If this collection contains a non-finite number of elements this method
+  * MAY return undefined.
+  *
+  * @return The first element of the sequence of element described by the
+  *         iterator of this collection.
+  */
+  first () : Element
+
+  /**
   * Return true if this collection contains the given element.
   *
   * @param element - An element to search for.
@@ -99,6 +131,11 @@ export interface Collection<Element> extends Iterable<Element> {
   * @param other - Object instance to compare to this one.
   */
   equals (other : any) : boolean
+
+  /**
+  * @return An iterator over this collection.
+  */
+  iterator () : CollectionIterator<Element>
 
   /**
   * @return An iterator over each elements of this collection.

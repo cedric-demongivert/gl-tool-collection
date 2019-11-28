@@ -29,13 +29,6 @@ function buildSuite <T> (
     })
   })
 
-  describe('#isCollection', function () {
-    it('return true', function () {
-      const circular : CircularBuffer<T> = factory(20)
-      expect(circular.isCollection).toBeTruthy()
-    })
-  })
-
   describe('#isCircularBuffer', function () {
     it('return true', function () {
       const circular : CircularBuffer<T> = factory(20)

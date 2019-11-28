@@ -1,4 +1,5 @@
 import { RandomlyAccessibleCollection } from '../RandomlyAccessibleCollection'
+import { RandomAccessIterator } from '../iterator/RandomAccessIterator'
 import { Pack } from '../pack/Pack'
 import { Packs } from '../pack/Packs'
 import { Comparator } from '../Comparator'
@@ -198,6 +199,27 @@ export class PackHeap<Element>
   */
   public has (value : Element) : boolean {
     return this._elements.has(value)
+  }
+
+  /**
+  * @see Collection.first
+  */
+  public first () : Element {
+    return this._elements.first()
+  }
+
+  /**
+  * @see Collection.last
+  */
+  public last () : Element {
+    return this._elements.last()
+  }
+
+  /**
+  * @see Collection.iterator
+  */
+  public iterator () : RandomAccessIterator<Element> {
+    return this._elements.iterator()
   }
 
   /**

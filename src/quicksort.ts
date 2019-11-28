@@ -26,16 +26,16 @@ function partition<Element> (
   left : number, right : number
 ) : number {
   const pivot : Element = collection.get((left + right) >>> 1)
-  let lower : number = left
-  let upper : number = right
+  let lower : number = left - 1
+  let upper : number = right + 1
 
   do {
-    while (comparator(collection.get(lower), pivot) < 0) {
+    do {
       lower += 1
-    }
-    while (comparator(collection.get(upper), pivot) > 0) {
+    } while (comparator(collection.get(lower), pivot) < 0)
+    do {
       upper -= 1
-    }
+    } while (comparator(collection.get(upper), pivot) > 0)
     if (lower >= upper) {
       return upper
     }

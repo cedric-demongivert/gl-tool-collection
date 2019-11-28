@@ -246,14 +246,6 @@ export function isPack <T, TestedPack extends Pack<T>> (
     })
   })
 
-  describe('#isCollection', function () {
-    it('returns true', function () {
-      const pack : TestedPack = configuration.factory(110)
-
-      expect(pack.isCollection).toBeTruthy()
-    })
-  })
-
   describe('#get', function () {
     it('returns the nth element of the pack', function () {
       const pack : TestedPack = configuration.factory(110)

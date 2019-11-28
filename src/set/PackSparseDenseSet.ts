@@ -1,5 +1,6 @@
 import { Pack } from '../pack/Pack'
 import { Packs } from '../pack/Packs'
+import { RandomAccessIterator } from '../iterator/RandomAccessIterator'
 import { SparseDenseSet } from './SparseDenseSet'
 import { ReallocableSet } from './ReallocableSet'
 
@@ -213,6 +214,27 @@ export class PackSparseDenseSet
   */
   public clear () : void {
     this._dense.clear()
+  }
+
+  /**
+  * @see Collection.first
+  */
+  public first () : number {
+    return this._dense.first()
+  }
+
+  /**
+  * @see Collection.last
+  */
+  public last () : number {
+    return this._dense.last()
+  }
+
+  /**
+  * @see Collection.iterator
+  */
+  public iterator () : RandomAccessIterator<number> {
+    return this._dense.iterator()
   }
 
   /**

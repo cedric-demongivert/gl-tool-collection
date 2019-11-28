@@ -14,6 +14,13 @@ export interface CircularBuffer<Element>
   readonly isCircularBuffer : boolean
 
   /**
+  * Set all cells of this buffer to the given value.
+  *
+  * @param value - The value to set to all cells of this buffer.
+  */
+  fill (value : Element) : void
+
+  /**
   * Remove the last value of the buffer and return it.
   *
   * @return The last value of the buffer.

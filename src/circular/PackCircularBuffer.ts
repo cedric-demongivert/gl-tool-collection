@@ -1,5 +1,6 @@
 import { equals } from '../equals'
 import { RandomlyAccessibleCollection } from '../RandomlyAccessibleCollection'
+import { RandomAccessIterator } from '../iterator/RandomAccessIterator'
 
 import { Pack } from '../pack/Pack'
 import { Packs } from '../pack/Packs'
@@ -122,10 +123,42 @@ export class PackCircularBuffer<Element>
   }
 
   /**
+  * @see Collection.first
+  */
+  public first () : Element {
+    return this._size > 0 ? this._elements.get(this._start) : undefined
+  }
+
+  /**
+  * @see Collection.last
+  */
+  public last () : Element {
+    return this._size > 0 ? this._elements.get((this._start + this._size) % this._elements.capacity) : undefined
+  }
+
+  /**
+  * @see Collection.iterator
+  */
+  public iterator () : RandomAccessIterator<Element> {
+    const result : RandomAccessIterator<Element> = new RandomAccessIterator()
+    result.reset(this)
+    return result
+  }
+
+  /**
   * @see Collection.get
   */
   public get (index : number) : Element {
     return this._elements.get((this._start + index) % this._elements.capacity)
+  }
+
+  /**
+  * @see CircularBuffer.fill
+  */
+  public fill (element : Element) : void {
+    for (let index = 0, size = this._size; index < size; ++index) {
+      this.set(index, element)
+    }
   }
 
   /**

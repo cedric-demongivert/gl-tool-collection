@@ -1,10 +1,12 @@
 import { equals } from '../equals'
 import { quicksort } from '../quicksort'
 import { Comparator } from '../Comparator'
+import { START, END } from '../iterator/symbols'
+import { RandomAccessIterator } from '../iterator/RandomAccessIterator'
 
 import { Pack } from './Pack'
 
-export class ArrayPack<T> implements Pack<T> {
+export class ArrayPack<Element> implements Pack<Element> {
   static DEFAULT_VALUE : any = null
 
   /**
@@ -12,8 +14,8 @@ export class ArrayPack<T> implements Pack<T> {
   *
   * @param toCopy - A pack to copy.
   */
-  static copy <T> (toCopy : Pack<T>) : ArrayPack<T> {
-    const result : ArrayPack<T> = new ArrayPack<T>(toCopy.capacity)
+  static copy <Element> (toCopy : Pack<Element>) : ArrayPack<Element> {
+    const result : ArrayPack<Element> = new ArrayPack<Element>(toCopy.capacity)
 
     result.size = toCopy.size
 
@@ -24,19 +26,19 @@ export class ArrayPack<T> implements Pack<T> {
     return result
   }
 
-  private _elements : Array<T>
+  private _elements : Array<Element>
   private _size : number
 
   /**
   * Instanciate a new pack with the given capacity based uppon a javascript array.
   *
-  * @param [capacity=16] - The number of elements to preallocate.
+  * @param [capacity=16] - Elementhe number of elements to preallocate.
   */
   public constructor (capacity : number = 16) {
     this._elements = []
 
     /**
-    * @see https://v8.dev/blog/elements-kinds?fbclid=IwAR337wb3oxEpjz_5xVHL-Y14gUpVTOztLSIikVVQLGN6qcKidEjMLJ4vO3M
+    * @see https://v8.dev/blog/elements-kinds?fbclid=IwAR337wb3oxEpjz_5xVHL-Y14gUpVElementOztLSIikVVQLGN6qcKidEjMLJ4vO3M
     */
     for (let index = 0; index < capacity; ++index) {
       this._elements.push(null)
@@ -99,7 +101,7 @@ export class ArrayPack<T> implements Pack<T> {
   */
   public set size (value : number) {
     /**
-    * @see https://v8.dev/blog/elements-kinds?fbclid=IwAR337wb3oxEpjz_5xVHL-Y14gUpVTOztLSIikVVQLGN6qcKidEjMLJ4vO3M
+    * @see https://v8.dev/blog/elements-kinds?fbclid=IwAR337wb3oxEpjz_5xVHL-Y14gUpVElementOztLSIikVVQLGN6qcKidEjMLJ4vO3M
     */
     while (value > this._elements.length) {
       this._elements.push(null)
@@ -128,7 +130,7 @@ export class ArrayPack<T> implements Pack<T> {
       this._size = Math.min(this._size, capacity)
     } else {
       /**
-      * @see https://v8.dev/blog/elements-kinds?fbclid=IwAR337wb3oxEpjz_5xVHL-Y14gUpVTOztLSIikVVQLGN6qcKidEjMLJ4vO3M
+      * @see https://v8.dev/blog/elements-kinds?fbclid=IwAR337wb3oxEpjz_5xVHL-Y14gUpVElementOztLSIikVVQLGN6qcKidEjMLJ4vO3M
       */
       while (this._elements.length != capacity) {
         this._elements.push(null)
@@ -153,41 +155,75 @@ export class ArrayPack<T> implements Pack<T> {
   /**
   * @see Collection.get
   */
-  public get (index : number) : T {
+  public get (index : number) : Element {
     return this._elements[index]
   }
 
   /**
   * @see Pack.pop
   */
-  public pop () : T {
+  public pop () : Element {
     const last : number = this._size - 1
-    const value : T = this._elements[last]
+    const value : Element = this._elements[last]
     this.delete(last)
     return value
   }
 
   /**
+  * @see Collection.last
+  */
+  public last () : Element {
+    return this._elements[this._size - 1]
+  }
+
+  /**
+  * @see Pack.fill
+  */
+  public fill (element : Element) : void {
+    for (let index = 0, size = this._size; index < size; ++index) {
+      this._elements[index] = element
+    }
+  }
+
+  /**
   * @see Pack.shift
   */
-  public shift () : T {
-    const value : T = this._elements[0]
+  public shift () : Element {
+    const value : Element = this._elements[0]
     this.delete(0)
     return value
   }
 
   /**
+  * @see Collection.first
+  */
+  public first () : Element {
+    return this._elements[0]
+  }
+
+  /**
   * @see Pack.sort
   */
-  public sort (comparator : Comparator<T, T>) : void {
+  public sort (comparator : Comparator<Element, Element>) : void {
     quicksort(this, comparator, 0, this._size)
+  }
+
+  /**
+  * @see Pack.subSort
+  */
+  public subSort (
+    offset : number,
+    size : number,
+    comparator : Comparator<Element, Element>
+  ) : void {
+    quicksort(this, comparator, offset, size)
   }
 
   /**
   * @see Pack.swap
   */
   public swap (first : number, second : number) : void {
-    const tmp : T = this._elements[first]
+    const tmp : Element = this._elements[first]
     this._elements[first] = this._elements[second]
     this._elements[second] = tmp
   }
@@ -195,7 +231,7 @@ export class ArrayPack<T> implements Pack<T> {
   /**
   * @see Pack.set
   */
-  public set (index : number, value : T) : void {
+  public set (index : number, value : Element) : void {
     if (index >= this._size) this.size = index + 1
     this._elements[index] = value
   }
@@ -203,7 +239,7 @@ export class ArrayPack<T> implements Pack<T> {
   /**
   * @see Pack.insert
   */
-  public insert (index : number, value : T) : void {
+  public insert (index : number, value : Element) : void {
     if (index >= this._size) {
       this.set(index, value)
     } else {
@@ -220,7 +256,7 @@ export class ArrayPack<T> implements Pack<T> {
   /**
   * @see Pack.push
   */
-  public push (value : T) : void {
+  public push (value : Element) : void {
     const index : number = this._size
 
     this.size += 1
@@ -249,14 +285,14 @@ export class ArrayPack<T> implements Pack<T> {
   /**
   * @see Collection.has
   */
-  public has (element : T) : boolean {
+  public has (element : Element) : boolean {
     return this.indexOf(element) >= 0
   }
 
   /**
   * @see Collection.indexOf
   */
-  public indexOf (element : T) : number {
+  public indexOf (element : Element) : number {
     for (let index = 0, length = this._size; index < length; ++index) {
       if (equals(element, this._elements[index])) {
         return index
@@ -269,8 +305,31 @@ export class ArrayPack<T> implements Pack<T> {
   /**
   * @see Pack.allocate
   */
-  public allocate (capacity : number) : ArrayPack<T> {
+  public allocate (capacity : number) : ArrayPack<Element> {
     return new ArrayPack(capacity)
+  }
+
+  /**
+  * @see Pack.start
+  */
+  public start () : Symbol {
+    return START
+  }
+
+  /**
+  * @see Pack.start
+  */
+  public end () : Symbol {
+    return END
+  }
+
+  /**
+  * @see Collection.iterator
+  */
+  public iterator () : RandomAccessIterator<Element> {
+    const result : RandomAccessIterator<Element> = new RandomAccessIterator()
+    result.reset(this)
+    return result
   }
 
   /**
@@ -283,7 +342,7 @@ export class ArrayPack<T> implements Pack<T> {
   /**
   * @see Collection.iterator
   */
-  public * [Symbol.iterator] () : Iterator<T> {
+  public * [Symbol.iterator] () : Iterator<Element> {
     for (let index = 0, length = this._size; index < length; ++index) {
       yield this._elements[index]
     }
