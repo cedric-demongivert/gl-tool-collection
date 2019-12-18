@@ -22,7 +22,7 @@ export function bissect<Item, Search> (
   value : Search,
   comparator : Comparator<Search, Item> = defaultComparator,
   offset : number = 0,
-  size : number = collection.size
+  size : number = collection.size,
 ) {
   if (size > 0) {
     let left = offset
@@ -31,6 +31,74 @@ export function bissect<Item, Search> (
     while (left !== right) {
       const cursor = left + ((right - left) >>> 1)
       const comparison = comparator(value, collection.get(cursor))
+
+      if (comparison === 0) {
+        return cursor
+      } else if (comparison > 0) {
+        left = cursor + 1
+      } else {
+        right = cursor
+      }
+    }
+
+    return - (left + 1)
+  } else {
+    return -1
+  }
+}
+
+bissect.first = function <Item, Search> (
+  collection : Collection<Item>,
+  value : Search,
+  comparator : Comparator<Search, Item> = defaultComparator,
+  offset : number = 0,
+  size : number = collection.size
+) {
+  let result : number = bissect(collection, value, comparator, offset, size)
+
+  if (result < 0) return result
+
+  while (result > 0 && comparator(value, collection.get(result - 1)) === 0) {
+    result -= 1
+  }
+
+  return result
+}
+
+bissect.last = function <Item, Search> (
+  collection : Collection<Item>,
+  value : Search,
+  comparator : Comparator<Search, Item> = defaultComparator,
+  offset : number = 0,
+  size : number = collection.size
+) {
+  let result : number = bissect(collection, value, comparator, offset, size)
+
+  if (result < 0) return result
+
+  const end : number = collection.size - 1
+
+  while (result < end && comparator(value, collection.get(result + 1)) === 0) {
+    result += 1
+  }
+
+  return result
+}
+
+bissect.invert = function <Item, Search> (
+  collection : Collection<Item>,
+  value : Search,
+  comparator : Comparator<Search, Item> = defaultComparator,
+  offset : number = 0,
+  size : number = collection.size,
+) {
+  if (size > 0) {
+    let left = offset
+    let right = offset + size
+
+    while (left !== right) {
+      const cursor = left + ((right - left) >>> 1)
+      const comparison = -comparator(value, collection.get(cursor))
 
       if (comparison === 0) {
         return cursor
