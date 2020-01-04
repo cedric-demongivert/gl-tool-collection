@@ -253,12 +253,10 @@ export function isHeap <T, TestedHeap extends Heap<T>> (
     it('return false if both collections does not have the same content', function () {
       const heap : TestedHeap = configuration.factory(32)
       const different : TestedHeap = configuration.factory(32)
-      const elements : Array<T> = new Array()
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = configuration.generator()
-        heap.push(elements[index])
-        different.push(index == 5 ? configuration.generator() : elements[index])
+        heap.push(configuration.generator())
+        different.push(configuration.generator())
       }
 
       expect(heap.equals(different)).toBeFalsy()

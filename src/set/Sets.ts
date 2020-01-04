@@ -5,6 +5,7 @@ import { Set } from './Set'
 import { PackSet } from './PackSet'
 import { SparseDenseSet } from './SparseDenseSet'
 import { PackSparseDenseSet } from './PackSparseDenseSet'
+import { IdentifierSet } from './IdentifierSet'
 
 export class Sets {
   static SparseDense = class {
@@ -45,5 +46,9 @@ export class Sets {
 
   static fromPack <T> (pack : Pack<T>) : Set<T> {
     return new PackSet<T>(pack)
+  }
+
+  static identifier (capacity : number) : IdentifierSet {
+    return new IdentifierSet(capacity)
   }
 }

@@ -1,6 +1,8 @@
 import { Pack } from './Pack'
 import { BufferPack } from './BufferPack'
 import { ArrayPack } from './ArrayPack'
+import { UintArray } from '../native/UintArray'
+import * as UintArrays from '../native/UintArrays'
 
 export class Packs {
   static copy <T> (pack : Pack<T>) : Pack<T> {
@@ -42,17 +44,8 @@ export class Packs {
     return new BufferPack<Uint32Array>(new Uint32Array(capacity))
   }
 
-  static upTo (
-    maximum : number,
-    capacity : number
-  ) : BufferPack<Uint8Array | Uint16Array | Uint32Array> {
-    if (maximum <= 0xff) {
-      return new BufferPack<Uint8Array>(new Uint8Array(capacity))
-    } else if (maximum <= 0xffff) {
-      return new BufferPack<Uint16Array>(new Uint16Array(capacity))
-    } else {
-      return new BufferPack<Uint32Array>(new Uint32Array(capacity))
-    }
+  static upTo (maximum : number, capacity : number) : BufferPack<UintArray> {
+    return new BufferPack<UintArray>(UintArrays.upTo(maximum, capacity))
   }
 
   static int8 (capacity : number) : BufferPack<Int8Array> {
