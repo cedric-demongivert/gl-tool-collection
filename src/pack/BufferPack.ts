@@ -6,8 +6,9 @@ import { Buffer } from '@library/native/Buffer'
 
 import { Pack } from '@library/Pack'
 import { PackIterator } from '@library/pack/PackIterator'
-import { UnsignedIntegerBuffer } from '@library/native/UnsignedIntegerBuffer';
-import { IntegerBuffer } from '@library/native/IntegerBuffer';
+import { UnsignedIntegerBuffer } from '@library/native/UnsignedIntegerBuffer'
+import { IntegerBuffer } from '@library/native/IntegerBuffer'
+import { Sequence } from '@library/Sequence'
 
 export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   /**
@@ -281,7 +282,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   /**
   * @see Pack.copy
   */
-  public copy (toCopy : Pack<number>) : void {
+  public copy (toCopy : Sequence<number>) : void {
     this.size = toCopy.size
 
     for (let index = 0, length = toCopy.size; index < length; ++index) {

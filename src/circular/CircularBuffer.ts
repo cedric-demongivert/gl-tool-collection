@@ -1,111 +1,26 @@
-import { StaticCollection } from '@library/StaticCollection'
-import { Sequence } from '@library/Sequence'
+import { ReallocableCollection } from '@library/ReallocableCollection'
+import { MutableSequence } from '@library/MutableSequence'
 import { Pack } from '@library/pack/Pack'
 
 import { PackCircularBuffer } from '@library/circular/PackCircularBuffer'
+import { CircularBufferIterator } from '@library/circular/CircularBufferIterator'
 
 /**
 * A circular buffer that continuously drop the first inserted item when an
 * element is added beyond of its own capacity.
 */
 export interface CircularBuffer<Element>
-         extends StaticCollection<Element>,
-                 Sequence<Element>
+         extends ReallocableCollection, MutableSequence<Element>
 {
   /**
-  * @return True if the instance is an instance of circular buffer.
+  * @see Collection.clone
   */
-  readonly isCircularBuffer : boolean
+  clone () : CircularBuffer<Element>
 
   /**
-  * Set all cells of this buffer to the given value.
-  *
-  * @param value - The value to set to all cells of this buffer.
+  * @see Collection.iterator
   */
-  fill (value : Element) : void
-
-  /**
-  * Remove the last value of the buffer and return it.
-  *
-  * @return The last value of the buffer.
-  */
-  pop () : Element
-
-  /**
-  * Remove the first buffer of the pack and return it.
-  *
-  * @return The first value of the buffer.
-  */
-  shift () : Element
-
-  /**
-  * Add the given value to the end of the buffer.
-  *
-  * @param value The value to add to the buffer.
-  */
-  push (value : Element) : void
-
-  /**
-  * Insert the given value at the given location.
-  *
-  * @param index Where to insert the value.
-  * @param value The value to insert.
-  */
-  insert (index : number, value : Element) : void
-
-  /**
-  * Set the given value at the given location.
-  *
-  * @param index Where to set the value.
-  * @param value The value to set.
-  */
-  set (index : number, value : Element) : void
-
-  /**
-  * Delete the value at the given index.
-  *
-  * This method will preserve this buffer internal element order.
-  *
-  * @param index The index of the value to delete.
-  */
-  delete (index : number) : void
-
-  /**
-  * Warp out the value at the given index.
-  *
-  * This method will not preserve this buffer internal element order.
-  *
-  * @param index The index of the value to warp out.
-  */
-  warp (index : number) : void
-
-  /**
-  * Swap two elements of this buffer.
-  *
-  * @param first Index of the first element to swap.
-  * @param second Index of the second element to swap.
-  */
-  swap (first : number, second : number) : void
-
-  /**
-  * Shallow copy an existing instance.
-  *
-  * This method may update the capacity of this buffer and as a result may
-  * reallocate it.
-  *
-  * @param toCopy - An existing instance to copy.
-  */
-  copy (toCopy : CircularBuffer<T>) : void
-
-  /**
-  * @return A shallow copy of this instance as a new circular buffer instance.
-  */
-  clone () : CircularBuffer<T>
-
-  /**
-  * Empty this buffer.
-  */
-  clear () : void
+  iterator () : CircularBufferIterator<Element>
 }
 
 namespace CircularBuffer {
@@ -129,5 +44,136 @@ namespace CircularBuffer {
   */
   export function fromPack <T> (pack : Pack<T>) : PackCircularBuffer<T> {
     return new PackCircularBuffer<T>(pack)
+  }
+
+  /**
+  * Instantiate a new circular buffer that wrap a pack of the given type of instance.
+  *
+  * @param capacity - Capacity of the pack to allocate.
+  *
+  * @return A new buffer that wrap a pack of the given type of instance.
+  */
+  export function any <T> (capacity : number) : PackCircularBuffer<T> {
+    return new PackCircularBuffer<T>(Pack.any(capacity))
+  }
+
+  /**
+  * Instantiate a new circular buffer that wrap a unsigned byte pack of the given capacity.
+  *
+  * @param capacity - Capacity of the pack to allocate.
+  *
+  * @return A new circular buffer that wrap a unsigned byte pack of the given capacity.
+  */
+  export function uint8 (capacity : number) : PackCircularBuffer<number> {
+    return new PackCircularBuffer<number>(Pack.uint8(capacity))
+  }
+
+  /**
+  * Instantiate a new circular buffer that wrap a unsigned short pack of the given capacity.
+  *
+  * @param capacity - Capacity of the pack to allocate.
+  *
+  * @return A new circular buffer that wrap a unsigned short pack of the given capacity.
+  */
+  export function uint16 (capacity : number) : PackCircularBuffer<number> {
+    return new PackCircularBuffer<number>(Pack.uint16(capacity))
+  }
+
+  /**
+  * Instantiate a new circular buffer that wrap a unsigned integer pack of the given capacity.
+  *
+  * @param capacity - Capacity of the pack to allocate.
+  *
+  * @return A new circular buffer that wrap a unsigned integer pack of the given capacity.
+  */
+  export function uint32 (capacity : number) : PackCircularBuffer<number> {
+    return new PackCircularBuffer<number>(Pack.uint32(capacity))
+  }
+
+  /**
+  * Instantiate a new circular buffer that wrap a byte pack of the given capacity.
+  *
+  * @param capacity - Capacity of the pack to allocate.
+  *
+  * @return A new circular buffer that wrap a byte pack of the given capacity.
+  */
+  export function int8 (capacity : number) : PackCircularBuffer<number> {
+    return new PackCircularBuffer<number>(Pack.int8(capacity))
+  }
+
+  /**
+  * Instantiate a new circular buffer that wrap a short pack of the given capacity.
+  *
+  * @param capacity - Capacity of the pack to allocate.
+  *
+  * @return A new circular buffer that wrap a short pack of the given capacity.
+  */
+  export function int16 (capacity : number) : PackCircularBuffer<number> {
+    return new PackCircularBuffer<number>(Pack.int16(capacity))
+  }
+
+  /**
+  * Instantiate a new circular buffer that wrap a integer pack of the given capacity.
+  *
+  * @param capacity - Capacity of the pack to allocate.
+  *
+  * @return A new circular buffer that wrap a integer pack of the given capacity.
+  */
+  export function int32 (capacity : number) : PackCircularBuffer<number> {
+    return new PackCircularBuffer<number>(Pack.int32(capacity))
+  }
+
+  /**
+  * Instantiate a new circular buffer that wrap a float pack of the given capacity.
+  *
+  * @param capacity - Capacity of the pack to allocate.
+  *
+  * @return A new circular buffer that wrap a float pack of the given capacity.
+  */
+  export function float32 (capacity : number) : PackCircularBuffer<number> {
+    return new PackCircularBuffer<number>(Pack.float32(capacity))
+  }
+
+  /**
+  * Instantiate a new circular buffer that wrap a double pack of the given capacity.
+  *
+  * @param capacity - Capacity of the pack to allocate.
+  *
+  * @return A new circular buffer that wrap a double pack of the given capacity.
+  */
+  export function float64 (capacity : number) : PackCircularBuffer<number> {
+    return new PackCircularBuffer<number>(Pack.float64(capacity))
+  }
+
+  /**
+  * Instantiate a new pack that wrap a unsigned integer pack that can store
+  * values in range [0, maximum] and that is of the given capacity.
+  *
+  * @param maximum - Maximum value that can be stored.
+  * @param capacity - Capacity of the pack to allocate.
+  *
+  * @return A new pack that wrap a unsigned integer pack that can store values
+  *         in range [0, maximum] and that is of the given capacity.
+  */
+  export function unsignedUpTo (
+    maximum : number, capacity : number
+  ) : PackCircularBuffer<number> {
+    return new PackCircularBuffer<number>(Pack.unsignedUpTo(maximum, capacity))
+  }
+
+  /**
+  * Instantiate a new circular buffer that wrap a signed integer pack that can store
+  * values in range [-maximum, maximum] and that is of the given capacity.
+  *
+  * @param maximum - Maximum value that can be stored.
+  * @param capacity - Capacity of the pack to allocate.
+  *
+  * @return A new circular buffer that wrap a signed integer pack that can store values
+  *         in range [-maximum, maximum] and that is of the given capacity.
+  */
+  export function signedUpTo (
+    maximum : number, capacity : number
+  ) : PackCircularBuffer<number> {
+    return new PackCircularBuffer<number>(Pack.signedUpTo(maximum, capacity))
   }
 }

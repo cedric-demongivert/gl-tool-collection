@@ -1,12 +1,10 @@
-import { equals } from '@library/equals'
-import { RandomlyAccessibleCollection } from '@library/RandomlyAccessibleCollection'
-import { RandomAccessIterator } from '@library/iterator/RandomAccessIterator'
+import { equals } from '@library/algorithm/equals'
 import { Pack } from '@library/pack/Pack'
-import { ReallocableCircularBuffer } from '@library/circular/ReallocableCircularBuffer'
+import { CircularBuffer } from '@library/circular/CircularBuffer'
+import { CircularBufferIterator } from '@library/iterator/CircularBufferIterator'
+import { Sequence } from '@library/Sequence';
 
-export class PackCircularBuffer<Element>
-  implements ReallocableCircularBuffer<Element>,
-             RandomlyAccessibleCollection<Element>
+export class PackCircularBuffer<Element> implements CircularBuffer<Element>
 {
   private _elements : Pack<Element>
   private _start : number
@@ -16,12 +14,19 @@ export class PackCircularBuffer<Element>
   * Create a new circular buffer uppon an existing pack implementation.
   *
   * @param elements - A pack to use for storing this circular buffer elements.
+  * @param [offset = 0] - Number of element to skip from the start of the pack.
+  * @param [size = elements.size - offset] - Number of element to keep.
   */
-  public constructor (elements : Pack<Element>) {
+  public constructor (
+    elements : Pack<Element>,
+    offset : number = 0,
+    size : number = elements.size - offset
+  ) {
     this._elements = elements
-    this._start = 0
-    this._size = elements.size
     this._elements.size = elements.capacity
+
+    this._start = offset
+    this._size = size
   }
 
   /**
@@ -29,48 +34,6 @@ export class PackCircularBuffer<Element>
   */
   public get size () : number {
     return this._size
-  }
-
-  /**
-  * @see Collection.isRandomlyAccessible
-  */
-  public get isRandomlyAccessible () : boolean {
-    return true
-  }
-
-  /**
-  * @see Collection.isSequentiallyAccessible
-  */
-  public get isSequentiallyAccessible () : boolean {
-    return false
-  }
-
-  /**
-  * @see Collection.isSet
-  */
-  public get isSet () : boolean {
-    return false
-  }
-
-  /**
-  * @see Collection.isStatic
-  */
-  public get isStatic () : boolean {
-    return true
-  }
-
-  /**
-  * @see Collection.isReallocable
-  */
-  public get isReallocable () : boolean {
-    return true
-  }
-
-  /**
-  * @see Collection.isSequence
-  */
-  public get isSequence () : boolean {
-    return true
   }
 
   /**
@@ -106,51 +69,54 @@ export class PackCircularBuffer<Element>
   }
 
   /**
-  * @see Collection.isCollection
+  * @see Sequence.first
   */
-  public get isCollection () : boolean {
-    return true
-  }
-
-  /**
-  * @see CircularBuffer.isCircularBuffer
-  */
-  public get isCircularBuffer () : boolean {
-    return true
-  }
-
-  /**
-  * @see Collection.first
-  */
-  public first () : Element {
+  public get first () : Element {
     return this._size > 0 ? this._elements.get(this._start) : undefined
   }
 
   /**
-  * @see Collection.last
+  * @see Sequence.firstIndex
   */
-  public last () : Element {
+  public get firstIndex () : number {
+    return 0
+  }
+
+  /**
+  * @see Sequence.last
+  */
+  public get last () : Element {
     return this._size > 0 ? this._elements.get((this._start + this._size) % this._elements.capacity) : undefined
+  }
+
+  /**
+  * @see Sequence.lastIndex
+  */
+  public get lastIndex () : number {
+    return Math.max(this._size - 1, 0)
   }
 
   /**
   * @see Collection.iterator
   */
-  public iterator () : RandomAccessIterator<Element> {
-    const result : RandomAccessIterator<Element> = new RandomAccessIterator()
-    result.reset(this)
+  public iterator () : CircularBufferIterator<Element> {
+    const result : CircularBufferIterator<Element> = new CircularBufferIterator()
+
+    result.buffer = this
+    result.index = 0
+
     return result
   }
 
   /**
-  * @see Collection.get
+  * @see Sequence.get
   */
   public get (index : number) : Element {
     return this._elements.get((this._start + index) % this._elements.capacity)
   }
 
   /**
-  * @see CircularBuffer.fill
+  * @see MutableSequence.fill
   */
   public fill (element : Element) : void {
     for (let index = 0, size = this._size; index < size; ++index) {
@@ -159,7 +125,7 @@ export class PackCircularBuffer<Element>
   }
 
   /**
-  * @see CircularBuffer.pop
+  * @see MutableSequence.pop
   */
   public pop () : Element {
     const last : number = this._size - 1
@@ -171,7 +137,7 @@ export class PackCircularBuffer<Element>
   }
 
   /**
-  * @see CircularBuffer.shift
+  * @see MutableSequence.shift
   */
   public shift () : Element {
     const result : Element = this.get(0)
@@ -182,7 +148,7 @@ export class PackCircularBuffer<Element>
   }
 
   /**
-  * @see CircularBuffer.swap
+  * @see MutableSequence.swap
   */
   public swap (first : number, second : number) : void {
     const rfirst : number = (this._start + first) % this._elements.capacity
@@ -192,7 +158,7 @@ export class PackCircularBuffer<Element>
   }
 
   /**
-  * @see CircularBuffer.set
+  * @see MutableSequence.set
   */
   public set (index : number, value : Element) : void {
     if (index >= this._elements.capacity) {
@@ -214,7 +180,7 @@ export class PackCircularBuffer<Element>
   }
 
   /**
-  * @see CircularBuffer.insert
+  * @see MutableSequence.insert
   */
   public insert (index : number, value : Element) : void {
     if (index >= this._size) {
@@ -236,7 +202,7 @@ export class PackCircularBuffer<Element>
   }
 
   /**
-  * @see CircularBuffer.push
+  * @see MutableSequence.push
   */
   public push (value : Element) : void {
     if (this._size < this._elements.capacity) {
@@ -252,7 +218,24 @@ export class PackCircularBuffer<Element>
   }
 
   /**
-  * @see CircularBuffer.delete
+  * @see MutableSequence.unshift
+  */
+  public unshift (value : Element) : void {
+    this._start -= 1
+
+    if (this._start < 0) {
+      this._start += this._elements.capacity
+    }
+
+    this._elements.set(this._start, value)
+
+    if (this._size < this._elements.capacity) {
+      this._size += 1
+    }
+  }
+
+  /**
+  * @see MutableSequence.delete
   */
   public delete (index : number) : void {
     for (let toMove = index; toMove > 0; --toMove) {
@@ -264,7 +247,7 @@ export class PackCircularBuffer<Element>
   }
 
   /**
-  * @see CircularBuffer.warp
+  * @see MutableSequence.warp
   */
   public warp (index : number) : void {
     this.set(index, this.get(0))
@@ -281,7 +264,7 @@ export class PackCircularBuffer<Element>
   }
 
   /**
-  * @see Collection.indexOf
+  * @see Sequence.indexOf
   */
   public indexOf (element : Element) : number {
     for (let index = 0, length = this._size; index < length; ++index) {
@@ -297,16 +280,16 @@ export class PackCircularBuffer<Element>
   }
 
   /**
-  * @see CircularBuffer.copy
+  * @see Sequence.copy
   */
-  public copy (toCopy : CircularBuffer<Element>) : void {
+  public copy (toCopy : Sequence<Element>) : void {
     if (toCopy.size > this.capacity) {
       this.reallocate(toCopy.size)
     }
 
     this.clear()
 
-    for (let index = 0; length = toCopy.size; index < length; ++index) {
+    for (let index = 0, length = toCopy.size; index < length; ++index) {
       this.push(toCopy.get(index))
     }
   }
@@ -315,14 +298,11 @@ export class PackCircularBuffer<Element>
   * @see CircularBuffer.clone
   */
   public clone () : PackCircularBuffer<Element> {
-    const copy : PackCircularBuffer<Element> = new PackCircularBuffer(
-      this._elements.clone()
+    return new PackCircularBuffer(
+      this._elements.clone(),
+      this._start,
+      this._size
     )
-
-    copy._start = this._start
-    copy._size = this._size
-
-    return copy
   }
 
   /**
@@ -349,7 +329,7 @@ export class PackCircularBuffer<Element>
     if (other == null) return false
     if (other === this) return true
 
-    if (other.isCollection) {
+    if (other instanceof PackCircularBuffer) {
       if (other.size !== this._size) return false
 
       for (let index = 0, size = this._size; index < size; ++index) {

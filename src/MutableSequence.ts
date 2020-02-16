@@ -87,7 +87,7 @@ export interface MutableSequence<Element> extends Sequence<Element> {
   *
   * This operation will increase the current sequence size and as a consequence
   * this sequence may reallocate itself. For more information about this
-  * behaviour please take a look at this sequence implementation
+  * behaviour please take a look at this sequence implementation.
   *
   * If this sequence does not have a begining element due to is semi-finite or
   * non-finite status this method MUST throw an error.
@@ -130,6 +130,17 @@ export interface MutableSequence<Element> extends Sequence<Element> {
   * @return A new instance that is a shallow copy of this pack.
   */
   clone () : MutableSequence<Element>
+
+  /**
+  * Shallow copy an existing sequence.
+  *
+  * This method may update the capacity of this sequence and as a result may
+  * reallocate it. For more information about this behaviour please take a look
+  * at this sequence implementation.
+  *
+  * @param toCopy - An existing instance to copy.
+  */
+  copy (toCopy : Sequence<Element>) : void
 
   /**
   * Remove all element of this sequence.

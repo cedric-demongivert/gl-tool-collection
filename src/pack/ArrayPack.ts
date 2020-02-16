@@ -1,4 +1,3 @@
-import { Collection } from '@library/Collection'
 import { Comparator } from '@library/Comparator'
 
 import { equals } from '@library/algorithm/equals'
@@ -6,6 +5,7 @@ import { quicksort } from '@library/algorithm/quicksort'
 
 import { PackIterator } from '@library/pack/PackIterator'
 import { Pack } from '@library/pack/Pack'
+import { Sequence } from '@library/Sequence'
 
 /**
 * A javascript array.
@@ -270,7 +270,7 @@ export class ArrayPack<Element> implements Pack<Element> {
   /**
   * @see Pack.copy
   */
-  public copy (toCopy : Pack<Element>) : void {
+  public copy (toCopy : Sequence<Element>) : void {
     this.size = toCopy.size
 
     for (let index = 0, length = toCopy.size; index < length; ++index) {

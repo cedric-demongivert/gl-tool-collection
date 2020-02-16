@@ -31,17 +31,6 @@ export interface Pack<Element>
   ) : void
 
   /**
-  * Shallow copy the given pack.
-  *
-  * This operation may update the size of this pack, and as a consequence this
-  * pack may reallocate itself. For more information about this behaviour please
-  * take a look at the size property documentation.
-  *
-  * @param toCopy - A pack instance to copy.
-  */
-  copy (toCopy : Pack<Element>) : void
-
-  /**
   * @see Collection.clone
   */
   clone () : Pack<Element>
@@ -63,7 +52,7 @@ export namespace Pack {
   export function copy <T> (toCopy : Pack<T>) : Pack<T> {
     return toCopy == null ? null : toCopy.clone()
   }
-  
+
   /**
   * Instantiate a new pack that wrap an array of the given type of instance.
   *
