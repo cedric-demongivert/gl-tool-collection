@@ -1,11 +1,8 @@
-import { equals } from '../equals'
-import { RandomlyAccessibleCollection } from '../RandomlyAccessibleCollection'
-import { RandomAccessIterator } from '../iterator/RandomAccessIterator'
-
-import { Pack } from '../pack/Pack'
-import { Packs } from '../pack/Packs'
-
-import { ReallocableCircularBuffer } from './ReallocableCircularBuffer'
+import { equals } from '@library/equals'
+import { RandomlyAccessibleCollection } from '@library/RandomlyAccessibleCollection'
+import { RandomAccessIterator } from '@library/iterator/RandomAccessIterator'
+import { Pack } from '@library/pack/Pack'
+import { ReallocableCircularBuffer } from '@library/circular/ReallocableCircularBuffer'
 
 export class PackCircularBuffer<Element>
   implements ReallocableCircularBuffer<Element>,
@@ -87,7 +84,7 @@ export class PackCircularBuffer<Element>
   * @see ReallocableCollection.reallocate
   */
   public reallocate (capacity : number) : void {
-    const next : Pack<Element> = Packs.copy(this._elements)
+    const next : Pack<Element> = Pack.copy(this._elements)
     next.reallocate(capacity)
 
     const nextSize : number = Math.min(capacity, this._size)
@@ -300,6 +297,35 @@ export class PackCircularBuffer<Element>
   }
 
   /**
+  * @see CircularBuffer.copy
+  */
+  public copy (toCopy : CircularBuffer<Element>) : void {
+    if (toCopy.size > this.capacity) {
+      this.reallocate(toCopy.size)
+    }
+
+    this.clear()
+
+    for (let index = 0; length = toCopy.size; index < length; ++index) {
+      this.push(toCopy.get(index))
+    }
+  }
+
+  /**
+  * @see CircularBuffer.clone
+  */
+  public clone () : PackCircularBuffer<Element> {
+    const copy : PackCircularBuffer<Element> = new PackCircularBuffer(
+      this._elements.clone()
+    )
+
+    copy._start = this._start
+    copy._size = this._size
+
+    return copy
+  }
+
+  /**
   * @see CircularBuffer.clear
   */
   public clear () : void {
@@ -334,5 +360,20 @@ export class PackCircularBuffer<Element>
     }
 
     return false
+  }
+}
+
+export namespace PackCircularBuffer {
+  /**
+  * Shallow copy an existing pack circular buffer instance.
+  *
+  * @param toCopy - An instance to shallow copy.
+  *
+  * @return A shallow copy of the given instance.
+  */
+  export function copy <Element> (
+    toCopy : PackCircularBuffer<Element>
+  ) : PackCircularBuffer<Element> {
+    return toCopy == null ? null : toCopy.clone()
   }
 }

@@ -1,144 +1,105 @@
-import { Iterator as CollectionIterator } from './iterator/Iterator'
+import { CollectionIterator } from '@library/iterator/CollectionIterator'
+import { Size } from '@library/Size'
+import { Comparator } from '@library/Comparator'
 
 /**
-* A collection of values.
+* A collection of element.
 */
 export interface Collection<Element> extends Iterable<Element> {
   /**
-  * @return True if this collection is a set.
-  */
-  readonly isSet : boolean
-
-  /**
-  * @see Sequence
-  */
-  readonly isSequence : boolean
-
-  /**
-  * @see RandomlyAccessibleCollection
-  */
-  readonly isRandomlyAccessible : boolean
-
-  /**
-  * @see SequentiallyAccessibleCollection
-  */
-  readonly isSequentiallyAccessible : boolean
-
-  /**
-  * @see StaticCollection
-  */
-  readonly isStatic : boolean
-
-  /**
-  * @see ReallocableCollection
-  */
-  readonly isReallocable : boolean
-
-  /**
-  * Return the number of elements stored into this collection.
+  * Return the number of element in this collection.
   *
-  * A collection may be non-finite and for such cases this getter MUST return
-  * Number.POSITIVE_INFINITY. For finite collections, this getter will return
-  * an integer equal to the number of elements that it currently store.
-  *
-  * @see InfiniteCollection
-  * @see FiniteCollection
+  * A collection may contains a non-finite number of element and for such cases
+  * this property MUST return Size.INFINITY. For collections that contains a
+  * finite number of element this property MUST return a non-negative integer
+  * equal to the number of elements that it contains.
   *
   * @return The number of elements stored into this collection.
   */
-  readonly size : number
+  readonly size : Size
 
   /**
-  * Return the element at the given index in the sequence of element described
-  * by the iterator of this collection.
+  * Return true if the given element is in this collection.
   *
-  * A collection may not be randomly accessible, and, in such cases, this method
-  * may use the iterator exposed by this collection to access the requested
-  * element. Randomly acessing elements of a non randomly accessible collection
-  * may result in poor performances.
+  * @param element - An element to search.
   *
-  * @param index - Index of the element to return in the sequence of element
-  *                described by the iterator of this collection
-  *
-  * @return The element at the given index in the sequence of element described
-  *         by the iterator of this collection.
-  *
-  * @see https://en.wikipedia.org/wiki/Random_access
-  */
-  get (index : number) : Element
-
-  /**
-  * Return the last element of the sequence of element described by the
-  * iterator of this collection.
-  *
-  * A collection may not be randomly accessible, and, in such cases, this method
-  * may iterate over the entire collection to retrieve the last element.
-  *
-  * If this collection contains a non-finite number of elements this method
-  * MUST return undefined.
-  *
-  * @return The last element of the sequence of element described by the
-  *         iterator of this collection.
-  */
-  last () : Element
-
-  /**
-  * Return the first element of the sequence of element described by the
-  * iterator of this collection.
-  *
-  * A collection may not be randomly accessible, and, in such cases, this method
-  * may iterate over the entire collection to retrieve the first element.
-  *
-  * If this collection contains a non-finite number of elements this method
-  * MAY return undefined.
-  *
-  * @return The first element of the sequence of element described by the
-  *         iterator of this collection.
-  */
-  first () : Element
-
-  /**
-  * Return true if this collection contains the given element.
-  *
-  * @param element - An element to search for.
-  *
-  * @return True if the given element exists into this collection.
+  * @return True if the given element is in this collection.
   */
   has (element : Element) : boolean
 
   /**
-  * Return the index of first element equal to the given one in the sequence of
-  * element described by the iterator of this collection.
+  * Return true if this collection is equal to the given instance.
   *
-  * If the given element does not exists into this collection, this method will
-  * return a negative index.
+  * - A collection is never equal to any non-collection value.
+  * - Two equal collection contains equal elements.
+  * - Two equal collection follows equal constaints.
   *
-  * A collection may not be randomly accessible, and, in such cases, this method
-  * may use the iterator exposed by this collection to find the requested
-  * element. Randomly acessing elements of a non randomly accessible collection
-  * may result in poor performances.
+  * @param other - Instance to compare to this one.
   *
-  * @param element - An element to search for.
-  *
-  * @return The index of first element equal to the given one in the sequence of
-  *         element described by the iterator of this collection.
-  */
-  indexOf (element : Element) : number
-
-  /**
-  * Return true if both instances are equals.
-  *
-  * @param other - Object instance to compare to this one.
+  * @return True if both instance are equals.
   */
   equals (other : any) : boolean
+
+  /**
+  * Return a shallow-copy of this collection.
+  *
+  * A shallow-copy *b* of a collection *a* is an instance that follow both
+  * properties :
+  *  - b !== a
+  *  - b.equals(a)
+  *
+  * @return A shallow copy of this collection.
+  */
+  clone () : Collection<Element>
 
   /**
   * @return An iterator over this collection.
   */
   iterator () : CollectionIterator<Element>
+}
+
+export namespace Collection {
+  /**
+  * Return true if the given collection contains a non-finite number of element.
+  *
+  * @param collection - A collection to assert.
+  *
+  * @return True if the given collection contains a non-finite number of element.
+  */
+  export function isInfinite <Element> (
+    collection : Collection<Element>
+  ) : boolean {
+    return collection.size !== Size.INFINITY
+  }
 
   /**
-  * @return An iterator over each elements of this collection.
+  * Return true if the given collection contains a finite number of element.
+  *
+  * @param collection - A collection to assert.
+  *
+  * @return True if the given collection contains a finite number of element.
   */
-  [Symbol.iterator] () : Iterator<Element>
+  export function isFinite <Element> (
+    collection : Collection<Element>
+  ) : boolean {
+    return collection.size !== Size.INFINITY
+  }
+
+  /**
+  * Return a shallow copy of the given collection.
+  *
+  * A shallow-copy *b* of a collection *a* is an instance that follow both
+  * properties :
+  *  - b !== a
+  *  - b.equals(a)
+  *
+  * @param toCopy - A collection to copy.
+  *
+  * @return A shallow copy of the given collection.
+  */
+  export function copy <Element> (
+    toCopy : Collection<Element>
+  ) : Collection<Element> {
+    return toCopy.clone()
+  }
 }

@@ -1,81 +1,17 @@
-import { ReallocableCollection } from '../ReallocableCollection'
-import { RandomlyAccessibleCollection } from '../RandomlyAccessibleCollection'
-import { Sequence } from '../Sequence'
-import { Comparator } from '../Comparator'
-import { RandomAccessIterator } from '../iterator/RandomAccessIterator'
+import { Comparator } from '@library/Comparator'
+import { MutableSequence } from '@library/MutableSequence'
+import { ReallocableCollection } from '@library/ReallocableCollection'
+
+import { UnsignedIntegerBuffer } from '@library/native/UnsignedIntegerBuffer'
+import { IntegerBuffer } from '@library/native/IntegerBuffer'
+
+import { PackIterator } from '@library/pack/PackIterator'
+import { BufferPack } from '@library/pack/BufferPack'
+import { ArrayPack } from '@library/pack/ArrayPack'
 
 export interface Pack<Element>
-         extends Sequence<Element>,
-                 ReallocableCollection<Element>,
-                 RandomlyAccessibleCollection<Element>
+         extends MutableSequence<Element>, ReallocableCollection
 {
-  /**
-  * Return the number of elements in this pack or update the current size of
-  * this pack.
-  *
-  * An update of the size of a pack may reallocate it if the next size excess
-  * the current pack capacity.
-  *
-  * If the given size is greather than the current size all new elements of the
-  * pack are setted to its default value that depends of the pack implementation
-  * and the kind of values it store.
-  */
-  size : number
-
-  /**
-  * Remove the last value of the pack and return it.
-  *
-  * @return The last value of the pack.
-  */
-  pop () : Element
-
-  /**
-  * Remove the first value of the pack and return it.
-  *
-  * @return The first value of the pack.
-  */
-  shift () : Element
-
-  /**
-  * Swap two elements of this pack.
-  *
-  * @param first - The first element to swap.
-  * @param second - The second element to swap.
-  */
-  swap (first : number, second : number) : void
-
-  /**
-  * Set the given value at the given index.
-  *
-  * If the given index is greather than the current pack size this operation
-  * will increase the size of the pack. As a consequence this pack may
-  * reallocate itself. For more information about this behaviour please take
-  * a look at the size property documentation.
-  *
-  * @see Pack.size
-  *
-  * @param index - Where to set the given value.
-  * @param value - The value to set.
-  */
-  set (index : number, value : Element) : void
-
-  /**
-  * Insert the given value at the given location.
-  *
-  * All values after the insertion index will be moved to their next available
-  * location.
-  *
-  * This operation may increase the current pack size and as a consequence this
-  * pack may reallocate itself. For more information about this behaviour please
-  * take a look at the size property documentation.
-  *
-  * @see Pack.size
-  *
-  * @param index - Where to insert the given value.
-  * @param value - The value to insert.
-  */
-  insert (index : number, value : Element) : void
-
   /**
   * @see Array.sort
   */
@@ -86,77 +22,176 @@ export interface Pack<Element>
   *
   * @param offset - Number of elements to ignore from the start of the pack.
   * @param size - Number of elements to sort.
+  * @param comparator - Comparison order to use.
   */
-  subSort (
+  subsort (
     offset : number,
     size : number,
     comparator : Comparator<Element, Element>
   ) : void
 
   /**
-  * Push the given value at the end of this pack.
+  * Shallow copy the given pack.
   *
-  * This operation will increase the current pack size and as a consequence this
+  * This operation may update the size of this pack, and as a consequence this
   * pack may reallocate itself. For more information about this behaviour please
   * take a look at the size property documentation.
   *
-  * @see Pack.size
-  *
-  * @param value - The value to push.
+  * @param toCopy - A pack instance to copy.
   */
-  push (value : Element) : void
+  copy (toCopy : Pack<Element>) : void
 
   /**
-  * Delete the element at the given index.
-  *
-  * All values after the insertion index will be moved to their previous
-  * available location and the size of will pack will decrement.
-  *
-  * @param index - Where to delete an element.
+  * @see Collection.clone
   */
-  delete (index : number) : void
-
-  /**
-  * Warp out the element at the given location by replacing it with the last
-  * element of this array. This operation will decrease the size of this pack.
-  *
-  * @param index - Where to warp out an element.
-  */
-  warp (index : number) : void
-
-  /**
-  * Set all cells of this pack to the given value.
-  *
-  * @param value - The value to set to all cells of this pack.
-  */
-  fill (value : Element) : void
-
-  /**
-  * Allocate a new pack of the same type of this one with the given capacity.
-  *
-  * @param capacity - Capacity of the new pack to instantiate.
-  *
-  * @return A new pack instance of the same type of this one with the given capacity.
-  */
-  allocate (capacity : number) : Pack<Element>
-
-  /**
-  * @return A symbol that represents the first element of this collection.
-  */
-  start () : Symbol
-
-  /**
-  * @return A symbol that represents the last element of this collection.
-  */
-  end () : Symbol
+  clone () : Pack<Element>
 
   /**
   * @see Collection.iterator
   */
-  iterator () : RandomAccessIterator<Element>
+  iterator () : PackIterator<Element>
+}
+
+export namespace Pack {
+  /**
+  * Shallow copy the given instance and return it.
+  *
+  * @param toCopy - An instance to shallow copy.
+  *
+  * @return A new instance, shallow copy of the given one.
+  */
+  export function copy <T> (toCopy : Pack<T>) : Pack<T> {
+    return toCopy == null ? null : toCopy.clone()
+  }
+  
+  /**
+  * Instantiate a new pack that wrap an array of the given type of instance.
+  *
+  * @param capacity - Capacity of the array to allocate.
+  *
+  * @return A new pack that wrap an array of the given type of instance.
+  */
+  export function any <T> (capacity : number) : ArrayPack<T> {
+    return ArrayPack.allocate(capacity)
+  }
 
   /**
-  * Empty this pack of its elements.
+  * Instantiate a new pack that wrap a unsigned byte buffer of the given capacity.
+  *
+  * @param capacity - Capacity of the buffer to allocate.
+  *
+  * @return A new pack that wrap a unsigned byte buffer of the given capacity.
   */
-  clear () : void
+  export function uint8 (capacity : number) : BufferPack<Uint8Array> {
+    return new BufferPack<Uint8Array>(new Uint8Array(capacity))
+  }
+
+  /**
+  * Instantiate a new pack that wrap a unsigned short buffer of the given capacity.
+  *
+  * @param capacity - Capacity of the buffer to allocate.
+  *
+  * @return A new pack that wrap a unsigned short buffer of the given capacity.
+  */
+  export function uint16 (capacity : number) : BufferPack<Uint16Array> {
+    return new BufferPack<Uint16Array>(new Uint16Array(capacity))
+  }
+
+  /**
+  * Instantiate a new pack that wrap a unsigned integer buffer of the given capacity.
+  *
+  * @param capacity - Capacity of the buffer to allocate.
+  *
+  * @return A new pack that wrap a unsigned integer buffer of the given capacity.
+  */
+  export function uint32 (capacity : number) : BufferPack<Uint32Array> {
+    return new BufferPack<Uint32Array>(new Uint32Array(capacity))
+  }
+
+  /**
+  * Instantiate a new pack that wrap a byte buffer of the given capacity.
+  *
+  * @param capacity - Capacity of the buffer to allocate.
+  *
+  * @return A new pack that wrap a byte buffer of the given capacity.
+  */
+  export function int8 (capacity : number) : BufferPack<Int8Array> {
+    return new BufferPack<Int8Array>(new Int8Array(capacity))
+  }
+
+  /**
+  * Instantiate a new pack that wrap a short buffer of the given capacity.
+  *
+  * @param capacity - Capacity of the buffer to allocate.
+  *
+  * @return A new pack that wrap a short buffer of the given capacity.
+  */
+  export function int16 (capacity : number) : BufferPack<Int16Array> {
+    return new BufferPack<Int16Array>(new Int16Array(capacity))
+  }
+
+  /**
+  * Instantiate a new pack that wrap a integer buffer of the given capacity.
+  *
+  * @param capacity - Capacity of the buffer to allocate.
+  *
+  * @return A new pack that wrap a integer buffer of the given capacity.
+  */
+  export function int32 (capacity : number) : BufferPack<Int32Array> {
+    return new BufferPack<Int32Array>(new Int32Array(capacity))
+  }
+
+  /**
+  * Instantiate a new pack that wrap a float buffer of the given capacity.
+  *
+  * @param capacity - Capacity of the buffer to allocate.
+  *
+  * @return A new pack that wrap a float buffer of the given capacity.
+  */
+  export function float32 (capacity : number) : BufferPack<Float32Array> {
+    return new BufferPack<Float32Array>(new Float32Array(capacity))
+  }
+
+  /**
+  * Instantiate a new pack that wrap a double buffer of the given capacity.
+  *
+  * @param capacity - Capacity of the buffer to allocate.
+  *
+  * @return A new pack that wrap a double buffer of the given capacity.
+  */
+  export function float64 (capacity : number) : BufferPack<Float64Array> {
+    return new BufferPack<Float64Array>(new Float64Array(capacity))
+  }
+
+  /**
+  * Instantiate a new pack that wrap a unsigned integer buffer that can store
+  * values in range [0, maximum] and that is of the given capacity.
+  *
+  * @param maximum - Maximum value that can be stored.
+  * @param capacity - Capacity of the buffer to allocate.
+  *
+  * @return A new pack that wrap a unsigned integer buffer that can store values
+  *         in range [0, maximum] and that is of the given capacity.
+  */
+  export function unsignedUpTo (
+    maximum : number, capacity : number
+  ) : BufferPack<UnsignedIntegerBuffer> {
+    return new BufferPack(UnsignedIntegerBuffer.upTo(maximum, capacity))
+  }
+
+  /**
+  * Instantiate a new pack that wrap a signed integer buffer that can store
+  * values in range [-maximum, maximum] and that is of the given capacity.
+  *
+  * @param maximum - Maximum value that can be stored.
+  * @param capacity - Capacity of the buffer to allocate.
+  *
+  * @return A new pack that wrap a signed integer buffer that can store values
+  *         in range [-maximum, maximum] and that is of the given capacity.
+  */
+  export function signedUpTo (
+    maximum : number, capacity : number
+  ) : BufferPack<IntegerBuffer> {
+    return new BufferPack(IntegerBuffer.upTo(maximum, capacity))
+  }
 }

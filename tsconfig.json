@@ -7,7 +7,11 @@
     "moduleResolution": "node",
     "declaration": true,
     "declarationDir": "./dist/types",
-    "outDir": "./dist/src"
+    "outDir": "./dist/src",
+    "baseUrl": ".",
+    "paths": {
+      "@library/*": ["./src/*"]
+    }
   },
   "include": [
       "src/**/*"

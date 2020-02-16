@@ -1,12 +1,16 @@
-import { StaticCollection } from '../StaticCollection'
-import { Sequence } from '../Sequence'
+import { StaticCollection } from '@library/StaticCollection'
+import { Sequence } from '@library/Sequence'
+import { Pack } from '@library/pack/Pack'
+
+import { PackCircularBuffer } from '@library/circular/PackCircularBuffer'
 
 /**
 * A circular buffer that continuously drop the first inserted item when an
 * element is added beyond of its own capacity.
 */
 export interface CircularBuffer<Element>
-         extends StaticCollection<Element>, Sequence<Element>
+         extends StaticCollection<Element>,
+                 Sequence<Element>
 {
   /**
   * @return True if the instance is an instance of circular buffer.
@@ -84,7 +88,46 @@ export interface CircularBuffer<Element>
   swap (first : number, second : number) : void
 
   /**
+  * Shallow copy an existing instance.
+  *
+  * This method may update the capacity of this buffer and as a result may
+  * reallocate it.
+  *
+  * @param toCopy - An existing instance to copy.
+  */
+  copy (toCopy : CircularBuffer<T>) : void
+
+  /**
+  * @return A shallow copy of this instance as a new circular buffer instance.
+  */
+  clone () : CircularBuffer<T>
+
+  /**
   * Empty this buffer.
   */
   clear () : void
+}
+
+namespace CircularBuffer {
+  /**
+  * Return a shallow copy the given circular buffer.
+  *
+  * @param buffer - An existing buffer instance to copy.
+  *
+  * @return A shallow copy the given circular buffer.
+  */
+  export function copy <T> (buffer : CircularBuffer<T>) : CircularBuffer<T> {
+    return buffer == null ? null : buffer.clone()
+  }
+
+  /**
+  * Return a circular buffer that wraps the given pack.
+  *
+  * @param pack - An existing pack instance to wrap.
+  *
+  * @return A circular buffer that wraps the given pack.
+  */
+  export function fromPack <T> (pack : Pack<T>) : PackCircularBuffer<T> {
+    return new PackCircularBuffer<T>(pack)
+  }
 }

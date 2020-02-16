@@ -3,7 +3,7 @@ import { StaticCollection } from './StaticCollection'
 /**
 * A static collection that allows to change its capacity on-the-fly.
 */
-export interface ReallocableCollection<T> extends StaticCollection<T> {
+export interface ReallocableCollection extends StaticCollection {
   /**
   * Update the capacity of this collection by reallocating it.
   *
