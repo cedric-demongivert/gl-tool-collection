@@ -1,5 +1,4 @@
-import { PackCircularBuffer } from '../../src/circular/PackCircularBuffer'
-import { ArrayPack } from '../../src/pack/ArrayPack'
+import { PackCircularBuffer } from '@library/circular/PackCircularBuffer'
 
 import { isCircularBuffer } from './CircularBuffer'
 import { isReallocableCircularBuffer } from './ReallocableCircularBuffer'
@@ -21,15 +20,6 @@ function randomString () : string {
 }
 
 describe('#PackCircularBuffer', function () {
-  isCircularBuffer<string>(
-    (capacity : number) => new PackCircularBuffer<string>(
-      new ArrayPack<string>(capacity)
-    )
-  ).of(randomString)
-
-  isReallocableCircularBuffer<string>(
-    (capacity : number) => new PackCircularBuffer<string>(
-      new ArrayPack<string>(capacity)
-    )
-  ).of(randomString)
+  isCircularBuffer(PackCircularBuffer.any)
+  isReallocableCircularBuffer(PackCircularBuffer.any)
 })

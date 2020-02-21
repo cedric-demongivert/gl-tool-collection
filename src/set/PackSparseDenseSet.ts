@@ -1,30 +1,12 @@
-import { Pack } from '../pack/Pack'
-import { Packs } from '../pack/Packs'
-import { RandomAccessIterator } from '../iterator/RandomAccessIterator'
-import { SparseDenseSet } from './SparseDenseSet'
-import { ReallocableSet } from './ReallocableSet'
+import { Pack } from '@library/pack/Pack'
+import { BidirectionalIterator } from '@library/iterator/BidirectionalIterator'
+import { SparseDenseSet } from '@library/set/SparseDenseSet'
+import { Set } from '@library/set/Set'
+import { Sequence } from '@library/Sequence'
+import { SequenceView } from '@library/view/SequenceView'
 
-export class PackSparseDenseSet
-  implements SparseDenseSet,
-             ReallocableSet<number>
+export class PackSparseDenseSet implements SparseDenseSet, Sequence<number>
 {
-  /**
-  * Return a copy of a given sparse set.
-  *
-  * @param toCopy - A sparse set to copy.
-  */
-  static copy (toCopy : PackSparseDenseSet) : PackSparseDenseSet {
-    const copy = new PackSparseDenseSet(
-      Packs.like(toCopy._dense, toCopy.capacity)
-    )
-
-    for (let index = 0, size = toCopy.size; index < size; ++index) {
-      copy.add(toCopy.get(index))
-    }
-
-    return copy
-  }
-
   private _sparse: Pack<number>
   private _dense: Pack<number>
 
@@ -34,50 +16,8 @@ export class PackSparseDenseSet
   * @param dense - An empty dense number pack.
   */
   public constructor (dense : Pack<number>) {
-    this._sparse = Packs.like(dense, dense.capacity)
+    this._sparse = dense.clone()
     this._dense = dense
-  }
-
-  /**
-  * @see Collection.isRandomlyAccessible
-  */
-  public get isRandomlyAccessible () : boolean {
-    return true
-  }
-
-  /**
-  * @see Collection.isSequentiallyAccessible
-  */
-  public get isSequentiallyAccessible () : boolean {
-    return false
-  }
-
-  /**
-  * @see Collection.isSet
-  */
-  public get isSet () : boolean {
-    return true
-  }
-
-  /**
-  * @see Collection.isStatic
-  */
-  public get isStatic () : boolean {
-    return true
-  }
-
-  /**
-  * @see Collection.isReallocable
-  */
-  public get isReallocable () : boolean {
-    return true
-  }
-
-  /**
-  * @see Collection.isSequence
-  */
-  public get isSequence () : boolean {
-    return false
   }
 
   /**
@@ -103,7 +43,7 @@ export class PackSparseDenseSet
   }
 
   /**
-  * @see Collection.indexOf
+  * @see Sequence.indexOf
   */
   public indexOf (element : number) : number {
     const index : number = this._sparse.get(element)
@@ -116,7 +56,7 @@ export class PackSparseDenseSet
   }
 
   /**
-  * @see MutableCollection.add
+  * @see MutableSet.add
   */
   public add (element : number) : void {
     const index : number = this._sparse.get(element)
@@ -128,7 +68,7 @@ export class PackSparseDenseSet
   }
 
   /**
-  * @see MutableCollection.delete
+  * @see MutableSet.delete
   */
   public delete (element : number) : void {
     const index : number = this._sparse.get(element)
@@ -141,14 +81,49 @@ export class PackSparseDenseSet
   }
 
   /**
-  * @see Collection.get
+  * @see Sequence.get
   */
   public get (index : number) : number {
     return this._dense.get(index)
   }
 
   /**
-  * @see StaticCollection.reallocate
+  * @see MutableSet.copy
+  */
+  public copy (toCopy : Set<number>) : void {
+    let max : number = 0
+
+    for (let value of toCopy) {
+      max = Math.max(value, max)
+    }
+
+    if (max > this.capacity) {
+      this.reallocate(max + 1)
+    }
+
+    this.clear()
+
+    for (let value of toCopy) {
+      this.add(value)
+    }
+  }
+
+  /**
+  * @see Collection.clone
+  */
+  public clone () : PackSparseDenseSet {
+    const copy : PackSparseDenseSet = new PackSparseDenseSet(
+      this._dense.clone()
+    )
+
+    copy._dense.copy(this._dense)
+    copy._sparse.copy(this._sparse)
+
+    return copy
+  }
+
+  /**
+  * @see ReallocableCollection.reallocate
   */
   public reallocate (capacity : number) : void {
     const oldDense : Pack<number> = this._dense
@@ -165,7 +140,7 @@ export class PackSparseDenseSet
   }
 
   /**
-  * @see StaticCollection.fit
+  * @see ReallocableCollection.fit
   */
   public fit () : void {
     const max : number = this.max()
@@ -210,30 +185,51 @@ export class PackSparseDenseSet
   }
 
   /**
-  * @see MutableCollection.clear
+  * @see MutableSet.clear
   */
   public clear () : void {
     this._dense.clear()
   }
 
   /**
-  * @see Collection.first
+  * @see Sequence.first
   */
-  public first () : number {
-    return this._dense.first()
+  public get first () : number {
+    return this._dense.first
   }
 
   /**
-  * @see Collection.last
+  * @see Sequence.firstIndex
   */
-  public last () : number {
-    return this._dense.last()
+  public get firstIndex () : number {
+    return this._dense.firstIndex
+  }
+
+  /**
+  * @see Sequence.last
+  */
+  public get last () : number {
+    return this._dense.last
+  }
+
+  /**
+  * @see Sequence.first
+  */
+  public get lastIndex () : number {
+    return this._dense.lastIndex
+  }
+
+  /**
+  * @see Collection.view
+  */
+  public view () : Sequence<number> {
+    return SequenceView.wrap(this)
   }
 
   /**
   * @see Collection.iterator
   */
-  public iterator () : RandomAccessIterator<number> {
+  public iterator () : BidirectionalIterator<number> {
     return this._dense.iterator()
   }
 
@@ -253,7 +249,7 @@ export class PackSparseDenseSet
     if (other == null) return false
     if (other === this) return true
 
-    if (other.isSet) {
+    if (other instanceof PackSparseDenseSet) {
       if (other.size !== this._dense.size) return false
 
       for (let index = 0, length = other.size; index < length; ++index) {
@@ -264,5 +260,77 @@ export class PackSparseDenseSet
     }
 
     return false
+  }
+}
+
+export namespace PackSparseDenseSet {
+  /**
+  * Return a copy of a given sparse set.
+  *
+  * @param toCopy - A sparse set to copy.
+  */
+  export function copy (toCopy : PackSparseDenseSet) : PackSparseDenseSet {
+    return toCopy == null ? null : toCopy.clone()
+  }
+
+  /**
+  * Instantiate a uint32 sparse-dense set.
+  *
+  * @param capacity - Capacity of the sparse-dense set to instantiate.
+  *
+  * @return A new sparse-dense set of the given capacity.
+  */
+  export function uint32 (capacity : number) : PackSparseDenseSet {
+    return new PackSparseDenseSet(Pack.uint32(capacity))
+  }
+
+  /**
+  * Instantiate a uint16 sparse-dense set.
+  *
+  * @param capacity - Capacity of the sparse-dense set to instantiate.
+  *
+  * @return A new sparse-dense set of the given capacity.
+  */
+  export function uint16 (capacity : number) : PackSparseDenseSet {
+    return new PackSparseDenseSet(Pack.uint16(capacity))
+  }
+
+  /**
+  * Instantiate a uint8 sparse-dense set.
+  *
+  * @param capacity - Capacity of the sparse-dense set to instantiate.
+  *
+  * @return A new sparse-dense set of the given capacity.
+  */
+  export function uint8 (capacity : number) : PackSparseDenseSet {
+    return new PackSparseDenseSet(Pack.uint8(capacity))
+  }
+
+  /**
+  * Instantiate an array sparse-dense set.
+  *
+  * @param capacity - Capacity of the sparse-dense set to instantiate.
+  *
+  * @return A new sparse-dense set of the given capacity.
+  */
+  export function any (capacity : number) : PackSparseDenseSet {
+    return new PackSparseDenseSet(Pack.any(capacity))
+  }
+
+  /**
+  * Instantiate a sparse-dense set that can store numbers up to the given value.
+  *
+  * @param capacity - Maximum number to be able to store into the resulting sparse-dense set.
+  *
+  * @return A new sparse-dense set that can store numbers up to the given value.
+  */
+  export function upTo (capacity : number) : PackSparseDenseSet {
+    if (capacity <= 0xff) {
+      return new PackSparseDenseSet(Pack.uint8(capacity))
+    } else if (capacity <= 0xffff) {
+      return new PackSparseDenseSet(Pack.uint16(capacity))
+    } else {
+      return new PackSparseDenseSet(Pack.uint32(capacity))
+    }
   }
 }

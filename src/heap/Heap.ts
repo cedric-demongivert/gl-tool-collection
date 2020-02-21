@@ -1,16 +1,13 @@
-import { Sequence } from '../Sequence'
-import { Comparator } from '../Comparator'
+import { Sequence } from '@library/Sequence'
+import { Comparator } from '@library/Comparator'
+import { PackHeap } from '@library/heap/PackHeap'
+import { Pack } from '@library/pack/Pack'
 
-export interface Heap<Value> extends Sequence<Value> {
+export interface Heap<Element> extends Sequence<Element> {
   /**
   * @return The comparator used by this heap.
   */
-  readonly comparator : Comparator<Value, Value>
-
-  /**
-  * @return True if this object is a heap.
-  */
-  readonly isHeap : boolean
+  readonly comparator : Comparator<Element, Element>
 
   /**
   * Compare the content of two cell of the heap.
@@ -27,7 +24,7 @@ export interface Heap<Value> extends Sequence<Value> {
   *
   * @param value - A value to add into the heap.
   */
-  push (value : Value) : void
+  push (value : Element) : void
 
   /**
   * Remove a value from the heap.
@@ -41,10 +38,95 @@ export interface Heap<Value> extends Sequence<Value> {
   *
   * @return The greatest element of the heap.
   */
-  next () : Value
+  next () : Element
 
   /**
   * Empty this heap of its elements.
   */
   clear () : void
+
+  /**
+  * @see Collection.clone
+  */
+  clone () : Heap<Element>
+}
+
+export namespace Heap {
+  function defaultNumberComparator (a : number, b : number) : number {
+    return a - b
+  }
+
+  export function copy <T> (pack : Heap<T>) : Heap<T> {
+    return pack == null ? null : pack.clone()
+  }
+
+  export function any <T> (
+    capacity : number,
+    comparator : Comparator<T, T>
+  ) : PackHeap<T> {
+    return new PackHeap<T>(Pack.any(capacity), comparator)
+  }
+
+  export function uint8 (
+    capacity : number,
+    comparator : Comparator<number, number> = defaultNumberComparator
+  ) : PackHeap<number> {
+    return new PackHeap<number>(Pack.uint8(capacity), comparator)
+  }
+
+  export function uint16 (
+    capacity : number,
+    comparator : Comparator<number, number> = defaultNumberComparator
+  ) : PackHeap<number> {
+    return new PackHeap<number>(Pack.uint16(capacity), comparator)
+  }
+
+  export function uint32 (
+    capacity : number,
+    comparator : Comparator<number, number> = defaultNumberComparator
+  ) : PackHeap<number> {
+    return new PackHeap<number>(Pack.uint32(capacity), comparator)
+  }
+
+  export function int8 (
+    capacity : number,
+    comparator : Comparator<number, number> = defaultNumberComparator
+  ) : PackHeap<number> {
+    return new PackHeap<number>(Pack.int8(capacity), comparator)
+  }
+
+  export function int16 (
+    capacity : number,
+    comparator : Comparator<number, number> = defaultNumberComparator
+  ) : PackHeap<number> {
+    return new PackHeap<number>(Pack.int16(capacity), comparator)
+  }
+
+  export function int32 (
+    capacity : number,
+    comparator : Comparator<number, number> = defaultNumberComparator
+  ) : PackHeap<number> {
+    return new PackHeap<number>(Pack.int32(capacity), comparator)
+  }
+
+  export function float32 (
+    capacity : number,
+    comparator : Comparator<number, number> = defaultNumberComparator
+  ) : PackHeap<number> {
+    return new PackHeap<number>(Pack.float32(capacity), comparator)
+  }
+
+  export function float64 (
+    capacity : number,
+    comparator : Comparator<number, number> = defaultNumberComparator
+  ) : PackHeap<number> {
+    return new PackHeap<number>(Pack.float64(capacity), comparator)
+  }
+
+  export function fromPack <T> (
+    pack : Pack<T>,
+    comparator : Comparator<T, T>
+  ) : PackHeap<T> {
+    return new PackHeap<T>(pack, comparator)
+  }
 }

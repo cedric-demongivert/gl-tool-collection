@@ -9,6 +9,8 @@ import { PackIterator } from '@library/pack/PackIterator'
 import { BufferPack } from '@library/pack/BufferPack'
 import { ArrayPack } from '@library/pack/ArrayPack'
 
+import { Sequence } from '@library/Sequence'
+
 export interface Pack<Element>
          extends MutableSequence<Element>, ReallocableCollection
 {
@@ -24,16 +26,26 @@ export interface Pack<Element>
   * @param size - Number of elements to sort.
   * @param comparator - Comparison order to use.
   */
-  subsort (
-    offset : number,
-    size : number,
-    comparator : Comparator<Element, Element>
-  ) : void
+  subsort (offset : number, size : number, comparator : Comparator<Element, Element>) : void
+
+  /**
+  * Allocate a new empty pack similar to this one with the given capacity.
+  *
+  * @param capacity - The capacity of the new pack to allocate.
+  *
+  * @return A new empty pack similar to this one.
+  */
+  allocate (capacity : number) : Pack<Element>
 
   /**
   * @see Collection.clone
   */
   clone () : Pack<Element>
+
+  /**
+  * @see Collection.view
+  */
+  view () : Sequence<Element>
 
   /**
   * @see Collection.iterator
@@ -51,6 +63,28 @@ export namespace Pack {
   */
   export function copy <T> (toCopy : Pack<T>) : Pack<T> {
     return toCopy == null ? null : toCopy.clone()
+  }
+
+  /**
+  * Return the default value used by the given pack instance.
+  *
+  * @param pack - A pack instance.
+  *
+  * @return The default value used by the given pack instance.
+  */
+  export function defaultValue <T> (pack : Pack<T>) : T {
+    return (Object.getPrototypeOf(pack).constructor as any).DEFAULT_VALUE
+  }
+
+  /**
+  * Instantiate a new pack that wrap an array of the given type of instance.
+  *
+  * @param capacity - Capacity of the array to allocate.
+  *
+  * @return A new pack that wrap an array of the given type of instance.
+  */
+  export function like <T> (pack : Pack<T>) : Pack<T> {
+    return ArrayPack.allocate(capacity)
   }
 
   /**

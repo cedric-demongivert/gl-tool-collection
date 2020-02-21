@@ -1,28 +1,14 @@
-import { UintArray } from '../native/UintArray'
-import * as UintArrays from '../native/UintArrays'
-import { RandomAccessIterator } from '../iterator/RandomAccessIterator'
-import { ReallocableSet } from './ReallocableSet'
+import { UnsignedIntegerBuffer } from '@library/native/UnsignedIntegerBuffer'
+import { ReallocableCollection } from '@library/ReallocableCollection'
+import { Set } from '@library/set/Set'
+import { MutableSet } from '@library/set/MutableSet'
+import { IdentifierSetIterator } from '@library/set/IdentifierSetIterator'
+import { SequenceView } from '@library/view/SequenceView'
+import { Sequence } from '@library/Sequence'
 
-export class IdentifierSet
-  implements ReallocableSet<number>
-{
-  /**
-  * Return a copy of a given sparse set.
-  *
-  * @param toCopy - A sparse set to copy.
-  */
-  static copy (toCopy : IdentifierSet) : IdentifierSet {
-    const copy = new IdentifierSet(toCopy.capacity)
-
-    for (let index = 0, size = toCopy.size; index < size; ++index) {
-      copy.add(toCopy.get(index))
-    }
-
-    return copy
-  }
-
-  private _sparse : UintArray
-  private _dense : UintArray
+export class IdentifierSet implements MutableSet<number>, Sequence<number>, ReallocableCollection {
+  private _sparse : UnsignedIntegerBuffer
+  private _dense : UnsignedIntegerBuffer
   private _size : number
 
   /**
@@ -31,56 +17,14 @@ export class IdentifierSet
   * @param capacity - Number of identifier to allocate.
   */
   public constructor (capacity : number) {
-    this._sparse = UintArrays.upTo(capacity - 1, capacity)
-    this._dense = UintArrays.upTo(capacity - 1, capacity)
+    this._sparse = UnsignedIntegerBuffer.upTo(capacity - 1, capacity)
+    this._dense = UnsignedIntegerBuffer.upTo(capacity - 1, capacity)
     this._size = 0
 
     for (let index = 0; index < capacity; ++index) {
       this._sparse[index] = index
       this._dense[index] = index
     }
-  }
-
-  /**
-  * @see Collection.isRandomlyAccessible
-  */
-  public get isRandomlyAccessible () : boolean {
-    return true
-  }
-
-  /**
-  * @see Collection.isSequentiallyAccessible
-  */
-  public get isSequentiallyAccessible () : boolean {
-    return false
-  }
-
-  /**
-  * @see Collection.isSet
-  */
-  public get isSet () : boolean {
-    return true
-  }
-
-  /**
-  * @see Collection.isStatic
-  */
-  public get isStatic () : boolean {
-    return true
-  }
-
-  /**
-  * @see Collection.isReallocable
-  */
-  public get isReallocable () : boolean {
-    return true
-  }
-
-  /**
-  * @see Collection.isSequence
-  */
-  public get isSequence () : boolean {
-    return false
   }
 
   /**
@@ -105,7 +49,7 @@ export class IdentifierSet
   }
 
   /**
-  * @see Collection.indexOf
+  * @see Sequence.indexOf
   */
   public indexOf (element : number) : number {
     const index : number = this._sparse[element]
@@ -113,7 +57,7 @@ export class IdentifierSet
   }
 
   /**
-  * @see MutableCollection.add
+  * @see MutableSet.add
   */
   public add (element : number) : void {
     const index : number = this._sparse[element]
@@ -134,7 +78,7 @@ export class IdentifierSet
   }
 
   /**
-  * @see MutableCollection.delete
+  * @see MutableSet.delete
   */
   public delete (element : number) : void {
     const index : number = this._sparse[element]
@@ -152,7 +96,7 @@ export class IdentifierSet
   }
 
   /**
-  * @see Collection.get
+  * @see Sequence.get
   */
   public get (index : number) : number {
     return this._dense[index]
@@ -162,11 +106,11 @@ export class IdentifierSet
   * @see StaticCollection.reallocate
   */
   public reallocate (capacity : number) : void {
-    const oldDense : UintArray = this._dense
+    const oldDense : UnsignedIntegerBuffer = this._dense
     const oldSize : number = this._size
 
-    this._dense = UintArrays.upTo(capacity - 1, capacity)
-    this._sparse = UintArrays.upTo(capacity - 1, capacity)
+    this._dense = UnsignedIntegerBuffer.upTo(capacity - 1, capacity)
+    this._sparse = UnsignedIntegerBuffer.upTo(capacity - 1, capacity)
     this._size = 0
 
     for (let index = 0; index < capacity; ++index) {
@@ -234,34 +178,79 @@ export class IdentifierSet
   }
 
   /**
-  * @see MutableCollection.clear
+  * @see MutableSet.clear
   */
   public clear () : void {
     this._size = 0
   }
 
   /**
-  * @see Collection.first
+  * @see Sequence.first
   */
-  public first () : number {
+  public get first () : number {
     return this._dense[0]
   }
 
   /**
-  * @see Collection.last
+  * @see Sequence.firstIndex
   */
-  public last () : number {
+  public get firstIndex () : number {
+    return 0
+  }
+
+  /**
+  * @see Sequence.last
+  */
+  public get last () : number {
     return this._dense[this._size - 1]
+  }
+
+  /**
+  * @see Sequence.lastIndex
+  */
+  public get lastIndex () : number {
+    return this._size - 1
   }
 
   /**
   * @see Collection.iterator
   */
-  public iterator () : RandomAccessIterator<number> {
-    const iterator : RandomAccessIterator<number> =  new RandomAccessIterator()
-    iterator.reset(this)
+  public iterator () : IdentifierSetIterator {
+    const iterator : IdentifierSetIterator =  new IdentifierSetIterator()
+
+    iterator.identifierSet = this
+    iterator.index = 0
 
     return iterator
+  }
+
+  /**
+  * @see Set.copy
+  */
+  public copy (toCopy : Set<number>) : void {
+    this.clear()
+
+    for (const element of toCopy) {
+      this.add(element)
+    }
+  }
+
+  /**
+  * @see Collection.view
+  */
+  public view () : Sequence<number> {
+    return SequenceView.wrap(this)
+  }
+
+  /**
+  * @see Collection.clone
+  */
+  public clone () : IdentifierSet {
+    const result : IdentifierSet = IdentifierSet.allocate(this._dense.length)
+
+    result.copy(this)
+
+    return result
   }
 
   /**
@@ -291,5 +280,15 @@ export class IdentifierSet
     }
 
     return false
+  }
+}
+
+export namespace IdentifierSet {
+  export function copy (toCopy : IdentifierSet) : IdentifierSet {
+    return toCopy == null ? null : toCopy.clone()
+  }
+
+  export function allocate (capacity : number) : IdentifierSet {
+    return new IdentifierSet(capacity)
   }
 }

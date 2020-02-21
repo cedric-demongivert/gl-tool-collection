@@ -1,6 +1,5 @@
 import { CollectionIterator } from '@library/iterator/CollectionIterator'
 import { Size } from '@library/Size'
-import { Comparator } from '@library/Comparator'
 
 /**
 * A collection of element.
@@ -51,6 +50,11 @@ export interface Collection<Element> extends Iterable<Element> {
   * @return A shallow copy of this collection.
   */
   clone () : Collection<Element>
+
+  /**
+  * @return A readonly instance of this collection.
+  */
+  view () : Collection<Element>
 
   /**
   * @return An iterator over this collection.

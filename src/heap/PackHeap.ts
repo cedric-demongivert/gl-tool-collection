@@ -1,33 +1,16 @@
-import { RandomlyAccessibleCollection } from '../RandomlyAccessibleCollection'
-import { RandomAccessIterator } from '../iterator/RandomAccessIterator'
-import { Pack } from '../pack/Pack'
-import { Packs } from '../pack/Packs'
-import { Comparator } from '../Comparator'
-import { ReallocableHeap } from './ReallocableHeap'
+import { ReallocableCollection } from '@library/ReallocableCollection'
+import { Pack } from '@library/pack/Pack'
+import { Comparator } from '@library/Comparator'
+import { Heap } from '@library/heap/Heap'
+import { BidirectionalIterator } from '@library/iterator/BidirectionalIterator'
+import { SequenceView } from '@library/view/SequenceView'
+import { Sequence } from '@library/Sequence'
 
 /**
 * A heap based uppon a pack collection.
 */
-export class PackHeap<Element>
-  implements ReallocableHeap<Element>,
-             RandomlyAccessibleCollection<Element>
+export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, Sequence<Element>
 {
-  /**
-  * Copy an existing heap instance.
-  *
-  * @param toCopy - An heap instance to copy.
-  *
-  * @return A copy of the given heap instance.
-  */
-  public static copy <Element> (
-    toCopy : PackHeap<Element>
-  ) : PackHeap<Element> {
-    return new PackHeap<Element>(
-      Packs.copy(toCopy._elements),
-      toCopy._comparator
-    )
-  }
-
   private _elements : Pack<Element>
   private _comparator : Comparator<Element, Element>
 
@@ -43,48 +26,6 @@ export class PackHeap<Element>
   ) {
     this._comparator = comparator
     this._elements = elements
-  }
-
-  /**
-  * @see Collection.isRandomlyAccessible
-  */
-  public get isRandomlyAccessible () : boolean {
-    return true
-  }
-
-  /**
-  * @see Collection.isSequentiallyAccessible
-  */
-  public get isSequentiallyAccessible () : boolean {
-    return false
-  }
-
-  /**
-  * @see Collection.isSet
-  */
-  public get isSet () : boolean {
-    return false
-  }
-
-  /**
-  * @see Collection.isStatic
-  */
-  public get isStatic () : boolean {
-    return true
-  }
-
-  /**
-  * @see Collection.isReallocable
-  */
-  public get isReallocable () : boolean {
-    return true
-  }
-
-  /**
-  * @see Collection.isSequence
-  */
-  public get isSequence () : boolean {
-    return true
   }
 
   /**
@@ -181,14 +122,14 @@ export class PackHeap<Element>
   }
 
   /**
-  * @see Collection#get
+  * @see Sequence#get
   */
   public get (index : number) : Element {
     return this._elements.get(index)
   }
 
   /**
-  * @see Collection#indexOf
+  * @see Sequence#indexOf
   */
   public indexOf (value : Element) : number {
     return this._elements.indexOf(value)
@@ -202,23 +143,37 @@ export class PackHeap<Element>
   }
 
   /**
-  * @see Collection.first
+  * @see Sequence.first
   */
-  public first () : Element {
-    return this._elements.first()
+  public get first () : Element {
+    return this._elements.first
   }
 
   /**
-  * @see Collection.last
+  * @see Sequence.firstIndex
   */
-  public last () : Element {
-    return this._elements.last()
+  public get firstIndex () : number {
+    return this._elements.firstIndex
+  }
+
+  /**
+  * @see Sequence.last
+  */
+  public get last () : Element {
+    return this._elements.last
+  }
+
+  /**
+  * @see Sequence.lastIndex
+  */
+  public get lastIndex () : number {
+    return this._elements.lastIndex
   }
 
   /**
   * @see Collection.iterator
   */
-  public iterator () : RandomAccessIterator<Element> {
+  public iterator () : BidirectionalIterator<Element> {
     return this._elements.iterator()
   }
 
@@ -244,20 +199,6 @@ export class PackHeap<Element>
   }
 
   /**
-  * @see Collection#get isCollection
-  */
-  public get isCollection () : boolean {
-    return true
-  }
-
-  /**
-  * @see Heap#get isHeap
-  */
-  public get isHeap () : boolean {
-    return true
-  }
-
-  /**
   * @see ReallocableCollection#reallocate
   */
   public reallocate (capacity : number) : void {
@@ -276,6 +217,23 @@ export class PackHeap<Element>
   */
   public clear () : void {
     this._elements.clear()
+  }
+
+  /**
+  * @see Collection#clone
+  */
+  public clone () : PackHeap<Element> {
+    return new PackHeap<Element>(
+      Pack.copy(this._elements),
+      this._comparator
+    )
+  }
+
+  /**
+  * @see Collection.view
+  */
+  public view () : Sequence<Element> {
+    return SequenceView.wrap(this)
   }
 
   /**
@@ -305,5 +263,18 @@ export class PackHeap<Element>
   */
   public * [Symbol.iterator] () {
     yield * this._elements
+  }
+}
+
+export namespace PackHeap {
+  /**
+  * Copy an existing heap instance.
+  *
+  * @param toCopy - An heap instance to copy.
+  *
+  * @return A copy of the given heap instance.
+  */
+  export function copy <Element> (toCopy : PackHeap<Element>) : PackHeap<Element> {
+    return toCopy == null ? null : toCopy.clone()
   }
 }

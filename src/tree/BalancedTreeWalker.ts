@@ -1,11 +1,10 @@
-import { Pack } from '../pack/Pack'
-import { Packs } from '../pack/Packs'
-import { View } from '../View'
+import { Pack } from '@library/pack/Pack'
+import { Sequence } from '@library/Sequence'
 
-import { BalancedTree } from './BalancedTree'
-import { BalancedTreeElement } from './BalancedTreeElement'
-import { BalancedTreeNode } from './BalancedTreeNode'
-import { BalancedTreeLeaf } from './BalancedTreeLeaf'
+import { BalancedTree } from '@library/tree/BalancedTree'
+import { BalancedTreeElement } from '@library/tree/BalancedTreeElement'
+import { BalancedTreeNode } from '@library/tree/BalancedTreeNode'
+import { BalancedTreeLeaf } from '@library/tree/BalancedTreeLeaf'
 
 export class BalancedTreeWalker<Element>
 {
@@ -14,16 +13,16 @@ export class BalancedTreeWalker<Element>
   private _tree : BalancedTree<Element>
   private _path : Pack<BalancedTreeElement<Element>>
   private _indexes : Pack<number>
-  private _indexesView : View<number>
+  private _indexesView : Sequence<number>
 
   /**
   * Instanciate a new balanced tree walker.
   */
   public constructor () {
     this._tree = null
-    this._path = Packs.any(16)
-    this._indexes = Packs.uint32(16)
-    this._indexesView = View.wrap(this._indexes)
+    this._path = Pack.any(16)
+    this._indexes = Pack.uint32(16)
+    this._indexesView = this._indexes.view()
   }
 
   /**
@@ -50,7 +49,7 @@ export class BalancedTreeWalker<Element>
   /**
   * @return The location of this walker as an array of index.
   */
-  public get indexes () : View<number> {
+  public get indexes () : Sequence<number> {
     return this._indexesView
   }
 
@@ -121,21 +120,21 @@ export class BalancedTreeWalker<Element>
   * @return True if the current element is a leaf.
   */
   public isLeaf () : boolean {
-    return this._tree && this._path.last() instanceof BalancedTreeLeaf
+    return this._tree && this._path.last instanceof BalancedTreeLeaf
   }
 
   /**
   * @return True if the current element is a node.
   */
   public isNode () : boolean {
-    return this._tree && this._path.last() instanceof BalancedTreeNode
+    return this._tree && this._path.last instanceof BalancedTreeNode
   }
 
   /**
   * @return True if the current element is the root element of the tree.
   */
   public isRoot () : boolean {
-    return this._tree && this._path.last().parent == null
+    return this._tree && this._path.last.parent == null
   }
 
   /**
@@ -166,8 +165,8 @@ export class BalancedTreeWalker<Element>
   * @return True if there is another key next to the current one.
   */
   public hasNext () : boolean {
-    const index : number = this._indexes.last()
-    const current : BalancedTreeElement<Element> = this._path.last()
+    const index : number = this._indexes.last
+    const current : BalancedTreeElement<Element> = this._path.last
 
     return index < current.keys.size
   }
@@ -184,12 +183,12 @@ export class BalancedTreeWalker<Element>
   public last () : void {
     this._indexes.set(
       this._indexes.size - 1,
-      this._path.last().keys.size
+      this._path.last.keys.size
     )
   }
 
   public isOnLastElement () : boolean {
-    return this._indexes.last() === this._path.last().keys.size
+    return this._indexes.last === this._path.last.keys.size
   }
 
   public first () : void {
@@ -197,7 +196,7 @@ export class BalancedTreeWalker<Element>
   }
 
   public isOnFirstElement () : boolean {
-    return this._indexes.last() === 0
+    return this._indexes.last === 0
   }
 
   /**
@@ -220,7 +219,7 @@ export class BalancedTreeWalker<Element>
   * @return True if there is another key previous to the current one.
   */
   public hasPrevious () : boolean {
-    const index : number = this._indexes.last()
+    const index : number = this._indexes.last
 
     return index > 0
   }
@@ -236,8 +235,8 @@ export class BalancedTreeWalker<Element>
   * @return True if this walker can enter into another children.
   */
   public canEnter () : boolean {
-    const current : BalancedTreeElement<Element> = this._path.last()
-    const index : number = this._indexes.last()
+    const current : BalancedTreeElement<Element> = this._path.last
+    const index : number = this._indexes.last
 
     return current instanceof BalancedTreeNode &&
            index < current.keys.size + 1
@@ -252,7 +251,7 @@ export class BalancedTreeWalker<Element>
     const path : Pack<BalancedTreeElement<Element>> = this._path
     const indexes : Pack<number> = this._indexes
 
-    const current : BalancedTreeElement<Element> = path.last()
+    const current : BalancedTreeElement<Element> = path.last
     indexes.pop()
 
     if (current instanceof BalancedTreeNode) {
@@ -269,8 +268,8 @@ export class BalancedTreeWalker<Element>
   * Enter into the selected child of the current element.
   */
   public enter () : void {
-    const current : BalancedTreeElement<Element> = this._path.last()
-    const index : number = this._indexes.last()
+    const current : BalancedTreeElement<Element> = this._path.last
+    const index : number = this._indexes.last
 
     const next : BalancedTreeElement<Element> = (
       (current as BalancedTreeNode<Element>).children.get(index)
@@ -284,14 +283,14 @@ export class BalancedTreeWalker<Element>
   * @return The current key index selected by this tree walker.
   */
   public getIndex () : number {
-    return this._indexes.last()
+    return this._indexes.last
   }
 
   /**
   * @return The number of keys into the current element.
   */
   public getSize () : number {
-    return this._path.last().keys.size + 1
+    return this._path.last.keys.size + 1
   }
 
   /**
@@ -300,8 +299,8 @@ export class BalancedTreeWalker<Element>
   * @return The current key.
   */
   public key () : Element | Symbol {
-    const index : number = this._indexes.last()
-    const current : BalancedTreeElement<Element> = this._path.last()
+    const index : number = this._indexes.last
+    const current : BalancedTreeElement<Element> = this._path.last
 
     if (index === 0) {
       return BalancedTreeWalker.POSITIVE_INFINITY
@@ -318,7 +317,7 @@ export class BalancedTreeWalker<Element>
   * @return True if this node contains the given element.
   */
   public has (element : Element) : boolean {
-    return this._path.last().has(element)
+    return this._path.last.has(element)
   }
 
   /**
@@ -329,7 +328,7 @@ export class BalancedTreeWalker<Element>
   * @return The index of the given element into the current node.
   */
   public indexOf (element : Element) : number {
-    return this._path.last().indexOf(element) + 1
+    return this._path.last.indexOf(element) + 1
   }
 
   /**
@@ -341,7 +340,7 @@ export class BalancedTreeWalker<Element>
 
     if (other instanceof BalancedTreeWalker) {
       return other.tree === this._tree &&
-             other._path.last() === this._path.last() &&
+             other._path.last === this._path.last &&
              other._indexes.equals(this._indexes)
     }
 

@@ -1,14 +1,13 @@
-import { Pack } from '../pack/Pack'
-import { Packs } from '../pack/Packs'
-import { View } from '../View'
-import { bissect } from '../bissect'
-import { Comparator } from '../Comparator'
-import { BalancedTree } from './BalancedTree'
-import { BalancedTreeNode } from './BalancedTreeNode'
+import { Pack } from '@library/pack/Pack'
+import { Sequence } from '@library/Sequence'
+import { bissect } from '@library/algorithm/bissect'
+import { Comparator } from '@library/Comparator'
+import { BalancedTree } from '@library/tree/BalancedTree'
+import { BalancedTreeNode } from '@library/tree/BalancedTreeNode'
 
 export class BalancedTreeElement<Element> {
   protected _keys : Pack<Element>
-  private _keysView : View<Element>
+  private _keysView : Sequence<Element>
   private _tree : BalancedTree<Element>
   private _parent : BalancedTreeNode<Element>
 
@@ -20,8 +19,8 @@ export class BalancedTreeElement<Element> {
   public constructor (tree : BalancedTree<Element>) {
     this._tree = tree
     this._parent = null
-    this._keys = Packs.any(tree.order - 1)
-    this._keysView = View.wrap(this._keys)
+    this._keys = Pack.any(tree.order - 1)
+    this._keysView = this._keys.view()
   }
 
   /**
@@ -34,7 +33,7 @@ export class BalancedTreeElement<Element> {
   /**
   * @return A view over each keys into this element.
   */
-  public get keys() : View<Element> {
+  public get keys() : Sequence<Element> {
     return this._keysView
   }
 

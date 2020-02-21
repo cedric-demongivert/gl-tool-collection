@@ -1,8 +1,7 @@
-import { BidirectionalIterator } from '../iterator/BidirectionalIterator'
-import { Iterator } from '../iterator/Iterator'
-import { START, END } from '../iterator/symbols'
-import { BalancedTree } from './BalancedTree'
-import { BalancedTreeWalker } from './BalancedTreeWalker'
+import { BidirectionalIterator } from '@library/iterator/BidirectionalIterator'
+import { CollectionIterator } from '@library/iterator/CollectionIterator'
+import { BalancedTree } from '@library/tree/BalancedTree'
+import { BalancedTreeWalker } from '@library/tree/BalancedTreeWalker'
 
 export class BalancedTreeIterator<Element> implements BidirectionalIterator<Element> {
   private _walker : BalancedTreeWalker<Element>
@@ -16,30 +15,31 @@ export class BalancedTreeIterator<Element> implements BidirectionalIterator<Elem
   }
 
   /**
-  * @see Iterator.move
+  * @see CollectionIterator.collection
   */
-  public move (iterator : Iterator<Element> | Symbol) : void {
-    if (iterator === START) {
-      this.start()
-    } else if (iterator === END) {
-      this.end()
-    } else if (iterator instanceof BalancedTreeIterator) {
+  public collection () : BalancedTree<Element> {
+    return this._walker.tree
+  }
+
+  /**
+  * @see CollectionIterator.move
+  */
+  public move (iterator : CollectionIterator<Element>) : void {
+    if (iterator instanceof BalancedTreeIterator) {
       this._walker.go((iterator as BalancedTreeIterator<Element>)._walker)
+    } else {
+      throw new Error(
+        'Trying to move to a location described by an unsupported type of ' +
+        'iterator'
+      )
     }
   }
 
   /**
-  * @see Iterator.get
+  * @see CollectionIterator.get
   */
   public get () : Element {
     return this._walker.key() as Element
-  }
-
-  /**
-  * @see Iterator.getCollection
-  */
-  public getCollection () : BalancedTree<Element> {
-    return this._walker.tree
   }
 
   /**
@@ -141,7 +141,23 @@ export class BalancedTreeIterator<Element> implements BidirectionalIterator<Elem
   }
 
   /**
-  * @see Iterator.equals
+  * @see BidirectionalIterator.go
+  */
+  public go (index : number) : void {
+    while (this._index > index) this.previous()
+    while (this._index < index) this.next()
+  }
+
+  public clone () : BalancedTreeIterator<Element> {
+    const result : BalancedTreeIterator<Element> = new BalancedTreeIterator(this.collection)
+
+    result.move(this)
+
+    return result
+  }
+
+  /**
+  * @see CollectionIterator.equals
   */
   public equals (other : any) : boolean {
     if (other == null) return false

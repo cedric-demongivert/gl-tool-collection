@@ -7,6 +7,8 @@ import { PackIterator } from '@library/pack/PackIterator'
 import { Pack } from '@library/pack/Pack'
 import { Sequence } from '@library/Sequence'
 
+import { SequenceView } from '@library/view/SequenceView'
+
 /**
 * A javascript array.
 *
@@ -163,11 +165,7 @@ export class ArrayPack<Element> implements Pack<Element> {
   /**
   * @see Pack.subsort
   */
-  public subsort (
-    offset : number,
-    size : number,
-    comparator : Comparator<Element, Element>
-  ) : void {
+  public subsort (offset : number, size : number, comparator : Comparator<Element, Element>) : void {
     quicksort(this, comparator, offset, size)
   }
 
@@ -279,10 +277,24 @@ export class ArrayPack<Element> implements Pack<Element> {
   }
 
   /**
+  * @see Pack.allocate
+  */
+  public allocate (capacity : number) : ArrayPack<Element> {
+    return ArrayPack.allocate(capacity)
+  }
+
+  /**
   * @see Pack.clone
   */
   public clone () : ArrayPack<Element> {
     return ArrayPack.copy(this)
+  }
+
+  /**
+  * @see Collection.view
+  */
+  public view () : Sequence<Element> {
+    return SequenceView.wrap(this)
   }
 
   /**

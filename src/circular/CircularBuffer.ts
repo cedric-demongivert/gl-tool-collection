@@ -155,9 +155,7 @@ namespace CircularBuffer {
   * @return A new pack that wrap a unsigned integer pack that can store values
   *         in range [0, maximum] and that is of the given capacity.
   */
-  export function unsignedUpTo (
-    maximum : number, capacity : number
-  ) : PackCircularBuffer<number> {
+  export function unsignedUpTo (maximum : number, capacity : number) : PackCircularBuffer<number> {
     return new PackCircularBuffer<number>(Pack.unsignedUpTo(maximum, capacity))
   }
 
@@ -171,9 +169,7 @@ namespace CircularBuffer {
   * @return A new circular buffer that wrap a signed integer pack that can store values
   *         in range [-maximum, maximum] and that is of the given capacity.
   */
-  export function signedUpTo (
-    maximum : number, capacity : number
-  ) : PackCircularBuffer<number> {
+  export function signedUpTo (maximum : number, capacity : number) : PackCircularBuffer<number> {
     return new PackCircularBuffer<number>(Pack.signedUpTo(maximum, capacity))
   }
 }

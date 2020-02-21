@@ -1,83 +1,71 @@
 /** eslint-env jest */
 
-import { Pack } from '../../src/pack/Pack'
-import { toArray } from '../../src/toArray'
+import { Pack } from '@library/pack/Pack'
 
-import { pickUnique } from '../pickUnique'
+type PackFactory<T> = (capacity : number) => Pack<T>
 
-type PackFactory<T, Result extends Pack<T>> = (capacity : number) => Result
-
-type SuiteConfiguration<T, TestedPack extends Pack<T>>  = {
-  factory: PackFactory<T, TestedPack>,
-  generator: () => T,
-  defaultValue: T,
-  copy: (toCopy : TestedPack) => TestedPack
-}
-
-export function isPack <T, TestedPack extends Pack<T>> (
-  configuration : SuiteConfiguration<T, TestedPack>
-) {
+export function isPack(instantiate : PackFactory<number>) : void{
   describe('#constructor', function () {
     it('allows to instantiate an empty pack with an initial capacity', function () {
-      const pack : TestedPack = configuration.factory(125)
+      const pack : Pack<number> = instantiate(125)
 
       expect(pack.capacity).toBe(125)
-      expect(toArray(pack)).toEqual([])
+      expect([...pack]).toEqual([])
     })
   })
 
   describe('#set size', function () {
     it('allows to expand the current size of the pack', function () {
-      const pack : TestedPack = configuration.factory(10)
+      const pack : Pack<number> = instantiate(10)
 
-      expect(toArray(pack)).toEqual([])
+      expect([...pack]).toEqual([])
       expect(pack.size).toBe(0)
 
       pack.size = 3
 
-      expect(toArray(pack)).toEqual([
-        configuration.defaultValue,
-        configuration.defaultValue,
-        configuration.defaultValue
+      expect([...pack]).toEqual([
+        Pack.defaultValue(pack),
+        Pack.defaultValue(pack),
+        Pack.defaultValue(pack)
       ])
       expect(pack.size).toBe(3)
 
       pack.size = 5
 
-      expect(toArray(pack)).toEqual([
-        configuration.defaultValue,
-        configuration.defaultValue,
-        configuration.defaultValue,
-        configuration.defaultValue,
-        configuration.defaultValue
+      expect([...pack]).toEqual([
+        Pack.defaultValue(pack),
+        Pack.defaultValue(pack),
+        Pack.defaultValue(pack),
+        Pack.defaultValue(pack),
+        Pack.defaultValue(pack)
       ])
       expect(pack.size).toBe(5)
 
       pack.size = 3
 
-      expect(toArray(pack)).toEqual([
-        configuration.defaultValue,
-        configuration.defaultValue,
-        configuration.defaultValue
+      expect([...pack]).toEqual([
+        Pack.defaultValue(pack),
+        Pack.defaultValue(pack),
+        Pack.defaultValue(pack)
       ])
       expect(pack.size).toBe(3)
     })
 
     it('expand the pack capacity if necessary', function () {
-      const pack : TestedPack = configuration.factory(2)
+      const pack : Pack<number> = instantiate(2)
 
-      expect(toArray(pack)).toEqual([])
+      expect([...pack]).toEqual([])
       expect(pack.size).toBe(0)
       expect(pack.capacity).toBe(2)
 
       pack.size = 5
 
-      expect(toArray(pack)).toEqual([
-        configuration.defaultValue,
-        configuration.defaultValue,
-        configuration.defaultValue,
-        configuration.defaultValue,
-        configuration.defaultValue
+      expect([...pack]).toEqual([
+        Pack.defaultValue(pack),
+        Pack.defaultValue(pack),
+        Pack.defaultValue(pack),
+        Pack.defaultValue(pack),
+        Pack.defaultValue(pack)
       ])
 
       expect(pack.size).toBe(5)
@@ -85,14 +73,14 @@ export function isPack <T, TestedPack extends Pack<T>> (
     })
 
     it('erase existing data', function () {
-      const pack : TestedPack = configuration.factory(10)
-      const elements : Array<T> = new Array()
+      const pack : Pack<number> = instantiate(10)
+      const elements : number[] = []
 
       for (let index = 0; index < 5; ++index) {
-        elements[index] = configuration.generator()
+        elements[index] = Math.random()
       }
 
-      expect(toArray(pack)).toEqual([])
+      expect([...pack]).toEqual([])
       expect(pack.size).toBe(0)
 
       pack.size = 5
@@ -104,12 +92,12 @@ export function isPack <T, TestedPack extends Pack<T>> (
       pack.size = 3
       pack.size = 5
 
-      expect(toArray(pack)).toEqual([
+      expect([...pack]).toEqual([
         elements[0],
         elements[1],
         elements[2],
-        configuration.defaultValue,
-        configuration.defaultValue
+        Pack.defaultValue(pack),
+        Pack.defaultValue(pack)
       ])
       expect(pack.size).toBe(5)
     })
@@ -117,73 +105,73 @@ export function isPack <T, TestedPack extends Pack<T>> (
 
   describe('#reallocate', function () {
     it('allows to expand the current capacity of the pack', function () {
-      const pack : TestedPack = configuration.factory(10)
-      const elements : Array<T> = new Array()
+      const pack : Pack<number> = instantiate(10)
+      const elements : number[] = []
 
       for (let index = 0; index < 5; ++index) {
-        elements[index] = configuration.generator()
+        elements[index] = Math.random()
         pack.push(elements[index])
       }
 
-      expect(toArray(pack)).toEqual(elements)
+      expect([...pack]).toEqual(elements)
       expect(pack.capacity).toBe(10)
       expect(pack.size).toBe(5)
 
       pack.reallocate(15)
 
-      expect(toArray(pack)).toEqual(elements)
+      expect([...pack]).toEqual(elements)
       expect(pack.capacity).toBe(15)
       expect(pack.size).toBe(5)
 
       pack.reallocate(32)
 
-      expect(toArray(pack)).toEqual(elements)
+      expect([...pack]).toEqual(elements)
       expect(pack.capacity).toBe(32)
       expect(pack.size).toBe(5)
     })
 
     it('reduce the pack capacity', function () {
-      const pack : TestedPack = configuration.factory(110)
-      const elements : Array<T> = new Array()
+      const pack : Pack<number> = instantiate(110)
+      const elements : number[] = []
 
       for (let index = 0; index < 5; ++index) {
-        elements[index] = configuration.generator()
+        elements[index] = Math.random()
         pack.push(elements[index])
       }
 
-      expect(toArray(pack)).toEqual(elements)
+      expect([...pack]).toEqual(elements)
       expect(pack.capacity).toBe(110)
       expect(pack.size).toBe(5)
 
       pack.reallocate(32)
 
-      expect(toArray(pack)).toEqual(elements)
+      expect([...pack]).toEqual(elements)
       expect(pack.capacity).toBe(32)
       expect(pack.size).toBe(5)
 
       pack.reallocate(15)
 
-      expect(toArray(pack)).toEqual(elements)
+      expect([...pack]).toEqual(elements)
       expect(pack.capacity).toBe(15)
       expect(pack.size).toBe(5)
     })
 
     it('may truncate the pack content', function () {
-      const pack : TestedPack = configuration.factory(15)
-      const elements : Array<T> = new Array()
+      const pack : Pack<number> = instantiate(15)
+      const elements : number[] = []
 
       for (let index = 0; index < 10; ++index) {
-        elements[index] = configuration.generator()
+        elements[index] = Math.random()
         pack.push(elements[index])
       }
 
-      expect(toArray(pack)).toEqual(elements)
+      expect([...pack]).toEqual(elements)
       expect(pack.capacity).toBe(15)
       expect(pack.size).toBe(10)
 
       pack.reallocate(5)
 
-      expect(toArray(pack)).toEqual([
+      expect([...pack]).toEqual([
         elements[0], elements[1], elements[2], elements[3], elements[4]
       ])
       expect(pack.capacity).toBe(5)
@@ -191,7 +179,7 @@ export function isPack <T, TestedPack extends Pack<T>> (
 
       pack.reallocate(2)
 
-      expect(toArray(pack)).toEqual([ elements[0], elements[1] ])
+      expect([...pack]).toEqual([ elements[0], elements[1] ])
       expect(pack.capacity).toBe(2)
       expect(pack.size).toBe(2)
     })
@@ -199,15 +187,15 @@ export function isPack <T, TestedPack extends Pack<T>> (
 
   describe('#sort', function () {
     it('sort the elements of the pack', function () {
-      const pack : TestedPack = configuration.factory(256)
-      const elements : Array<T> = new Array()
+      const pack : Pack<number> = instantiate(256)
+      const elements : number[] = []
 
       for (let index = 0; index < 128; ++index) {
-        elements[index] = configuration.generator()
+        elements[index] = Math.random()
         pack.push(elements[index])
       }
 
-      expect(toArray(pack)).toEqual(elements)
+      expect([...pack]).toEqual(elements)
       expect(pack.capacity).toBe(256)
       expect(pack.size).toBe(128)
 
@@ -218,7 +206,7 @@ export function isPack <T, TestedPack extends Pack<T>> (
         return a < b ? -1 : (a > b ? 1 : 0)
       })
 
-      expect(toArray(pack)).toEqual(elements)
+      expect([...pack]).toEqual(elements)
       expect(pack.capacity).toBe(256)
       expect(pack.size).toBe(128)
     })
@@ -226,21 +214,21 @@ export function isPack <T, TestedPack extends Pack<T>> (
 
   describe('#fit', function () {
     it('reduce the pack capacity to its size', function () {
-      const pack : TestedPack = configuration.factory(110)
-      const elements : Array<T> = new Array()
+      const pack : Pack<number> = instantiate(110)
+      const elements : number[] = []
 
       for (let index = 0; index < 5; ++index) {
-        elements[index] = configuration.generator()
+        elements[index] = Math.random()
         pack.push(elements[index])
       }
 
-      expect(toArray(pack)).toEqual(elements)
+      expect([...pack]).toEqual(elements)
       expect(pack.capacity).toBe(110)
       expect(pack.size).toBe(5)
 
       pack.fit()
 
-      expect(toArray(pack)).toEqual(elements)
+      expect([...pack]).toEqual(elements)
       expect(pack.capacity).toBe(5)
       expect(pack.size).toBe(5)
     })
@@ -248,15 +236,15 @@ export function isPack <T, TestedPack extends Pack<T>> (
 
   describe('#get', function () {
     it('returns the nth element of the pack', function () {
-      const pack : TestedPack = configuration.factory(110)
-      const elements : Array<T> = new Array()
+      const pack : Pack<number> = instantiate(110)
+      const elements : number[] = []
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = configuration.generator()
+        elements[index] = Math.random()
         pack.push(elements[index])
       }
 
-      expect(toArray(pack)).toEqual(elements)
+      expect([...pack]).toEqual(elements)
 
       for (let index = 0; index < 20; ++index) {
         expect(pack.get(index)).toBe(elements[index])
@@ -266,15 +254,15 @@ export function isPack <T, TestedPack extends Pack<T>> (
 
   describe('#swap', function () {
     it('swap two elements of the pack', function () {
-      const pack : TestedPack = configuration.factory(110)
-      const elements : Array<T> = new Array()
+      const pack : Pack<number> = instantiate(110)
+      const elements : number[] = []
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = configuration.generator()
+        elements[index] = Math.random()
         pack.push(elements[index])
       }
 
-      expect(toArray(pack)).toEqual(elements)
+      expect([...pack]).toEqual(elements)
 
       pack.swap(3, 8)
 
@@ -290,25 +278,25 @@ export function isPack <T, TestedPack extends Pack<T>> (
 
   describe('#set', function () {
     it('set a value of the pack', function () {
-      const pack : TestedPack = configuration.factory(110)
-      const elements : Array<T> = new Array()
+      const pack : Pack<number> = instantiate(110)
+      const elements : number[] = []
 
       pack.size = 20
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = configuration.generator()
+        elements[index] = Math.random()
         pack.set(index, elements[index])
       }
 
-      expect(toArray(pack)).toEqual(elements)
+      expect([...pack]).toEqual(elements)
     })
 
     it('can expand the size and the capacity of the pack', function () {
-      const pack : TestedPack = configuration.factory(5)
-      const elements : Array<T> = new Array()
+      const pack : Pack<number> = instantiate(5)
+      const elements : number[] = []
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = configuration.generator()
+        elements[index] = Math.random()
         pack.set(index * 5, elements[index])
       }
 
@@ -319,7 +307,7 @@ export function isPack <T, TestedPack extends Pack<T>> (
         if (index % 5 == 0) {
           expect(pack.get(index)).toBe(elements[index / 5])
         } else {
-          expect(pack.get(index)).toBe(configuration.defaultValue)
+          expect(pack.get(index)).toBe(Pack.defaultValue(pack))
         }
       }
     })
@@ -327,17 +315,17 @@ export function isPack <T, TestedPack extends Pack<T>> (
 
   describe('#insert', function () {
     it('insert a value into the pack', function () {
-      const pack : TestedPack = configuration.factory(30)
-      const elements : Array<T> = new Array()
+      const pack : Pack<number> = instantiate(30)
+      const elements : number[] = []
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = configuration.generator()
+        elements[index] = Math.random()
         pack.set(index, elements[index])
       }
 
-      expect(toArray(pack)).toEqual(elements)
+      expect([...pack]).toEqual(elements)
 
-      const inserted : T = configuration.generator()
+      const inserted : number = Math.random()
 
       pack.insert(8, inserted)
 
@@ -355,17 +343,17 @@ export function isPack <T, TestedPack extends Pack<T>> (
     })
 
     it('may reallocate the pack if necessary', function () {
-      const pack : TestedPack = configuration.factory(20)
-      const elements : Array<T> = new Array()
+      const pack : Pack<number> = instantiate(20)
+      const elements : number[] = []
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = configuration.generator()
+        elements[index] = Math.random()
         pack.set(index, elements[index])
       }
 
-      expect(toArray(pack)).toEqual(elements)
+      expect([...pack]).toEqual(elements)
 
-      const inserted : T = configuration.generator()
+      const inserted : number = Math.random()
 
       pack.insert(8, inserted)
 
@@ -384,17 +372,17 @@ export function isPack <T, TestedPack extends Pack<T>> (
     })
 
     it('only set the value if the index is out of the size of the pack', function () {
-      const pack : TestedPack = configuration.factory(20)
-      const elements : Array<T> = new Array()
+      const pack : Pack<number> = instantiate(20)
+      const elements : number[] = []
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = configuration.generator()
+        elements[index] = Math.random()
         pack.set(index, elements[index])
       }
 
-      expect(toArray(pack)).toEqual(elements)
+      expect([...pack]).toEqual(elements)
 
-      const inserted : T = configuration.generator()
+      const inserted : number = Math.random()
 
       pack.insert(30, inserted)
 
@@ -403,7 +391,7 @@ export function isPack <T, TestedPack extends Pack<T>> (
       }
 
       for (let index = 20; index < 29; ++index) {
-        expect(pack.get(index)).toBe(configuration.defaultValue)
+        expect(pack.get(index)).toBe(Pack.defaultValue(pack))
       }
 
       expect(pack.get(30)).toBe(inserted)
@@ -415,29 +403,29 @@ export function isPack <T, TestedPack extends Pack<T>> (
 
   describe('#push', function () {
     it('insert a value at the end of the pack', function () {
-      const pack : TestedPack = configuration.factory(30)
-      const elements : Array<T> = new Array()
+      const pack : Pack<number> = instantiate(30)
+      const elements : number[] = []
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = configuration.generator()
+        elements[index] = Math.random()
         pack.push(elements[index])
       }
 
-      expect(toArray(pack)).toEqual(elements)
+      expect([...pack]).toEqual(elements)
       expect(pack.size).toBe(20)
       expect(pack.capacity).toBe(30)
     })
 
     it('may reallocate the pack if necessary', function () {
-      const pack : TestedPack = configuration.factory(5)
-      const elements : Array<T> = new Array()
+      const pack : Pack<number> = instantiate(5)
+      const elements : number[] = []
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = configuration.generator()
+        elements[index] = Math.random()
         pack.set(index, elements[index])
       }
 
-      expect(toArray(pack)).toEqual(elements)
+      expect([...pack]).toEqual(elements)
       expect(pack.size).toBe(20)
       expect(pack.capacity).toBe(20)
     })
@@ -445,15 +433,15 @@ export function isPack <T, TestedPack extends Pack<T>> (
 
   describe('#delete', function () {
     it('delete a value of the pack', function () {
-      const pack : TestedPack = configuration.factory(30)
-      const elements : Array<T> = new Array()
+      const pack : Pack<number> = instantiate(30)
+      const elements : number[] = []
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = configuration.generator()
+        elements[index] = Math.random()
         pack.push(elements[index])
       }
 
-      expect(toArray(pack)).toEqual(elements)
+      expect([...pack]).toEqual(elements)
       expect(pack.size).toBe(20)
       expect(pack.capacity).toBe(30)
 
@@ -474,15 +462,15 @@ export function isPack <T, TestedPack extends Pack<T>> (
 
   describe('#warp', function () {
     it('warp a value of the pack', function () {
-      const pack : TestedPack = configuration.factory(30)
-      const elements : Array<T> = new Array()
+      const pack : Pack<number> = instantiate(30)
+      const elements : number[] = []
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = configuration.generator()
+        elements[index] = Math.random()
         pack.push(elements[index])
       }
 
-      expect(toArray(pack)).toEqual(elements)
+      expect([...pack]).toEqual(elements)
       expect(pack.size).toBe(20)
       expect(pack.capacity).toBe(30)
 
@@ -505,8 +493,12 @@ export function isPack <T, TestedPack extends Pack<T>> (
 
   describe('#has', function () {
     it('return true if the given value is in the pack', function () {
-      const pack : TestedPack = configuration.factory(30)
-      const elements : Array<T> = pickUnique(configuration.generator, 20)
+      const pack : Pack<number> = instantiate(30)
+      const elements : Set<number> = new Set<number>()
+
+      while (elements.size < 20) {
+        elements.add(Math.random())
+      }
 
       for (let index = 0; index < 20; ++index) {
         expect(pack.has(elements[index])).toBeFalsy()
@@ -524,8 +516,12 @@ export function isPack <T, TestedPack extends Pack<T>> (
 
   describe('#indexOf', function () {
     it('return the index of the given value of the pack', function () {
-      const pack : TestedPack = configuration.factory(30)
-      const elements : Array<T> = pickUnique(configuration.generator, 20)
+      const pack : Pack<number> = instantiate(30)
+      const elements : Set<number> = new Set<number>()
+
+      while (elements.size < 20) {
+        elements.add(Math.random())
+      }
 
       for (let index = 0; index < 20; ++index) {
         expect(pack.indexOf(elements[index])).toBe(-1)
@@ -543,76 +539,76 @@ export function isPack <T, TestedPack extends Pack<T>> (
 
   describe('#pop', function () {
     it('removes the last value of the pack and return it', function () {
-      const pack : TestedPack = configuration.factory(30)
-      const elements : Array<T> = new Array<T>()
-      const removed : Array<T> = new Array<T>()
+      const pack : Pack<number> = instantiate(30)
+      const elements : number[] = []
+      const removed : number[] = []
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = configuration.generator()
+        elements[index] = Math.random()
         pack.push(elements[index])
       }
 
-      expect(toArray(pack)).toEqual(elements)
+      expect([...pack]).toEqual(elements)
       expect(removed).toEqual([])
 
       while (pack.size > 0) {
         removed.push(pack.pop())
       }
 
-      expect(toArray(pack)).toEqual([])
+      expect([...pack]).toEqual([])
       expect(removed).toEqual(elements.reverse())
     })
   })
 
   describe('#shift', function () {
     it('removes the first value of the pack and return it', function () {
-      const pack : TestedPack = configuration.factory(30)
-      const elements : Array<T> = new Array<T>()
-      const removed : Array<T> = new Array<T>()
+      const pack : Pack<number> = instantiate(30)
+      const elements : number[] = []
+      const removed : number[] = []
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = configuration.generator()
+        elements[index] = Math.random()
         pack.push(elements[index])
       }
 
-      expect(toArray(pack)).toEqual(elements)
+      expect([...pack]).toEqual(elements)
       expect(removed).toEqual([])
 
       while (pack.size > 0) {
         removed.push(pack.shift())
       }
 
-      expect(toArray(pack)).toEqual([])
+      expect([...pack]).toEqual([])
       expect(removed).toEqual(elements)
     })
   })
 
   describe('#clear', function () {
     it('empty the pack', function () {
-      const pack : TestedPack = configuration.factory(30)
-      const elements : Array<T> = new Array()
+      const pack : Pack<number> = instantiate(30)
+      const elements : number[] = []
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = configuration.generator()
+        elements[index] = Math.random()
         pack.push(elements[index])
       }
 
-      expect(toArray(pack)).toEqual(elements)
+      expect([...pack]).toEqual(elements)
 
       pack.clear()
 
-      expect(toArray(pack)).toEqual([])
+      expect([...pack]).toEqual([])
     })
   })
 
   describe('#equals', function () {
     it('return true if both collections have the same content', function () {
-      const pack : TestedPack = configuration.factory(30)
-      const copy : TestedPack = configuration.factory(30)
-      const elements : Array<T> = new Array()
+      const pack : Pack<number> = instantiate(30)
+      const copy : Pack<number> = instantiate(30)
+      const elements : number[] = []
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = configuration.generator()
+        elements[index] = Math.random()
         pack.push(elements[index])
         copy.push(elements[index])
       }
@@ -621,12 +617,12 @@ export function isPack <T, TestedPack extends Pack<T>> (
     })
 
     it('return true if both collections have the same content but different capacities', function () {
-      const pack : TestedPack = configuration.factory(30)
-      const copy : TestedPack = configuration.factory(60)
-      const elements : Array<T> = new Array()
+      const pack : Pack<number> = instantiate(30)
+      const copy : Pack<number> = instantiate(60)
+      const elements : number[] = []
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = configuration.generator()
+        elements[index] = Math.random()
         pack.push(elements[index])
         copy.push(elements[index])
       }
@@ -635,41 +631,41 @@ export function isPack <T, TestedPack extends Pack<T>> (
     })
 
     it('return false if both collections does not have the same content', function () {
-      const pack : TestedPack = configuration.factory(30)
-      const different : TestedPack = configuration.factory(30)
-      const elements : Array<T> = new Array()
+      const pack : Pack<number> = instantiate(30)
+      const different : Pack<number> = instantiate(30)
+      const elements : number[] = []
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = configuration.generator()
+        elements[index] = Math.random()
         pack.push(elements[index])
-        different.push(index == 5 ? configuration.generator() : elements[index])
+        different.push(index == 5 ? Math.random() : elements[index])
       }
 
       expect(pack.equals(different)).toBeFalsy()
     })
 
     it('return false if both collections does not have the same size', function () {
-      const pack : TestedPack = configuration.factory(30)
-      const different : TestedPack = configuration.factory(30)
-      const elements : Array<T> = new Array()
+      const pack : Pack<number> = instantiate(30)
+      const different : Pack<number> = instantiate(30)
+      const elements : number[] = []
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = configuration.generator()
+        elements[index] = Math.random()
         pack.push(elements[index])
-        different.push(index == 5 ? configuration.generator() : elements[index])
+        different.push(index == 5 ? Math.random() : elements[index])
       }
 
-      different.push(configuration.generator())
+      different.push(Math.random())
 
       expect(pack.equals(different)).toBeFalsy()
     })
 
     it('return false otherwise', function () {
-      const pack : TestedPack = configuration.factory(30)
-      const elements : Array<T> = new Array()
+      const pack : Pack<number> = instantiate(30)
+      const elements : number[] = []
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = configuration.generator()
+        elements[index] = Math.random()
         pack.push(elements[index])
       }
 
@@ -680,19 +676,33 @@ export function isPack <T, TestedPack extends Pack<T>> (
   })
 
   describe('#copy', function () {
-    it('return a copy of an existing pack', function () {
-      const pack : TestedPack = configuration.factory(30)
-      const elements : Array<T> = new Array()
+    it('copy an existing pack', function () {
+      const source : Pack<number> = instantiate(30)
+      const destination : Pack<number> = instantiate(30)
 
       for (let index = 0; index < 20; ++index) {
-        elements[index] = configuration.generator()
-        pack.push(elements[index])
+        source.push(Math.random())
       }
 
-      const copy : TestedPack = configuration.copy(pack)
+      destination.copy(source)
 
-      expect(pack.equals(copy)).toBeTruthy()
-      expect(copy.capacity).toBe(pack.capacity)
+      expect(source.equals(destination)).toBeTruthy()
+      expect(destination).not.toBe(source)
+    })
+  })
+
+  describe('#clone', function () {
+    it('return a copy of the pack', function () {
+      const source : Pack<number> = instantiate(30)
+
+      for (let index = 0; index < 20; ++index) {
+        source.push(Math.random())
+      }
+
+      const destination : Pack<number> = source.clone()
+
+      expect(source.equals(destination)).toBeTruthy()
+      expect(destination).not.toBe(source)
     })
   })
 }

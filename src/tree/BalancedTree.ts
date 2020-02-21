@@ -1,14 +1,16 @@
-import { Sequence } from '../Sequence'
-import { SequentiallyAccessibleCollection } from '../SequentiallyAccessibleCollection'
-import { Comparator } from '../Comparator'
-import { bissect } from '../bissect'
+import { Sequence } from '@library/Sequence'
+import { Comparator } from '@library/Comparator'
+import { bissect } from '@library/algorithm/bissect'
+import { View } from '@library/view/View'
+import { Collection } from '@library/Collection'
+import { CollectionIterator } from '@library/iterator/CollectionIterator'
 
-import { BalancedTreeWalker } from './BalancedTreeWalker'
+import { BalancedTreeWalker } from '@library/tree/BalancedTreeWalker'
 
-import { BalancedTreeElement } from './BalancedTreeElement'
-import { BalancedTreeNode } from './BalancedTreeNode'
-import { BalancedTreeLeaf } from './BalancedTreeLeaf'
-import { BalancedTreeIterator } from './BalancedTreeIterator'
+import { BalancedTreeElement } from '@library/tree/BalancedTreeElement'
+import { BalancedTreeNode } from '@library/tree/BalancedTreeNode'
+import { BalancedTreeLeaf } from '@library/tree/BalancedTreeLeaf'
+import { BalancedTreeIterator } from '@library/tree/BalancedTreeIterator'
 
 function indent (depth : number) : string {
   return '  '.repeat(depth)
@@ -18,9 +20,7 @@ function invert <A, B> (comparator : Comparator<A, B>) : Comparator<A, B> {
   return (left : A, right : B) => -comparator(left, right)
 }
 
-export class BalancedTree<Element>
-  implements Sequence<Element>,
-             SequentiallyAccessibleCollection<Element>
+export class BalancedTree<Element> implements Sequence<Element>
 {
   private _size : number
   private _order : number
@@ -49,48 +49,6 @@ export class BalancedTree<Element>
     this._walker = new BalancedTreeWalker<Element>()
     this._iterator = new BalancedTreeIterator(this)
     this.acceptWalker(this._walker)
-  }
-
-  /**
-  * @see Collection.isRandomlyAccessible
-  */
-  public get isRandomlyAccessible () : boolean {
-    return false
-  }
-
-  /**
-  * @see Collection.isSequentiallyAccessible
-  */
-  public get isSequentiallyAccessible () : boolean {
-    return true
-  }
-
-  /**
-  * @see Collection.isSet
-  */
-  public get isSet () : boolean {
-    return false
-  }
-
-  /**
-  * @see Collection.isStatic
-  */
-  public get isStatic () : boolean {
-    return false
-  }
-
-  /**
-  * @see Collection.isReallocable
-  */
-  public get isReallocable () : boolean {
-    return false
-  }
-
-  /**
-  * @see Collection.isSequence
-  */
-  public get isSequence () : boolean {
-    return true
   }
 
   /**
@@ -145,7 +103,7 @@ export class BalancedTree<Element>
   }
 
   /**
-  * @see Collection.get
+  * @see Sequence.get
   */
   public get (index : number) : Element {
     let current : number = 0
@@ -162,7 +120,7 @@ export class BalancedTree<Element>
   }
 
   /**
-  * @see Collection.indexOf
+  * @see Sequence.indexOf
   */
   public indexOf (element : Element) : number {
     let current : number = 0
@@ -179,29 +137,43 @@ export class BalancedTree<Element>
   }
 
   /**
-  * @see Collection.first
+  * @see Sequence.first
   */
-  public first () : Element {
+  public get first () : Element {
     let current : BalancedTreeElement<Element> = this._root
 
     while (current instanceof BalancedTreeNode) {
-      current = current.children.last()
+      current = current.children.last
     }
 
-    return current.keys.last()
+    return current.keys.last
   }
 
   /**
-  * @see Collection.last
+  * @see Sequence.firstIndex
   */
-  public last () : Element {
+  public get firstIndex () : number {
+    return 0
+  }
+
+  /**
+  * @see Sequence.last
+  */
+  public get last () : Element {
     let current : BalancedTreeElement<Element> = this._root
 
     while (current instanceof BalancedTreeNode) {
-      current = current.children.first()
+      current = current.children.first
     }
 
-    return current.keys.first()
+    return current.keys.first
+  }
+
+  /**
+  * @see Sequence.lastIndex
+  */
+  public get lastIndex () : number {
+    return this._size - 1
   }
 
   /**
@@ -338,35 +310,23 @@ export class BalancedTree<Element>
   }
 
   /**
-  * @see Collection.equals
+  * @see Collection.clone
   */
-  public equals (other : any) : boolean {
-    if (other == null) return false
-    if (other === this) return true
+  public clone () : BalancedTree<Element> {
+    return this
+  }
 
-    if (other instanceof BalancedTree) {
-      if (other.size !== this._size) return false
-      if (other.size === 0) return true
-
-      const a : BalancedTreeIterator<Element> = this._iterator
-      const b : BalancedTreeIterator<Element> = other._iterator
-
-      if (a.next() !== b.next()) return false
-
-      while (a.hasNext()) {
-        if (a.next() !== b.next()) return false
-      }
-
-      return true
-    }
-
-    return false
+  /**
+  * @see Collection.clone
+  */
+  public view () : Collection<Element> {
+    return View.wrap(this)
   }
 
   /**
   * @see Collection.iterator
   */
-  public iterator () : BalancedTreeIterator<Element> {
+  public iterator () : CollectionIterator<Element> {
     return new BalancedTreeIterator<Element>(this)
   }
 
@@ -403,6 +363,32 @@ export class BalancedTree<Element>
     result.push('</root>')
 
     return result.join('\n\r')
+  }
+
+  /**
+  * @see Collection.equals
+  */
+  public equals (other : any) : boolean {
+    if (other == null) return false
+    if (other === this) return true
+
+    if (other instanceof BalancedTree) {
+      if (other.size !== this._size) return false
+      if (other.size === 0) return true
+
+      const a : BalancedTreeIterator<Element> = this._iterator
+      const b : BalancedTreeIterator<Element> = other._iterator
+
+      if (a.next() !== b.next()) return false
+
+      while (a.hasNext()) {
+        if (a.next() !== b.next()) return false
+      }
+
+      return true
+    }
+
+    return false
   }
 
   /**

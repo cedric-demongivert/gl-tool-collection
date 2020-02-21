@@ -1,39 +1,81 @@
-import { RandomlyAccessibleCollection } from '../RandomlyAccessibleCollection'
-import { StaticSet } from './StaticSet'
+import { Sequence } from '@library/Sequence'
+import { ReallocableCollection } from '@library/ReallocableCollection'
+import { MutableSet } from '@library/set/MutableSet'
+import { PackSparseDenseSet } from '@library/set/PackSparseDenseSet'
 
 export interface SparseDenseSet
-         extends StaticSet<number>,
-                 RandomlyAccessibleCollection<number>
-{ }
+         extends Sequence<number>, MutableSet<number>, ReallocableCollection
+{
+  /**
+  * @see Collection.clone
+  */
+  clone () : SparseDenseSet
+}
 
 export namespace SparseDenseSet {
-  export function copy (pack : SparseDenseSet) : SparseDenseSet {
-    return pack == null ? null : (pack.constructor as any).copy(pack)
+  /**
+  * Copy an existing sparse-dense set instance.
+  *
+  * @param toCopy - An instance to copy.
+  *
+  * @return A copy of the given instance.
+  */
+  export function copy (toCopy : SparseDenseSet) : SparseDenseSet {
+    return toCopy == null ? null : toCopy.clone()
   }
 
+  /**
+  * Instantiate a uint32 sparse-dense set.
+  *
+  * @param capacity - Capacity of the sparse-dense set to instantiate.
+  *
+  * @return A new sparse-dense set of the given capacity.
+  */
   export function uint32 (capacity : number) : SparseDenseSet {
-    return new PackSparseDenseSet(Packs.uint32(capacity))
+    return PackSparseDenseSet.uint32(capacity)
   }
 
+  /**
+  * Instantiate a uint16 sparse-dense set.
+  *
+  * @param capacity - Capacity of the sparse-dense set to instantiate.
+  *
+  * @return A new sparse-dense set of the given capacity.
+  */
   export function uint16 (capacity : number) : SparseDenseSet {
-    return new PackSparseDenseSet(Packs.uint16(capacity))
+    return PackSparseDenseSet.uint16(capacity)
   }
 
+  /**
+  * Instantiate a uint8 sparse-dense set.
+  *
+  * @param capacity - Capacity of the sparse-dense set to instantiate.
+  *
+  * @return A new sparse-dense set of the given capacity.
+  */
   export function uint8 (capacity : number) : SparseDenseSet {
-    return new PackSparseDenseSet(Packs.uint8(capacity))
+    return PackSparseDenseSet.uint8(capacity)
   }
 
+  /**
+  * Instantiate an array sparse-dense set.
+  *
+  * @param capacity - Capacity of the sparse-dense set to instantiate.
+  *
+  * @return A new sparse-dense set of the given capacity.
+  */
   export function any (capacity : number) : SparseDenseSet {
-    return new PackSparseDenseSet(Packs.any(capacity))
+    return PackSparseDenseSet.any(capacity)
   }
 
-  export function adaptative (capacity : number) : SparseDenseSet {
-    if (capacity <= 0xff) {
-      return new PackSparseDenseSet(Packs.uint8(capacity))
-    } else if (capacity <= 0xffff) {
-      return new PackSparseDenseSet(Packs.uint16(capacity))
-    } else {
-      return new PackSparseDenseSet(Packs.uint32(capacity))
-    }
+  /**
+  * Instantiate a sparse-dense set that can store numbers up to the given value.
+  *
+  * @param capacity - Maximum number to be able to store into the resulting sparse-dense set.
+  *
+  * @return A new sparse-dense set that can store numbers up to the given value.
+  */
+  export function upTo (capacity : number) : SparseDenseSet {
+    return PackSparseDenseSet.upTo(capacity)
   }
 }

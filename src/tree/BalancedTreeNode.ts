@@ -1,14 +1,13 @@
-import { Pack } from '../pack/Pack'
-import { Packs } from '../pack/Packs'
-import { View } from '../View'
-import { bissect } from '../bissect'
+import { Pack } from '@library/pack/Pack'
+import { Sequence } from '@library/Sequence'
+import { bissect } from '@library/algorithm/bissect'
 
-import { BalancedTree } from './BalancedTree'
-import { BalancedTreeElement } from './BalancedTreeElement'
+import { BalancedTree } from '@library/tree/BalancedTree'
+import { BalancedTreeElement } from '@library/tree/BalancedTreeElement'
 
 export class BalancedTreeNode<Element> extends BalancedTreeElement<Element> {
   private _children : Pack<BalancedTreeElement<Element>>
-  private _childrenView : View<BalancedTreeElement<Element>>
+  private _childrenView : Sequence<BalancedTreeElement<Element>>
 
   /**
   * Instantiate a new node for the given tree.
@@ -17,14 +16,14 @@ export class BalancedTreeNode<Element> extends BalancedTreeElement<Element> {
   */
   public constructor (tree : BalancedTree<Element>) {
     super(tree)
-    this._children = Packs.any(tree.order)
-    this._childrenView = View.wrap(this._children)
+    this._children = Pack.any(tree.order)
+    this._childrenView = this._children.view()
   }
 
   /**
   * @return A view over each child element of this element.
   */
-  public get children () : View<BalancedTreeElement<Element>> {
+  public get children () : Sequence<BalancedTreeElement<Element>> {
     return this._childrenView
   }
 
@@ -51,7 +50,7 @@ export class BalancedTreeNode<Element> extends BalancedTreeElement<Element> {
     const keys : Pack<Element> = this._keys
     const children : Pack<BalancedTreeElement<Element>> = this._children
 
-    const key : Element = child.keys.first()
+    const key : Element = child.keys.first
     const bissection : number = bissect.first(keys, key, this.descending)
     let index : number = bissection < 0 ? -bissection - 1 : bissection
 
@@ -100,13 +99,13 @@ export class BalancedTreeNode<Element> extends BalancedTreeElement<Element> {
   *
   * @param element - The new element with the greaters keys.
   */
-  public setUpmost (element : BalancedTreeElement<Element>) {    
-    if (this._children.first() != null) {
-      this._children.first().parent = null
+  public setUpmost (element : BalancedTreeElement<Element>) {
+    if (this._children.first != null) {
+      this._children.first.parent = null
     }
 
     this._children.set(0, element)
-    this._children.first().parent = this
+    this._children.first.parent = this
   }
 
   /**
@@ -129,8 +128,8 @@ export class BalancedTreeNode<Element> extends BalancedTreeElement<Element> {
       srcChildren.get(index).parent = smallers
     }
 
-    dstChildren.push(srcChildren.last())
-    srcChildren.last().parent = smallers
+    dstChildren.push(srcChildren.last)
+    srcChildren.last.parent = smallers
     srcKeys.size = median
     srcChildren.size = median + 1
 

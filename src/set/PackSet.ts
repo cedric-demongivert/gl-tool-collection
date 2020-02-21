@@ -1,23 +1,14 @@
-import { RandomlyAccessibleCollection } from '../RandomlyAccessibleCollection'
-import { RandomAccessIterator } from '../iterator/RandomAccessIterator'
-import { Pack } from '../pack/Pack'
-import { Packs } from '../pack/Packs'
-
-import { ReallocableSet } from './ReallocableSet'
+import { ReallocableCollection } from '@library/ReallocableCollection'
+import { MutableSet } from '@library/set/MutableSet'
+import { Set } from '@library/set/Set'
+import { Sequence } from '@library/Sequence'
+import { BidirectionalIterator } from '@library/iterator/BidirectionalIterator'
+import { Pack } from '@library/pack/Pack'
+import { SequenceView } from '@library/view/SequenceView'
 
 export class PackSet<Element>
-  implements ReallocableSet<Element>,
-             RandomlyAccessibleCollection<Element>
+  implements ReallocableCollection, MutableSet<Element>, Sequence<Element>
 {
-  /**
-  * Return a copy of a given pack set.
-  *
-  * @param toCopy - A pack set to copy.
-  */
-  static copy <Element> (toCopy : PackSet<Element>) : PackSet<Element> {
-    return new PackSet<Element>(Packs.copy(toCopy.elements))
-  }
-
   private _elements: Pack<Element>
 
   /**
@@ -46,48 +37,6 @@ export class PackSet<Element>
   }
 
   /**
-  * @see Collection.isRandomlyAccessible
-  */
-  public get isRandomlyAccessible () : boolean {
-    return true
-  }
-
-  /**
-  * @see Collection.isSequentiallyAccessible
-  */
-  public get isSequentiallyAccessible () : boolean {
-    return false
-  }
-
-  /**
-  * @see Collection.isSet
-  */
-  public get isSet () : boolean {
-    return true
-  }
-
-  /**
-  * @see Collection.isStatic
-  */
-  public get isStatic () : boolean {
-    return true
-  }
-
-  /**
-  * @see Collection.isReallocable
-  */
-  public get isReallocable () : boolean {
-    return true
-  }
-
-  /**
-  * @see Collection.isSequence
-  */
-  public get isSequence () : boolean {
-    return false
-  }
-
-  /**
   * @see Collection.size
   */
   public get size () : number {
@@ -109,7 +58,7 @@ export class PackSet<Element>
   }
 
   /**
-  * @see Collection.indexOf
+  * @see Sequence.indexOf
   */
   public indexOf (element : Element) : number {
     return this._elements.indexOf(element)
@@ -157,6 +106,24 @@ export class PackSet<Element>
   }
 
   /**
+  * @see Set.copy
+  */
+  public copy (toCopy : Set<Element>) : void {
+    this.clear()
+
+    for (const element of toCopy) {
+      this.add(element)
+    }
+  }
+
+  /**
+  * @see Collection.clone
+  */
+  public clone () : PackSet<Element> {
+    return new PackSet<Element>(this._elements.clone())
+  }
+
+  /**
   * @see Set.clear
   */
   public clear () : void {
@@ -164,28 +131,49 @@ export class PackSet<Element>
   }
 
   /**
-  * @see Collection.first
+  * @see Sequence.first
   */
-  public first () : Element {
-    return this._elements.first()
+  public get first () : Element {
+    return this._elements.first
   }
 
   /**
-  * @see Collection.last
+  * @see Sequence.firstIndex
   */
-  public last () : Element {
-    return this._elements.last()
+  public get firstIndex () : number {
+    return this._elements.firstIndex
+  }
+
+  /**
+  * @see Sequence.last
+  */
+  public get last () : Element {
+    return this._elements.last
+  }
+
+  /**
+  * @see Sequence.lastIndex
+  */
+  public get lastIndex () : number {
+    return this._elements.lastIndex
+  }
+
+  /**
+  * @see Collection.view
+  */
+  public view () : Sequence<Element> {
+    return SequenceView.wrap(this)
   }
 
   /**
   * @see Collection.iterator
   */
-  public iterator () : RandomAccessIterator<Element> {
+  public iterator () : BidirectionalIterator<Element> {
     return this._elements.iterator()
   }
 
   /**
-  * @see Collection.iterator
+  * @see Set.iterator
   */
   public * [Symbol.iterator] () : Iterator<Element> {
     yield * this._elements
@@ -198,7 +186,7 @@ export class PackSet<Element>
     if (other == null) return false
     if (other === this) return true
 
-    if (other.isSet) {
+    if (other instanceof PackSet) {
       if (other.size !== this._elements.size) return false
 
       for (let index = 0, length = other.size; index < length; ++index) {
@@ -209,5 +197,16 @@ export class PackSet<Element>
     }
 
     return false
+  }
+}
+
+export namespace PackSet {
+  /**
+  * Return a copy of a given pack set.
+  *
+  * @param toCopy - A pack set to copy.
+  */
+  export function copy <Element> (toCopy : PackSet<Element>) : PackSet<Element> {
+    return new PackSet<Element>(Pack.copy(toCopy.elements))
   }
 }

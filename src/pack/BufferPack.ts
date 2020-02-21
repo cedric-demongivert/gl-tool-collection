@@ -9,6 +9,7 @@ import { PackIterator } from '@library/pack/PackIterator'
 import { UnsignedIntegerBuffer } from '@library/native/UnsignedIntegerBuffer'
 import { IntegerBuffer } from '@library/native/IntegerBuffer'
 import { Sequence } from '@library/Sequence'
+import { SequenceView } from '@library/view/SequenceView'
 
 export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   /**
@@ -175,11 +176,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   /**
   * @see Pack.subsort
   */
-  public subsort (
-    offset : number,
-    size : number,
-    comparator : Comparator<number, number>
-  ) : void {
+  public subsort (offset : number, size : number, comparator : Comparator<number, number>) : void {
     quicksort(this, comparator, offset, size)
   }
 
@@ -291,6 +288,13 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
+  * @see Pack.allocate
+  */
+  public allocate (capacity : number) : BufferPack<Wrapped> {
+    return new BufferPack<Wrapped>(Buffer.reallocate(this._elements, capacity))
+  }
+
+  /**
   * @see Collection.clone
   */
   public clone () : BufferPack<Wrapped> {
@@ -302,6 +306,13 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   */
   public clear () : void {
     this._size = 0
+  }
+
+  /**
+  * @see Collection.view
+  */
+  public view () : Sequence<number> {
+    return SequenceView.wrap(this)
   }
 
   /**

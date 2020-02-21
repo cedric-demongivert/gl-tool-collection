@@ -1,4 +1,4 @@
-import { Collection } from '../Collection'
+import { Collection } from '@library/Collection'
 
 /**
 * A collection of elements without order and that does not allows duplicates of
@@ -6,35 +6,14 @@ import { Collection } from '../Collection'
 */
 export interface Set<Element> extends Collection<Element> {
   /**
-  * Add a new element to the collection.
-  *
-  * @param value - Elementhe value to add to the collection.
-  */
-  add (value : Element) : void
-
-  /**
-  * Remove an element from the collection.
-  *
-  * @param value - Elementhe value to remove from the collection.
-  */
-  delete (value : Element) : void
-
-  /**
-  * Shallow copy an existing set instance.
-  *
-  * @param toCopy - An existing set instance to shallow copy.
-  */
-  copy (toCopy : Set<Element>) : void
-
-  /**
-  * @return A shallow copy of this set as a new instance.
+  * @see Collection.clone
   */
   clone () : Set<Element>
 
   /**
-  * Empty the collection.
+  * @return A javascript iterator over this sequence of elements.
   */
-  clear () : void
+  [Symbol.iterator] () : Iterator<Element>
 }
 
 export namespace Set {

@@ -1,8 +1,9 @@
 import { equals } from '@library/algorithm/equals'
 import { Pack } from '@library/pack/Pack'
 import { CircularBuffer } from '@library/circular/CircularBuffer'
-import { CircularBufferIterator } from '@library/iterator/CircularBufferIterator'
-import { Sequence } from '@library/Sequence';
+import { CircularBufferIterator } from '@library/circular/CircularBufferIterator'
+import { Sequence } from '@library/Sequence'
+import { SequenceView } from '@library/view/SequenceView'
 
 export class PackCircularBuffer<Element> implements CircularBuffer<Element>
 {
@@ -306,6 +307,13 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
+  * @see Collection.view
+  */
+  public view () : Sequence<Element> {
+    return SequenceView.wrap(this)
+  }
+
+  /**
   * @see CircularBuffer.clear
   */
   public clear () : void {
@@ -351,9 +359,134 @@ export namespace PackCircularBuffer {
   *
   * @return A shallow copy of the given instance.
   */
-  export function copy <Element> (
-    toCopy : PackCircularBuffer<Element>
-  ) : PackCircularBuffer<Element> {
+  export function copy <Element> (toCopy : PackCircularBuffer<Element>) : PackCircularBuffer<Element> {
     return toCopy == null ? null : toCopy.clone()
+  }
+
+  /**
+  * Instantiate a new circular buffer that wrap a pack of the given type of instance.
+  *
+  * @param capacity - Capacity of the pack to allocate.
+  *
+  * @return A new buffer that wrap a pack of the given type of instance.
+  */
+  export function any <T> (capacity : number) : PackCircularBuffer<T> {
+    return new PackCircularBuffer<T>(Pack.any(capacity))
+  }
+
+  /**
+  * Instantiate a new circular buffer that wrap a unsigned byte pack of the given capacity.
+  *
+  * @param capacity - Capacity of the pack to allocate.
+  *
+  * @return A new circular buffer that wrap a unsigned byte pack of the given capacity.
+  */
+  export function uint8 (capacity : number) : PackCircularBuffer<number> {
+    return new PackCircularBuffer<number>(Pack.uint8(capacity))
+  }
+
+  /**
+  * Instantiate a new circular buffer that wrap a unsigned short pack of the given capacity.
+  *
+  * @param capacity - Capacity of the pack to allocate.
+  *
+  * @return A new circular buffer that wrap a unsigned short pack of the given capacity.
+  */
+  export function uint16 (capacity : number) : PackCircularBuffer<number> {
+    return new PackCircularBuffer<number>(Pack.uint16(capacity))
+  }
+
+  /**
+  * Instantiate a new circular buffer that wrap a unsigned integer pack of the given capacity.
+  *
+  * @param capacity - Capacity of the pack to allocate.
+  *
+  * @return A new circular buffer that wrap a unsigned integer pack of the given capacity.
+  */
+  export function uint32 (capacity : number) : PackCircularBuffer<number> {
+    return new PackCircularBuffer<number>(Pack.uint32(capacity))
+  }
+
+  /**
+  * Instantiate a new circular buffer that wrap a byte pack of the given capacity.
+  *
+  * @param capacity - Capacity of the pack to allocate.
+  *
+  * @return A new circular buffer that wrap a byte pack of the given capacity.
+  */
+  export function int8 (capacity : number) : PackCircularBuffer<number> {
+    return new PackCircularBuffer<number>(Pack.int8(capacity))
+  }
+
+  /**
+  * Instantiate a new circular buffer that wrap a short pack of the given capacity.
+  *
+  * @param capacity - Capacity of the pack to allocate.
+  *
+  * @return A new circular buffer that wrap a short pack of the given capacity.
+  */
+  export function int16 (capacity : number) : PackCircularBuffer<number> {
+    return new PackCircularBuffer<number>(Pack.int16(capacity))
+  }
+
+  /**
+  * Instantiate a new circular buffer that wrap a integer pack of the given capacity.
+  *
+  * @param capacity - Capacity of the pack to allocate.
+  *
+  * @return A new circular buffer that wrap a integer pack of the given capacity.
+  */
+  export function int32 (capacity : number) : PackCircularBuffer<number> {
+    return new PackCircularBuffer<number>(Pack.int32(capacity))
+  }
+
+  /**
+  * Instantiate a new circular buffer that wrap a float pack of the given capacity.
+  *
+  * @param capacity - Capacity of the pack to allocate.
+  *
+  * @return A new circular buffer that wrap a float pack of the given capacity.
+  */
+  export function float32 (capacity : number) : PackCircularBuffer<number> {
+    return new PackCircularBuffer<number>(Pack.float32(capacity))
+  }
+
+  /**
+  * Instantiate a new circular buffer that wrap a double pack of the given capacity.
+  *
+  * @param capacity - Capacity of the pack to allocate.
+  *
+  * @return A new circular buffer that wrap a double pack of the given capacity.
+  */
+  export function float64 (capacity : number) : PackCircularBuffer<number> {
+    return new PackCircularBuffer<number>(Pack.float64(capacity))
+  }
+
+  /**
+  * Instantiate a new pack that wrap a unsigned integer pack that can store
+  * values in range [0, maximum] and that is of the given capacity.
+  *
+  * @param maximum - Maximum value that can be stored.
+  * @param capacity - Capacity of the pack to allocate.
+  *
+  * @return A new pack that wrap a unsigned integer pack that can store values
+  *         in range [0, maximum] and that is of the given capacity.
+  */
+  export function unsignedUpTo (maximum : number, capacity : number) : PackCircularBuffer<number> {
+    return new PackCircularBuffer<number>(Pack.unsignedUpTo(maximum, capacity))
+  }
+
+  /**
+  * Instantiate a new circular buffer that wrap a signed integer pack that can store
+  * values in range [-maximum, maximum] and that is of the given capacity.
+  *
+  * @param maximum - Maximum value that can be stored.
+  * @param capacity - Capacity of the pack to allocate.
+  *
+  * @return A new circular buffer that wrap a signed integer pack that can store values
+  *         in range [-maximum, maximum] and that is of the given capacity.
+  */
+  export function signedUpTo (maximum : number, capacity : number) : PackCircularBuffer<number> {
+    return new PackCircularBuffer<number>(Pack.signedUpTo(maximum, capacity))
   }
 }
