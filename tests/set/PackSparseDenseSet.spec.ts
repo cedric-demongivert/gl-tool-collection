@@ -1,15 +1,8 @@
 /** eslint-env jest */
-import { PackSparseDenseSet } from '../../src/set/PackSparseDenseSet'
-import { ArrayPack } from '../../src/pack/ArrayPack'
+import { PackSparseDenseSet } from '@library/set/PackSparseDenseSet'
 
-import { isSet } from './Set'
-
-function randomNumber () : number {
-  return Math.floor(250 + Math.random() * 1000)
-}
+import { isMutableSet } from './MutableSet'
 
 describe('#PackSparseDenseSet', function () {
-  isSet<number>(
-    () => new PackSparseDenseSet(new ArrayPack<number>(2000))
-  ).of(randomNumber)
+  isMutableSet(PackSparseDenseSet.any)
 })

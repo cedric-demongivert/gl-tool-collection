@@ -1,26 +1,27 @@
 import { PackSet } from '../../src/set/PackSet'
-import { ArrayPack } from '../../src/pack/ArrayPack'
 
-import { isSet } from './Set'
-
-const chars : Array<string> = [
-  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
-  'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
-]
-
-function randomString () : string {
-  const length : number = Math.floor(5 + Math.random() * 10)
-  let result : string = ''
-
-  for (let index = 0; index < length; ++index) {
-    result += chars[Math.floor(Math.random() * chars.length)]
-  }
-
-  return result
-}
+import { isMutableSet } from './MutableSet'
 
 describe('#ArrayPackSet', function () {
-  isSet<string>(
-    () => new PackSet<string>(new ArrayPack<string>(10))
-  ).of(randomString)
+  isMutableSet(PackSet.any)
+
+  describe('#indexOf', function () {
+    it('return the index of the given value of the pack', function () {
+      const set : PackSet<number> = PackSet.any(32)
+
+      for (let index = 0; index < 20; ++index) {
+        expect(set.indexOf(index)).toBe(-1)
+        set.add(index)
+        expect(set.get(set.indexOf(index))).toBe(index)
+      }
+
+      for (let index = 15; index < 20; ++index) {
+        set.delete(index)
+      }
+
+      for (let index = 15; index < 20; ++index) {
+        expect(set.indexOf(index)).toBe(-1)
+      }
+    })
+  })
 })

@@ -1,15 +1,17 @@
 import { Comparator } from '@library/Comparator'
+import { Sequence } from '@library/Sequence'
 
 import { equals } from '@library/algorithm/equals'
 import { quicksort } from '@library/algorithm/quicksort'
-import { Buffer } from '@library/native/Buffer'
 
-import { Pack } from '@library/Pack'
-import { PackIterator } from '@library/pack/PackIterator'
+import { Buffer } from '@library/native/Buffer'
 import { UnsignedIntegerBuffer } from '@library/native/UnsignedIntegerBuffer'
 import { IntegerBuffer } from '@library/native/IntegerBuffer'
-import { Sequence } from '@library/Sequence'
+
 import { SequenceView } from '@library/view/SequenceView'
+
+import { Pack } from '@library/pack/Pack'
+import { PackIterator } from '@library/pack/PackIterator'
 
 export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   /**
@@ -298,7 +300,11 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   * @see Collection.clone
   */
   public clone () : BufferPack<Wrapped> {
-    return BufferPack.copy(this)
+    const result : BufferPack<Wrapped> = this.allocate(this._elements.length)
+
+    result.copy(this)
+
+    return result
   }
 
   /**

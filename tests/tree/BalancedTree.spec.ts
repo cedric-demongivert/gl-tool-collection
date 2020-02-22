@@ -1,7 +1,6 @@
 /** eslint-env jest */
 
-import { BalancedTree } from '../../src/tree/BalancedTree'
-import { toArray } from '../../src/toArray'
+import { BalancedTree } from '@library/tree/BalancedTree'
 
 function numberComparator (left : number, right : number) : number {
   return left - right
@@ -15,7 +14,7 @@ describe('#BalancedTree', function () {
       expect(tree.order).toBe(5)
       expect(tree.ascending).toBe(numberComparator)
       expect(tree.size).toBe(0)
-      expect(toArray(tree)).toEqual([])
+      expect([...tree]).toEqual([])
     })
   })
 
@@ -24,12 +23,12 @@ describe('#BalancedTree', function () {
       const tree : BalancedTree<number> = new BalancedTree(numberComparator, 5)
 
       expect(tree.size).toBe(0)
-      expect(toArray(tree)).toEqual([])
+      expect([...tree]).toEqual([])
 
       tree.push(5)
 
       expect(tree.size).toBe(1)
-      expect(toArray(tree)).toEqual([5])
+      expect([...tree]).toEqual([5])
     })
 
     it('is able to fill leaf nodes', function () {
@@ -37,7 +36,7 @@ describe('#BalancedTree', function () {
 
       for (let index = 0; index < 20; ++index) {
         expect(tree.size).toBe(0)
-        expect(toArray(tree)).toEqual([])
+        expect([...tree]).toEqual([])
 
         const values : number[] = [
           Math.random(), Math.random(),
@@ -48,7 +47,7 @@ describe('#BalancedTree', function () {
         values.sort(tree.ascending)
 
         expect(tree.size).toBe(4)
-        expect(toArray(tree)).toEqual(values)
+        expect([...tree]).toEqual(values)
 
         tree.clear()
       }
@@ -59,7 +58,7 @@ describe('#BalancedTree', function () {
 
       for (let index = 0; index < 20; ++index) {
         expect(tree.size).toBe(0)
-        expect(toArray(tree)).toEqual([])
+        expect([...tree]).toEqual([])
 
         const values : number[] = [
           Math.random(), Math.random(),
@@ -71,7 +70,7 @@ describe('#BalancedTree', function () {
         values.sort(tree.ascending)
 
         expect(tree.size).toBe(6)
-        expect(toArray(tree)).toEqual(values)
+        expect([...tree]).toEqual(values)
 
         tree.clear()
       }
@@ -82,7 +81,7 @@ describe('#BalancedTree', function () {
 
       for (let index = 0; index < 20; ++index) {
         expect(tree.size).toBe(0)
-        expect(toArray(tree)).toEqual([])
+        expect([...tree]).toEqual([])
 
         const values : number[] = []
 
@@ -97,7 +96,7 @@ describe('#BalancedTree', function () {
         values.sort(numberComparator)
 
         expect(tree.size).toBe(values.length)
-        expect(toArray(tree)).toEqual(values)
+        expect([...tree]).toEqual(values)
 
         tree.clear()
       }
@@ -107,7 +106,7 @@ describe('#BalancedTree', function () {
       const tree : BalancedTree<number> = new BalancedTree(numberComparator, 32)
 
       expect(tree.size).toBe(0)
-      expect(toArray(tree)).toEqual([])
+      expect([...tree]).toEqual([])
 
       const values : number[] = []
 
@@ -122,7 +121,7 @@ describe('#BalancedTree', function () {
       values.sort(numberComparator)
 
       expect(tree.size).toBe(values.length)
-      expect(toArray(tree)).toEqual(values)
+      expect([...tree]).toEqual(values)
 
       tree.clear()
     })

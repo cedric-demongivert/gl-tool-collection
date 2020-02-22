@@ -1,4 +1,5 @@
 import { Comparator } from '@library/Comparator'
+import { Sequence } from '@library/Sequence'
 import { MutableSequence } from '@library/MutableSequence'
 import { ReallocableCollection } from '@library/ReallocableCollection'
 
@@ -8,8 +9,6 @@ import { IntegerBuffer } from '@library/native/IntegerBuffer'
 import { PackIterator } from '@library/pack/PackIterator'
 import { BufferPack } from '@library/pack/BufferPack'
 import { ArrayPack } from '@library/pack/ArrayPack'
-
-import { Sequence } from '@library/Sequence'
 
 export interface Pack<Element>
          extends MutableSequence<Element>, ReallocableCollection
@@ -79,12 +78,13 @@ export namespace Pack {
   /**
   * Instantiate a new pack that wrap an array of the given type of instance.
   *
+  * @param pack - Instance of the type of pack to instantiate.
   * @param capacity - Capacity of the array to allocate.
   *
   * @return A new pack that wrap an array of the given type of instance.
   */
-  export function like <T> (pack : Pack<T>) : Pack<T> {
-    return ArrayPack.allocate(capacity)
+  export function like <T> (pack : Pack<T>, capacity : number) : Pack<T> {
+    return pack.allocate(capacity)
   }
 
   /**

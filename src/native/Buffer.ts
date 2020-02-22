@@ -1,10 +1,12 @@
-import { FloatBuffer } from '@library/buffer/FloatBuffer'
-import { UnsignedIntegerBuffer } from '@library/buffer/UnsignedIntegerBuffer'
-import { IntegerBuffer } from '@library/buffer/IntegerBuffer'
+import { FloatBuffer } from '@library/native/FloatBuffer'
+import { UnsignedIntegerBuffer } from '@library/native/UnsignedIntegerBuffer'
+import { IntegerBuffer } from '@library/native/IntegerBuffer'
 
 export type Buffer = UnsignedIntegerBuffer | IntegerBuffer | FloatBuffer
 
 export namespace Buffer {
+  export type Allocator<T> = new (capacity : number) => T
+
   export import float32      = FloatBuffer.float32
   export import float64      = FloatBuffer.float64
 
@@ -27,7 +29,7 @@ export namespace Buffer {
   * @return A reallocation of the given buffer.
   */
   export function reallocate <T extends Buffer> (buffer : T, capacity : number) : T {
-    const result : T = new buffer.constructor(capacity)
+    const result : T = new (buffer.constructor as Buffer.Allocator<T>)(capacity)
     return result
   }
 }

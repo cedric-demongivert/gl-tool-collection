@@ -1,9 +1,9 @@
 /** eslint-env jest */
 
-import { Collection } from '../src/Collection'
-import { View } from '../src/View'
+import { Collection } from '@library/Collection'
+import { View } from '@library/View'
 
-import { createCollection } from './mocks/createCollection'
+import { createCollection } from '../mocks/createCollection'
 
 function on (value : any) : any {
   return value
@@ -41,6 +41,7 @@ describe('View', function () {
     })
   })
 
+  /*
   describe('#indexOf', function () {
     it('call the wrapped collection method and return the result', function () {
       const mock : Collection<number> = createCollection()
@@ -69,7 +70,7 @@ describe('View', function () {
       expect(tags.get(2)).toBe(3)
       expect(mock.get).toHaveBeenCalledWith(2)
     })
-  })
+  })*/
 
   describe('#size', function () {
     it('call the wrapped collection method and return the result', function () {
@@ -79,34 +80,6 @@ describe('View', function () {
       createCollection.size(mock).mockReturnValue(3)
       expect(tags.size).toBe(3)
       expect(createCollection.size(mock)).toHaveBeenCalled()
-    })
-  })
-
-  describe('#iterator', function () {
-    it('call the wrapped collection method and return the result', function () {
-      const mock : Collection<number> = createCollection()
-      const tags : View<number> = new View<number>(mock)
-
-      on(mock[Symbol.iterator]).mockImplementation(
-        function * () { yield * [1, 2, 3] }
-      )
-      expect([...tags]).toEqual([1, 2, 3])
-      expect(mock[Symbol.iterator]).toHaveBeenCalled()
-    })
-  })
-
-  describe('#equals', function () {
-    it('call the wrapped collection method and return the result', function () {
-      const mock : Collection<number> = createCollection()
-      const tags : View<number> = new View<number>(mock)
-
-      on(mock.equals).mockReturnValue(false)
-      expect(tags.equals(6)).toBeFalsy()
-      expect(mock.equals).toHaveBeenCalledWith(6)
-
-      on(mock.equals).mockReturnValue(true)
-      expect(tags.equals(8)).toBeTruthy()
-      expect(mock.equals).toHaveBeenCalledWith(8)
     })
   })
 })

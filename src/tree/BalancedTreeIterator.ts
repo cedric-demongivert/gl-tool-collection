@@ -149,7 +149,9 @@ export class BalancedTreeIterator<Element> implements BidirectionalIterator<Elem
   }
 
   public clone () : BalancedTreeIterator<Element> {
-    const result : BalancedTreeIterator<Element> = new BalancedTreeIterator(this.collection)
+    const result : BalancedTreeIterator<Element> = new BalancedTreeIterator(
+      this.collection()
+    )
 
     result.move(this)
 

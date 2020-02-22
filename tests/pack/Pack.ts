@@ -494,11 +494,10 @@ export function isPack(instantiate : PackFactory<number>) : void{
   describe('#has', function () {
     it('return true if the given value is in the pack', function () {
       const pack : Pack<number> = instantiate(30)
-      const elements : Set<number> = new Set<number>()
-
-      while (elements.size < 20) {
-        elements.add(Math.random())
-      }
+      const elements : number[] = [
+         5, 10,  8,  3,  9,  7,  1,  4,  2,  0,
+         6, 11, 13, 15, 19, 16, 22, 23, 30, 18
+      ]
 
       for (let index = 0; index < 20; ++index) {
         expect(pack.has(elements[index])).toBeFalsy()
@@ -517,11 +516,10 @@ export function isPack(instantiate : PackFactory<number>) : void{
   describe('#indexOf', function () {
     it('return the index of the given value of the pack', function () {
       const pack : Pack<number> = instantiate(30)
-      const elements : Set<number> = new Set<number>()
-
-      while (elements.size < 20) {
-        elements.add(Math.random())
-      }
+      const elements : number[] = [
+         5, 10,  8,  3,  9,  7,  1,  4,  2,  0,
+         6, 11, 13, 15, 19, 16, 22, 23, 30, 18
+      ]
 
       for (let index = 0; index < 20; ++index) {
         expect(pack.indexOf(elements[index])).toBe(-1)

@@ -209,4 +209,131 @@ export namespace PackSet {
   export function copy <Element> (toCopy : PackSet<Element>) : PackSet<Element> {
     return new PackSet<Element>(Pack.copy(toCopy.elements))
   }
+
+  /**
+  * Instantiate a new set that wrap a pack of the given type of instance.
+  *
+  * @param capacity - Capacity of the set to allocate.
+  *
+  * @return A new set that wrap a pack of the given type of instance.
+  */
+  export function any <T> (capacity : number) : PackSet<T> {
+    return new PackSet<T>(Pack.any(capacity))
+  }
+
+  /**
+  * Instantiate a new set that wrap a unsigned byte pack of the given capacity.
+  *
+  * @param capacity - Capacity of the set to allocate.
+  *
+  * @return A new set that wrap a unsigned byte pack of the given capacity.
+  */
+  export function uint8 (capacity : number) : PackSet<number> {
+    return new PackSet<number>(Pack.uint8(capacity))
+  }
+
+  /**
+  * Instantiate a new set that wrap a unsigned short pack of the given capacity.
+  *
+  * @param capacity - Capacity of the set to allocate.
+  *
+  * @return A new set that wrap a unsigned short pack of the given capacity.
+  */
+  export function uint16 (capacity : number) : PackSet<number> {
+    return new PackSet<number>(Pack.uint16(capacity))
+  }
+
+  /**
+  * Instantiate a new set that wrap a unsigned integer pack of the given capacity.
+  *
+  * @param capacity - Capacity of the set to allocate.
+  *
+  * @return A new set that wrap a unsigned integer pack of the given capacity.
+  */
+  export function uint32 (capacity : number) : PackSet<number> {
+    return new PackSet<number>(Pack.uint32(capacity))
+  }
+
+  /**
+  * Instantiate a new set that wrap a byte pack of the given capacity.
+  *
+  * @param capacity - Capacity of the set to allocate.
+  *
+  * @return A new set that wrap a byte pack of the given capacity.
+  */
+  export function int8 (capacity : number) : PackSet<number> {
+    return new PackSet<number>(Pack.int8(capacity))
+  }
+
+  /**
+  * Instantiate a new set that wrap a short pack of the given capacity.
+  *
+  * @param capacity - Capacity of the set to allocate.
+  *
+  * @return A new set that wrap a short pack of the given capacity.
+  */
+  export function int16 (capacity : number) : PackSet<number> {
+    return new PackSet<number>(Pack.int16(capacity))
+  }
+
+  /**
+  * Instantiate a new set that wrap a integer pack of the given capacity.
+  *
+  * @param capacity - Capacity of the set to allocate.
+  *
+  * @return A new set that wrap a integer pack of the given capacity.
+  */
+  export function int32 (capacity : number) : PackSet<number> {
+    return new PackSet<number>(Pack.int32(capacity))
+  }
+
+  /**
+  * Instantiate a new set that wrap a float pack of the given capacity.
+  *
+  * @param capacity - Capacity of the set to allocate.
+  *
+  * @return A new set that wrap a float pack of the given capacity.
+  */
+  export function float32 (capacity : number) : PackSet<number> {
+    return new PackSet<number>(Pack.float32(capacity))
+  }
+
+  /**
+  * Instantiate a new set that wrap a double pack of the given capacity.
+  *
+  * @param capacity - Capacity of the set to allocate.
+  *
+  * @return A new set that wrap a double pack of the given capacity.
+  */
+  export function float64 (capacity : number) : PackSet<number> {
+    return new PackSet<number>(Pack.float64(capacity))
+  }
+
+  /**
+  * Instantiate a new set that wrap a unsigned integer pack that can store
+  * values in range [0, maximum] and that is of the given capacity.
+  *
+  * @param maximum - Maximum value that can be stored.
+  * @param capacity - Capacity of the set to allocate.
+  *
+  * @return A new set that wrap a unsigned integer pack that can store values
+  *         in range [0, maximum] and that is of the given capacity.
+  */
+  export function unsignedUpTo (maximum : number, capacity : number) : PackSet<number> {
+    return new PackSet<number>(Pack.unsignedUpTo(maximum, capacity))
+  }
+
+  /**
+  * Instantiate a new set that wrap a signed integer pack that can store
+  * values in range [-maximum, maximum] and that is of the given capacity.
+  *
+  * @param maximum - Maximum value that can be stored.
+  * @param capacity - Capacity of the set to allocate.
+  *
+  * @return A new set that wrap a signed integer pack that can store values
+  *         in range [-maximum, maximum] and that is of the given capacity.
+  */
+  export function signedUpTo (maximum : number, capacity : number) : PackSet<number> {
+    return new PackSet<number>(Pack.signedUpTo(maximum, capacity))
+  }
 }

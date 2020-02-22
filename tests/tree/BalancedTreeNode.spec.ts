@@ -1,8 +1,7 @@
 /** eslint-env jest */
 
-import { BalancedTreeNode } from '../../src/tree/BalancedTreeNode'
-import { BalancedTree } from '../../src/tree/BalancedTree'
-import { toArray } from '../../src/toArray'
+import { BalancedTreeNode } from '@library/tree/BalancedTreeNode'
+import { BalancedTree } from '@library/tree/BalancedTree'
 
 function numberComparator (left : number, right : number) : number {
   return left - right
@@ -14,8 +13,8 @@ describe('#BalancedTreeNode', function () {
       const tree : BalancedTree<number> = new BalancedTree(numberComparator, 5)
       const node : BalancedTreeNode<number> = new BalancedTreeNode(tree)
 
-      expect(toArray(node.keys)).toEqual([])
-      expect(toArray(node.children)).toEqual([])
+      expect([...node.keys]).toEqual([])
+      expect([...node.children]).toEqual([])
       expect(node.ascending).toBe(numberComparator)
       expect(node.descending).toBe(tree.descending)
       expect(node.tree).toBe(tree)
@@ -29,8 +28,8 @@ describe('#BalancedTreeNode', function () {
       const tree : BalancedTree<number> = new BalancedTree(numberComparator, 40)
       const node : BalancedTreeNode<number> = new BalancedTreeNode(tree)
 
-      expect(toArray(node.keys)).toEqual([])
-      expect(toArray(node.children)).toEqual([])
+      expect([...node.keys]).toEqual([])
+      expect([...node.children]).toEqual([])
 
 
       for (let index = 0; index < 39; ++index) {
@@ -88,8 +87,8 @@ describe('#BalancedTreeNode', function () {
       const tree : BalancedTree<number> = new BalancedTree(numberComparator, 40)
       const node : BalancedTreeNode<number> = new BalancedTreeNode(tree)
 
-      expect(toArray(node.keys)).toEqual([])
-      expect(toArray(node.children)).toEqual([])
+      expect([...node.keys]).toEqual([])
+      expect([...node.children]).toEqual([])
 
       const values : [number, BalancedTreeNode<number>][] = []
 
@@ -103,8 +102,8 @@ describe('#BalancedTreeNode', function () {
       values.sort(function (a, b) { return node.descending(a[0], b[0]) })
 
       expect(node.keys.size).toBe(32)
-      expect(toArray(node.keys)).toEqual(values.map(x => x[0]))
-      expect(toArray(node.children)).toEqual([null, ...values.map(x => x[1])])
+      expect([...node.keys]).toEqual(values.map(x => x[0]))
+      expect([...node.children]).toEqual([null, ...values.map(x => x[1])])
     })
   })
 
@@ -113,7 +112,7 @@ describe('#BalancedTreeNode', function () {
       const tree : BalancedTree<number> = new BalancedTree(numberComparator, 40)
       const node : BalancedTreeNode<number> = new BalancedTreeNode(tree)
 
-      expect(toArray(node.keys)).toEqual([])
+      expect([...node.keys]).toEqual([])
 
       const values : [number, BalancedTreeNode<number>][] = [
         [1, new BalancedTreeNode(tree)],
@@ -145,8 +144,8 @@ describe('#BalancedTreeNode', function () {
       const tree : BalancedTree<number> = new BalancedTree(numberComparator, 40)
       const node : BalancedTreeNode<number> = new BalancedTreeNode(tree)
 
-      expect(toArray(node.keys)).toEqual([])
-      expect(toArray(node.children)).toEqual([])
+      expect([...node.keys]).toEqual([])
+      expect([...node.children]).toEqual([])
 
       const upmost : BalancedTreeNode<number> = new BalancedTreeNode(tree)
       const refs : any[] = [ upmost ]
@@ -167,8 +166,8 @@ describe('#BalancedTreeNode', function () {
       values.sort(function (a, b) { return node.descending(a[0], b[0]) })
 
       expect(node.keys.size).toBe(32)
-      expect(toArray(node.keys)).toEqual(values.map(x => x[0]))
-      expect(toArray(node.children)).toEqual([upmost, ...values.map(x => x[1])])
+      expect([...node.keys]).toEqual(values.map(x => x[0]))
+      expect([...node.children]).toEqual([upmost, ...values.map(x => x[1])])
 
       const split : BalancedTreeNode<number> = node.split(8)
 
@@ -177,17 +176,17 @@ describe('#BalancedTreeNode', function () {
       expect(node.children.size).toBe(9)
       expect(split.children.size).toBe(33 - 9)
 
-      expect(toArray(node.keys)).toEqual(
+      expect([...node.keys]).toEqual(
         values.slice(0, 8).map(x => x[0])
       )
-      expect(toArray(split.keys)).toEqual(
+      expect([...split.keys]).toEqual(
         values.slice(9, 32).map(x => x[0])
       )
 
-      expect(toArray(node.children)).toEqual([
+      expect([...node.children]).toEqual([
         upmost, ...values.slice(0, 8).map(x => x[1])
       ])
-      expect(toArray(split.children)).toEqual(
+      expect([...split.children]).toEqual(
         values.slice(8, 32).map(x => x[1])
       )
     })

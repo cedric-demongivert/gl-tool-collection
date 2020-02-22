@@ -7,6 +7,6 @@ module.exports = {
     "/node_modules"
   ],
   "moduleNameMapper": {
-    '^@library/(.*)$': '<rootDir>/sources/$1'
+    '^@library/(.*)$': '<rootDir>/src/$1'
   }
 }

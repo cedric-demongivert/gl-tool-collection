@@ -1,12 +1,11 @@
 /** eslint-env jest */
 
-import { Collection } from '../src/Collection'
-import { ArrayPack } from '../src/pack/ArrayPack'
-import { bissect } from '../src/bissect'
+import { ArrayPack } from '@library/pack/ArrayPack'
+import { bissect } from '@library/algorithm/bissect'
 
 describe('#bissect', function () {
   it('binary search a collection for a given value', function () {
-    const collection : ArrayPack<number> = new ArrayPack<number>(20)
+    const collection : ArrayPack<number> = ArrayPack.allocate(20)
 
     for (let index = 0; index < 20; ++index) {
       collection.push(index)
@@ -18,7 +17,7 @@ describe('#bissect', function () {
   })
 
   it('return a negative insertion index if the value is missing', function () {
-    const collection : ArrayPack<number> = new ArrayPack<number>(10)
+    const collection : ArrayPack<number> = ArrayPack.allocate(10)
 
     for (const value of [0, 5, 6, 8, 10, 11, 12, 13, 15, 17]) {
       collection.push(value)

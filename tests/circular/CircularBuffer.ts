@@ -136,7 +136,7 @@ export function isCircularBuffer(factory : CircularBufferFactory<number>) {
       circular.swap(2, 6)
       circular.swap(5, 5)
 
-      const tmp : T = current[6]
+      const tmp : number = current[6]
       current[6] = current[2]
       current[2] = tmp
 
@@ -184,7 +184,7 @@ export function isCircularBuffer(factory : CircularBufferFactory<number>) {
 
       circular.set(24, elements[24])
 
-      const empty : T = circular.get(15)
+      const empty : number = circular.get(15)
 
       expect([...circular]).toEqual(
         elements.slice(5, 20).concat([
@@ -351,6 +351,67 @@ export function isCircularBuffer(factory : CircularBufferFactory<number>) {
       circular.clear()
 
       expect([...circular]).toEqual([])
+    })
+  })
+
+  describe('#reallocate', function () {
+    it('allows to expand the buffer', function () {
+      const circular : CircularBuffer<number> = factory(20)
+      const elements : number[] = pickUnique(30)
+
+      for (let index = 0; index < 30; ++index) {
+        circular.push(elements[index])
+      }
+
+      expect([...circular]).toEqual(elements.slice(10, 30))
+      expect(circular.capacity).toBe(20)
+
+      circular.reallocate(30)
+
+      for (let index = 0; index < 10; ++index) {
+        circular.push(elements[index])
+      }
+
+      expect(circular.capacity).toBe(30)
+      expect([...circular]).toEqual(elements.slice(10, 30).concat(
+        elements.slice(0, 10)
+      ))
+    })
+
+    it('allows to shrink the buffer', function () {
+      const circular : CircularBuffer<number> = factory(20)
+      const elements : number[] = pickUnique(30)
+
+      for (let index = 0; index < 30; ++index) {
+        circular.push(elements[index])
+      }
+
+      expect([...circular]).toEqual(elements.slice(10, 30))
+      expect(circular.capacity).toBe(20)
+
+      circular.reallocate(10)
+
+      expect(circular.capacity).toBe(10)
+      expect([...circular]).toEqual(elements.slice(20, 30))
+    })
+  })
+
+  describe('#fit', function () {
+    it('fit the buffer capacity to its size', function () {
+      const circular : CircularBuffer<number> = factory(50)
+      const elements : number[] = pickUnique(30)
+
+      for (let index = 0; index < 30; ++index) {
+        circular.push(elements[index])
+      }
+
+      expect([...circular]).toEqual(elements)
+      expect(circular.capacity).toBe(50)
+
+      circular.fit()
+
+      expect([...circular]).toEqual(elements)
+      expect(circular.capacity).toBe(30)
     })
   })
 }

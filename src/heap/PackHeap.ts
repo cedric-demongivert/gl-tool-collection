@@ -243,7 +243,7 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
     if (other == null) return false
     if (other === this) return true
 
-    if (other.isHeap) {
+    if (other instanceof PackHeap) {
       if (this.size !== other.size) return false
 
       for (let index = 0, size = this.size; index < size; ++index) {
@@ -267,6 +267,10 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
 }
 
 export namespace PackHeap {
+  function defaultNumberComparator (a : number, b : number) : number {
+    return a - b
+  }
+
   /**
   * Copy an existing heap instance.
   *
@@ -276,5 +280,75 @@ export namespace PackHeap {
   */
   export function copy <Element> (toCopy : PackHeap<Element>) : PackHeap<Element> {
     return toCopy == null ? null : toCopy.clone()
+  }
+
+  export function any <T> (
+    capacity : number,
+    comparator : Comparator<T, T>
+  ) : PackHeap<T> {
+    return new PackHeap<T>(Pack.any(capacity), comparator)
+  }
+
+  export function uint8 (
+    capacity : number,
+    comparator : Comparator<number, number> = defaultNumberComparator
+  ) : PackHeap<number> {
+    return new PackHeap<number>(Pack.uint8(capacity), comparator)
+  }
+
+  export function uint16 (
+    capacity : number,
+    comparator : Comparator<number, number> = defaultNumberComparator
+  ) : PackHeap<number> {
+    return new PackHeap<number>(Pack.uint16(capacity), comparator)
+  }
+
+  export function uint32 (
+    capacity : number,
+    comparator : Comparator<number, number> = defaultNumberComparator
+  ) : PackHeap<number> {
+    return new PackHeap<number>(Pack.uint32(capacity), comparator)
+  }
+
+  export function int8 (
+    capacity : number,
+    comparator : Comparator<number, number> = defaultNumberComparator
+  ) : PackHeap<number> {
+    return new PackHeap<number>(Pack.int8(capacity), comparator)
+  }
+
+  export function int16 (
+    capacity : number,
+    comparator : Comparator<number, number> = defaultNumberComparator
+  ) : PackHeap<number> {
+    return new PackHeap<number>(Pack.int16(capacity), comparator)
+  }
+
+  export function int32 (
+    capacity : number,
+    comparator : Comparator<number, number> = defaultNumberComparator
+  ) : PackHeap<number> {
+    return new PackHeap<number>(Pack.int32(capacity), comparator)
+  }
+
+  export function float32 (
+    capacity : number,
+    comparator : Comparator<number, number> = defaultNumberComparator
+  ) : PackHeap<number> {
+    return new PackHeap<number>(Pack.float32(capacity), comparator)
+  }
+
+  export function float64 (
+    capacity : number,
+    comparator : Comparator<number, number> = defaultNumberComparator
+  ) : PackHeap<number> {
+    return new PackHeap<number>(Pack.float64(capacity), comparator)
+  }
+
+  export function fromPack <T> (
+    pack : Pack<T>,
+    comparator : Comparator<T, T>
+  ) : PackHeap<T> {
+    return new PackHeap<T>(pack, comparator)
   }
 }

@@ -1,13 +1,13 @@
 import { Comparator } from '@library/Comparator'
+import { Sequence } from '@library/Sequence'
 
 import { equals } from '@library/algorithm/equals'
 import { quicksort } from '@library/algorithm/quicksort'
 
+import { SequenceView } from '@library/view/SequenceView'
+
 import { PackIterator } from '@library/pack/PackIterator'
 import { Pack } from '@library/pack/Pack'
-import { Sequence } from '@library/Sequence'
-
-import { SequenceView } from '@library/view/SequenceView'
 
 /**
 * A javascript array.
