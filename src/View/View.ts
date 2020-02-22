@@ -1,5 +1,5 @@
 import { Collection } from '@library/Collection'
-import { Iterator } from '@library/iterator'
+import { CollectionIterator } from '@library/iterator/CollectionIterator'
 
 /**
 * A readonly view over a given collection of values.
@@ -33,7 +33,7 @@ export class View<Element> implements Collection<Element> {
   /**
   * @see Collection.iterator
   */
-  public iterator () : Iterator<Element> {
+  public iterator () : CollectionIterator<Element> {
     return this._collection.iterator()
   }
 

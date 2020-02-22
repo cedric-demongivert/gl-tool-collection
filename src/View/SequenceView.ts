@@ -1,5 +1,4 @@
 import { Sequence } from '@library/Sequence'
-import { SequenceIterator } from '@library/SequenceIterator'
 import { View } from '@library/view/View'
 
 /**
