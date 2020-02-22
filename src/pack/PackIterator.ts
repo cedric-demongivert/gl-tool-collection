@@ -1,6 +1,6 @@
 import { CollectionIterator } from '@library/iterator/CollectionIterator'
 import { BidirectionalIterator } from '@library/iterator/BidirectionalIterator'
-import { Pack } from '@library/Pack'
+import { Pack } from '@library/pack/Pack'
 
 export class PackIterator<Element> implements BidirectionalIterator<Element>
 {
