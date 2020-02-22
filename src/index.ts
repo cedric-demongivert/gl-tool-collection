@@ -5,7 +5,7 @@ export { ReallocableCollection } from '@library/ReallocableCollection'
 export { Sequence } from '@library/Sequence'
 export { MutableSequence } from '@library/MutableSequence'
 
-export { View } from '@library/View'
+export { View } from '@library/view/View'
 
 export { Comparator } from '@library/Comparator'
 
