@@ -1,7 +1,8 @@
-import { Sequence } from '@library/Sequence'
-import { ReallocableCollection } from '@library/ReallocableCollection'
-import { MutableSet } from '@library/set/MutableSet'
-import { PackSparseDenseSet } from '@library/set/PackSparseDenseSet'
+import { Sequence } from '../Sequence'
+import { ReallocableCollection } from '../ReallocableCollection'
+
+import { MutableSet } from './MutableSet'
+import { PackSparseDenseSet } from './PackSparseDenseSet'
 
 export interface SparseDenseSet
          extends Sequence<number>, MutableSet<number>, ReallocableCollection

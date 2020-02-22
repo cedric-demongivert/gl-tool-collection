@@ -1,10 +1,12 @@
-import { UnsignedIntegerBuffer } from '@library/native/UnsignedIntegerBuffer'
-import { ReallocableCollection } from '@library/ReallocableCollection'
-import { Set } from '@library/set/Set'
-import { MutableSet } from '@library/set/MutableSet'
-import { IdentifierSetIterator } from '@library/set/IdentifierSetIterator'
-import { SequenceView } from '@library/view/SequenceView'
-import { Sequence } from '@library/Sequence'
+import { ReallocableCollection } from '../ReallocableCollection'
+import { SequenceView } from '../view/SequenceView'
+import { Sequence } from '../Sequence'
+
+import { UnsignedIntegerBuffer } from '../native/UnsignedIntegerBuffer'
+
+import { Set } from './Set'
+import { MutableSet } from './MutableSet'
+import { IdentifierSetIterator } from './IdentifierSetIterator'
 
 export class IdentifierSet implements MutableSet<number>, Sequence<number>, ReallocableCollection {
   private _sparse : UnsignedIntegerBuffer

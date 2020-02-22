@@ -1,6 +1,6 @@
-import { FloatBuffer } from '@library/native/FloatBuffer'
-import { UnsignedIntegerBuffer } from '@library/native/UnsignedIntegerBuffer'
-import { IntegerBuffer } from '@library/native/IntegerBuffer'
+import { FloatBuffer } from './FloatBuffer'
+import { UnsignedIntegerBuffer } from './UnsignedIntegerBuffer'
+import { IntegerBuffer } from './IntegerBuffer'
 
 export type Buffer = UnsignedIntegerBuffer | IntegerBuffer | FloatBuffer
 

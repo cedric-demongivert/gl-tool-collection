@@ -1,4 +1,4 @@
-import { Sequence } from '@library/Sequence'
+import { Sequence } from './Sequence'
 
 export interface MutableSequence<Element> extends Sequence<Element> {
   /**

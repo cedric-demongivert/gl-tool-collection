@@ -1,4 +1,4 @@
-import { BufferPack } from '@library/pack/BufferPack'
+import { BufferPack } from '../../src/pack/BufferPack'
 import { isPack } from './Pack'
 
 describe('#BufferPack', function () {

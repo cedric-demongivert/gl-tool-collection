@@ -1,4 +1,4 @@
-import { PackHeap } from '@library/heap/PackHeap'
+import { PackHeap } from '../../src/heap/PackHeap'
 
 import { isHeap } from './Heap'
 

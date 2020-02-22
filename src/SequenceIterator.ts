@@ -1,6 +1,6 @@
-import { Sequence } from '@library/Sequence'
-import { CollectionIterator } from '@library/iterator/CollectionIterator'
-import { BidirectionalIterator } from '@library/iterator/BidirectionalIterator'
+import { Sequence } from './Sequence'
+import { CollectionIterator } from './iterator/CollectionIterator'
+import { BidirectionalIterator } from './iterator/BidirectionalIterator'
 
 export class SequenceIterator<Element> implements BidirectionalIterator<Element>
 {

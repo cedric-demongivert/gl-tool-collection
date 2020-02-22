@@ -1,9 +1,10 @@
-import { Pack } from '@library/pack/Pack'
-import { Sequence } from '@library/Sequence'
-import { bissect } from '@library/algorithm/bissect'
-import { Comparator } from '@library/Comparator'
-import { BalancedTree } from '@library/tree/BalancedTree'
-import { BalancedTreeNode } from '@library/tree/BalancedTreeNode'
+import { Pack } from '../pack/Pack'
+import { Sequence } from '../Sequence'
+import { bissect } from '../algorithm/bissect'
+import { Comparator } from '../Comparator'
+
+import { BalancedTree } from './BalancedTree'
+import { BalancedTreeNode } from './BalancedTreeNode'
 
 export class BalancedTreeElement<Element> {
   protected _keys : Pack<Element>

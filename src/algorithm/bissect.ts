@@ -1,5 +1,5 @@
-import { Sequence } from '@library/Sequence'
-import { Comparator } from '@library/Comparator'
+import { Sequence } from '../Sequence'
+import { Comparator } from '../Comparator'
 
 /**
 * Default comparator used in order to bissect a collection.

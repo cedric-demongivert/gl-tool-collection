@@ -1,16 +1,15 @@
-import { Sequence } from '@library/Sequence'
-import { Comparator } from '@library/Comparator'
-import { bissect } from '@library/algorithm/bissect'
-import { View } from '@library/view/View'
-import { Collection } from '@library/Collection'
-import { CollectionIterator } from '@library/iterator/CollectionIterator'
+import { Sequence } from '../Sequence'
+import { Comparator } from '../Comparator'
+import { bissect } from '../algorithm/bissect'
+import { View } from '../view/View'
+import { Collection } from '../Collection'
+import { CollectionIterator } from '../iterator/CollectionIterator'
 
-import { BalancedTreeWalker } from '@library/tree/BalancedTreeWalker'
-
-import { BalancedTreeElement } from '@library/tree/BalancedTreeElement'
-import { BalancedTreeNode } from '@library/tree/BalancedTreeNode'
-import { BalancedTreeLeaf } from '@library/tree/BalancedTreeLeaf'
-import { BalancedTreeIterator } from '@library/tree/BalancedTreeIterator'
+import { BalancedTreeWalker } from './BalancedTreeWalker'
+import { BalancedTreeElement } from './BalancedTreeElement'
+import { BalancedTreeNode } from './BalancedTreeNode'
+import { BalancedTreeLeaf } from './BalancedTreeLeaf'
+import { BalancedTreeIterator } from './BalancedTreeIterator'
 
 function indent (depth : number) : string {
   return '  '.repeat(depth)

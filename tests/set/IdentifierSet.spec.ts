@@ -1,5 +1,5 @@
 /** eslint-env jest */
-import { IdentifierSet } from '@library/set/IdentifierSet'
+import { IdentifierSet } from '../../src/set/IdentifierSet'
 
 import { isMutableSet } from './MutableSet'
 

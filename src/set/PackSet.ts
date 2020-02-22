@@ -1,10 +1,11 @@
-import { ReallocableCollection } from '@library/ReallocableCollection'
-import { MutableSet } from '@library/set/MutableSet'
-import { Set } from '@library/set/Set'
-import { Sequence } from '@library/Sequence'
-import { BidirectionalIterator } from '@library/iterator/BidirectionalIterator'
-import { Pack } from '@library/pack/Pack'
-import { SequenceView } from '@library/view/SequenceView'
+import { ReallocableCollection } from '../ReallocableCollection'
+import { Sequence } from '../Sequence'
+import { BidirectionalIterator } from '../iterator/BidirectionalIterator'
+import { Pack } from '../pack/Pack'
+import { SequenceView } from '../view/SequenceView'
+
+import { MutableSet } from './MutableSet'
+import { Set } from './Set'
 
 export class PackSet<Element>
   implements ReallocableCollection, MutableSet<Element>, Sequence<Element>

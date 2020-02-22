@@ -1,7 +1,8 @@
-import { Collection } from '@library/Collection'
-import { Pack } from '@library/pack/Pack'
-import { PackSet } from '@library/set/PackSet'
-import { IdentifierSet } from '@library/set/IdentifierSet'
+import { Collection } from '../Collection'
+import { Pack } from '../pack/Pack'
+
+import { PackSet } from './PackSet'
+import { IdentifierSet } from './IdentifierSet'
 
 /**
 * A collection of elements without order and that does not allows duplicates of

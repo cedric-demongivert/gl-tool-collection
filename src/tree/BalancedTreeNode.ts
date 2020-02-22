@@ -1,9 +1,9 @@
-import { Pack } from '@library/pack/Pack'
-import { Sequence } from '@library/Sequence'
-import { bissect } from '@library/algorithm/bissect'
+import { Pack } from '../pack/Pack'
+import { Sequence } from '../Sequence'
+import { bissect } from '../algorithm/bissect'
 
-import { BalancedTree } from '@library/tree/BalancedTree'
-import { BalancedTreeElement } from '@library/tree/BalancedTreeElement'
+import { BalancedTree } from './BalancedTree'
+import { BalancedTreeElement } from './BalancedTreeElement'
 
 export class BalancedTreeNode<Element> extends BalancedTreeElement<Element> {
   private _children : Pack<BalancedTreeElement<Element>>

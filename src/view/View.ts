@@ -1,5 +1,5 @@
-import { Collection } from '@library/Collection'
-import { CollectionIterator } from '@library/iterator/CollectionIterator'
+import { Collection } from '../Collection'
+import { CollectionIterator } from '../iterator/CollectionIterator'
 
 /**
 * A readonly view over a given collection of values.

@@ -1,6 +1,6 @@
 /** eslint-env jest */
 
-import { Heap } from '@library/heap/Heap'
+import { Heap } from '../../src/heap/Heap'
 
 type HeapFactory<T> = (capacity : number) => Heap<T>
 

@@ -1,6 +1,6 @@
 /** eslint-env jest */
 
-import { Pack } from '@library/pack/Pack'
+import { Pack } from '../../src/pack/Pack'
 
 type PackFactory<T> = (capacity : number) => Pack<T>
 

@@ -1,14 +1,14 @@
-import { Comparator } from '@library/Comparator'
-import { Sequence } from '@library/Sequence'
-import { MutableSequence } from '@library/MutableSequence'
-import { ReallocableCollection } from '@library/ReallocableCollection'
+import { Comparator } from '../Comparator'
+import { Sequence } from '../Sequence'
+import { MutableSequence } from '../MutableSequence'
+import { ReallocableCollection } from '../ReallocableCollection'
 
-import { UnsignedIntegerBuffer } from '@library/native/UnsignedIntegerBuffer'
-import { IntegerBuffer } from '@library/native/IntegerBuffer'
+import { UnsignedIntegerBuffer } from '../native/UnsignedIntegerBuffer'
+import { IntegerBuffer } from '../native/IntegerBuffer'
 
-import { PackIterator } from '@library/pack/PackIterator'
-import { BufferPack } from '@library/pack/BufferPack'
-import { ArrayPack } from '@library/pack/ArrayPack'
+import { PackIterator } from './PackIterator'
+import { BufferPack } from './BufferPack'
+import { ArrayPack } from './ArrayPack'
 
 export interface Pack<Element>
          extends MutableSequence<Element>, ReallocableCollection

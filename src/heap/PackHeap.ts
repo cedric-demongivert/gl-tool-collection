@@ -1,10 +1,14 @@
-import { ReallocableCollection } from '@library/ReallocableCollection'
-import { Pack } from '@library/pack/Pack'
-import { Comparator } from '@library/Comparator'
-import { Heap } from '@library/heap/Heap'
-import { BidirectionalIterator } from '@library/iterator/BidirectionalIterator'
-import { SequenceView } from '@library/view/SequenceView'
-import { Sequence } from '@library/Sequence'
+import { ReallocableCollection } from '../ReallocableCollection'
+import { Comparator } from '../Comparator'
+import { Sequence } from '../Sequence'
+
+import { Pack } from '../pack/Pack'
+
+import { BidirectionalIterator } from '../iterator/BidirectionalIterator'
+
+import { SequenceView } from '../view/SequenceView'
+
+import { Heap } from './Heap'
 
 /**
 * A heap based uppon a pack collection.

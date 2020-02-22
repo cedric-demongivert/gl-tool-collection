@@ -1,7 +1,7 @@
-import { Pack } from '@library/pack/Pack'
+import { Pack } from '../pack/Pack'
 
-import { BalancedTreeElement } from '@library/tree/BalancedTreeElement'
-import { BalancedTree } from '@library/tree/BalancedTree'
+import { BalancedTreeElement } from './BalancedTreeElement'
+import { BalancedTree } from './BalancedTree'
 
 export class BalancedTreeLeaf<Element> extends BalancedTreeElement<Element> {
   /**

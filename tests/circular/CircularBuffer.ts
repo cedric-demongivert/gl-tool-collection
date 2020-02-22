@@ -1,6 +1,6 @@
 /** eslint-env jest */
 
-import { CircularBuffer } from '@library/circular/CircularBuffer'
+import { CircularBuffer } from '../../src/circular/CircularBuffer'
 
 type CircularBufferFactory<T> = (capacity : number) => CircularBuffer<number>
 

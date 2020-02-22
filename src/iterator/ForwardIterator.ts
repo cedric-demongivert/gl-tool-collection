@@ -1,4 +1,4 @@
-import { CollectionIterator } from '@library/iterator/CollectionIterator'
+import { CollectionIterator } from './CollectionIterator'
 
 /**
 * Forward iterators are iterators that can move from element to element by

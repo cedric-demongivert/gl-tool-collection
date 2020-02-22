@@ -1,7 +1,8 @@
-import { Sequence } from '@library/Sequence'
-import { Comparator } from '@library/Comparator'
-import { PackHeap } from '@library/heap/PackHeap'
-import { Pack } from '@library/pack/Pack'
+import { Sequence } from '../Sequence'
+import { Comparator } from '../Comparator'
+import { Pack } from '../pack/Pack'
+
+import { PackHeap } from './PackHeap'
 
 export interface Heap<Element> extends Sequence<Element> {
   /**

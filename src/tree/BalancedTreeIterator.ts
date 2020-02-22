@@ -1,7 +1,8 @@
-import { BidirectionalIterator } from '@library/iterator/BidirectionalIterator'
-import { CollectionIterator } from '@library/iterator/CollectionIterator'
-import { BalancedTree } from '@library/tree/BalancedTree'
-import { BalancedTreeWalker } from '@library/tree/BalancedTreeWalker'
+import { BidirectionalIterator } from '../iterator/BidirectionalIterator'
+import { CollectionIterator } from '../iterator/CollectionIterator'
+
+import { BalancedTree } from './BalancedTree'
+import { BalancedTreeWalker } from './BalancedTreeWalker'
 
 export class BalancedTreeIterator<Element> implements BidirectionalIterator<Element> {
   private _walker : BalancedTreeWalker<Element>

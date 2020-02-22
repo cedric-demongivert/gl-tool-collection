@@ -1,6 +1,7 @@
-import { CollectionIterator } from '@library/iterator/CollectionIterator'
-import { BidirectionalIterator } from '@library/iterator/BidirectionalIterator'
-import { IdentifierSet } from '@library/set/IdentifierSet'
+import { CollectionIterator } from '../iterator/CollectionIterator'
+import { BidirectionalIterator } from '../iterator/BidirectionalIterator'
+
+import { IdentifierSet } from './IdentifierSet'
 
 export class IdentifierSetIterator implements BidirectionalIterator<number>
 {

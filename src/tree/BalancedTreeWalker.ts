@@ -1,10 +1,10 @@
-import { Pack } from '@library/pack/Pack'
-import { Sequence } from '@library/Sequence'
+import { Pack } from '../pack/Pack'
+import { Sequence } from '../Sequence'
 
-import { BalancedTree } from '@library/tree/BalancedTree'
-import { BalancedTreeElement } from '@library/tree/BalancedTreeElement'
-import { BalancedTreeNode } from '@library/tree/BalancedTreeNode'
-import { BalancedTreeLeaf } from '@library/tree/BalancedTreeLeaf'
+import { BalancedTree } from './BalancedTree'
+import { BalancedTreeElement } from './BalancedTreeElement'
+import { BalancedTreeNode } from './BalancedTreeNode'
+import { BalancedTreeLeaf } from './BalancedTreeLeaf'
 
 export class BalancedTreeWalker<Element>
 {

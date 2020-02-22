@@ -1,6 +1,6 @@
 /** eslint-env jest */
 
-import { MutableSet } from '@library/set/MutableSet'
+import { MutableSet } from '../../src/set/MutableSet'
 
 type SetFactory<T> = (capacity : number) => MutableSet<T>
 

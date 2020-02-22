@@ -1,9 +1,11 @@
-import { Pack } from '@library/pack/Pack'
-import { BidirectionalIterator } from '@library/iterator/BidirectionalIterator'
-import { SparseDenseSet } from '@library/set/SparseDenseSet'
-import { Set } from '@library/set/Set'
-import { Sequence } from '@library/Sequence'
-import { SequenceView } from '@library/view/SequenceView'
+import { Sequence } from '../Sequence'
+
+import { Pack } from '../pack/Pack'
+import { BidirectionalIterator } from '../iterator/BidirectionalIterator'
+import { SequenceView } from '../view/SequenceView'
+
+import { SparseDenseSet } from './SparseDenseSet'
+import { Set } from './Set'
 
 export class PackSparseDenseSet implements SparseDenseSet, Sequence<number>
 {

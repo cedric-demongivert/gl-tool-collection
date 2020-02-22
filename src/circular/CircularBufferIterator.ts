@@ -1,6 +1,6 @@
-import { CollectionIterator } from '@library/iterator/CollectionIterator'
-import { BidirectionalIterator } from '@library/iterator/BidirectionalIterator'
-import { CircularBuffer } from '@library/circular/CircularBuffer'
+import { CollectionIterator } from '../iterator/CollectionIterator'
+import { BidirectionalIterator } from '../iterator/BidirectionalIterator'
+import { CircularBuffer } from '../circular/CircularBuffer'
 
 export class CircularBufferIterator<Element> implements BidirectionalIterator<Element>
 {

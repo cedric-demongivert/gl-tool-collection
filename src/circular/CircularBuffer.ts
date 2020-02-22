@@ -1,9 +1,9 @@
-import { ReallocableCollection } from '@library/ReallocableCollection'
-import { MutableSequence } from '@library/MutableSequence'
-import { Pack } from '@library/pack/Pack'
+import { ReallocableCollection } from '../ReallocableCollection'
+import { MutableSequence } from '../MutableSequence'
+import { Pack } from '../pack/Pack'
 
-import { PackCircularBuffer } from '@library/circular/PackCircularBuffer'
-import { CircularBufferIterator } from '@library/circular/CircularBufferIterator'
+import { PackCircularBuffer } from '../circular/PackCircularBuffer'
+import { CircularBufferIterator } from '../circular/CircularBufferIterator'
 
 /**
 * A circular buffer that continuously drop the first inserted item when an

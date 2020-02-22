@@ -8,11 +8,7 @@
     "downlevelIteration": true,
     "declaration": true,
     "declarationDir": "./dist/types",
-    "outDir": "./dist/src",
-    "baseUrl": ".",
-    "paths": {
-      "@library/*": ["./src/*"]
-    }
+    "outDir": "./dist/src"
   },
   "include": [
       "src/**/*"

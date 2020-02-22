@@ -1,7 +1,7 @@
 /** eslint-env jest */
 
-import { ArrayPack } from '@library/pack/ArrayPack'
-import { bissect } from '@library/algorithm/bissect'
+import { ArrayPack } from '../src/pack/ArrayPack'
+import { bissect } from '../src/algorithm/bissect'
 
 describe('#bissect', function () {
   it('binary search a collection for a given value', function () {

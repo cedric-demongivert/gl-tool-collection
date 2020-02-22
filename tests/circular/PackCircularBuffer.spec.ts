@@ -1,4 +1,4 @@
-import { PackCircularBuffer } from '@library/circular/PackCircularBuffer'
+import { PackCircularBuffer } from '../../src/circular/PackCircularBuffer'
 
 import { isCircularBuffer } from './CircularBuffer'
 

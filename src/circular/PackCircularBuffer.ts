@@ -1,9 +1,9 @@
-import { equals } from '@library/algorithm/equals'
-import { Pack } from '@library/pack/Pack'
-import { CircularBuffer } from '@library/circular/CircularBuffer'
-import { CircularBufferIterator } from '@library/circular/CircularBufferIterator'
-import { Sequence } from '@library/Sequence'
-import { SequenceView } from '@library/view/SequenceView'
+import { equals } from '../algorithm/equals'
+import { Pack } from '../pack/Pack'
+import { CircularBuffer } from '../circular/CircularBuffer'
+import { CircularBufferIterator } from '../circular/CircularBufferIterator'
+import { Sequence } from '../Sequence'
+import { SequenceView } from '../view/SequenceView'
 
 export class PackCircularBuffer<Element> implements CircularBuffer<Element>
 {

@@ -1,5 +1,5 @@
-import { Comparator } from '@library/Comparator'
-import { MutableSequence } from '@library/MutableSequence'
+import { Comparator } from '../Comparator'
+import { MutableSequence } from '../MutableSequence'
 
 /**
 * Default comparator used in order to quicksort a collection.

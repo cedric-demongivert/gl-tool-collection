@@ -1,17 +1,17 @@
-import { Comparator } from '@library/Comparator'
-import { Sequence } from '@library/Sequence'
+import { Comparator } from '../Comparator'
+import { Sequence } from '../Sequence'
 
-import { equals } from '@library/algorithm/equals'
-import { quicksort } from '@library/algorithm/quicksort'
+import { equals } from '../algorithm/equals'
+import { quicksort } from '../algorithm/quicksort'
 
-import { Buffer } from '@library/native/Buffer'
-import { UnsignedIntegerBuffer } from '@library/native/UnsignedIntegerBuffer'
-import { IntegerBuffer } from '@library/native/IntegerBuffer'
+import { Buffer } from '../native/Buffer'
+import { UnsignedIntegerBuffer } from '../native/UnsignedIntegerBuffer'
+import { IntegerBuffer } from '../native/IntegerBuffer'
 
-import { SequenceView } from '@library/view/SequenceView'
+import { SequenceView } from '../view/SequenceView'
 
-import { Pack } from '@library/pack/Pack'
-import { PackIterator } from '@library/pack/PackIterator'
+import { Pack } from './Pack'
+import { PackIterator } from './PackIterator'
 
 export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   /**

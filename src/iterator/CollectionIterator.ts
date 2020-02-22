@@ -1,4 +1,4 @@
-import { Collection } from '@library/Collection'
+import { Collection } from '../Collection'
 
 /**
 * An iterator over a collection of element.

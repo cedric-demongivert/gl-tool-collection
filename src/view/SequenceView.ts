@@ -1,5 +1,5 @@
-import { Sequence } from '@library/Sequence'
-import { View } from '@library/view/View'
+import { Sequence } from '../Sequence'
+import { View } from './View'
 
 /**
 * A readonly view over a given sequence of values.

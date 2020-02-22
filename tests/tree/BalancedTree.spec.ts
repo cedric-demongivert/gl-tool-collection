@@ -1,6 +1,6 @@
 /** eslint-env jest */
 
-import { BalancedTree } from '@library/tree/BalancedTree'
+import { BalancedTree } from '../../src/tree/BalancedTree'
 
 function numberComparator (left : number, right : number) : number {
   return left - right

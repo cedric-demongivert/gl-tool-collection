@@ -1,5 +1,5 @@
-import { CollectionIterator } from '@library/iterator/CollectionIterator'
-import { Size } from '@library/Size'
+import { CollectionIterator } from './iterator/CollectionIterator'
+import { Size } from './Size'
 
 /**
 * A collection of element.
