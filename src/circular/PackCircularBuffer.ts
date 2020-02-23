@@ -281,6 +281,18 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
+  * @see Sequence.concat
+  */
+  public concat (toConcat : Sequence<Element>) : void {
+    const firstIndex : number = toConcat.firstIndex
+    const lastIndex : number = toConcat.lastIndex + 1
+
+    for (let index = firstIndex; index < lastIndex; ++index) {
+      this.push(toConcat.get(index))
+    }
+  }
+
+  /**
   * @see Sequence.copy
   */
   public copy (toCopy : Sequence<Element>) : void {

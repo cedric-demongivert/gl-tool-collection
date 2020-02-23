@@ -290,6 +290,20 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
+  * @see Sequence.concat
+  */
+  public concat (toConcat : Sequence<number>) : void {
+    const firstIndex : number = toConcat.firstIndex
+    const lastIndex : number = toConcat.lastIndex + 1
+
+    this.size += toConcat.size
+
+    for (let index = firstIndex; index < lastIndex; ++index) {
+      this.push(toConcat.get(index))
+    }
+  }
+
+  /**
   * @see Pack.allocate
   */
   public allocate (capacity : number) : BufferPack<Wrapped> {

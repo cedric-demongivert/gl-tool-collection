@@ -132,6 +132,13 @@ export interface MutableSequence<Element> extends Sequence<Element> {
   clone () : MutableSequence<Element>
 
   /**
+  * Append the content of the given sequence at the end of this one.
+  *
+  * @param toConcat - An existing sequence to concat.
+  */
+  concat (toConcat : Sequence<Element>) : void
+
+  /**
   * Shallow copy an existing sequence.
   *
   * This method may update the capacity of this sequence and as a result may
