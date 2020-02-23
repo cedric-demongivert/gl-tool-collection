@@ -283,7 +283,9 @@ export class ArrayPack<Element> implements Pack<Element> {
     const firstIndex : number = toConcat.firstIndex
     const lastIndex : number = toConcat.lastIndex + 1
 
-    this.size += toConcat.size
+    if (this.capacity < this.size + toConcat.size) {
+      this.reallocate(this.size + toConcat.size)
+    }
 
     for (let index = firstIndex; index < lastIndex; ++index) {
       this.push(toConcat.get(index))
