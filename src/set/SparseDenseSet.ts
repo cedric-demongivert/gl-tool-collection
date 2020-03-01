@@ -8,6 +8,11 @@ export interface SparseDenseSet
          extends Sequence<number>, MutableSet<number>, ReallocableCollection
 {
   /**
+  * @see Collection.view
+  */
+  view () : Sequence<number>
+
+  /**
   * @see Collection.clone
   */
   clone () : SparseDenseSet
