@@ -248,6 +248,20 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
+  * @see MutableSequence.deleteMany
+  */
+  public deleteMany (from : number, size : number) : void {
+    const end : number = from + size
+
+    for (let cursor = 0; cursor < from; ++cursor) {
+      this.set(end - cursor - 1, this.get(from - cursor - 1))
+    }
+
+    this._start = (this._start + size) % this._elements.capacity
+    this._size -= size
+  }
+
+  /**
   * @see MutableSequence.warp
   */
   public warp (index : number) : void {

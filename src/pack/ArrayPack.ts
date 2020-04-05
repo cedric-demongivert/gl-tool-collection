@@ -238,6 +238,20 @@ export class ArrayPack<Element> implements Pack<Element> {
   }
 
   /**
+  * @see MutableSequence.deleteMany
+  */
+  public deleteMany (from : number, size : number) : void {
+    const toMove : number = this._size - from - size
+    const offset : number = from + size
+
+    for (let cursor = 0; cursor < toMove; ++cursor) {
+      this._elements[from + cursor] = this._elements[offset + cursor]
+    }
+
+    this.size -= size
+  }
+
+  /**
   * @see MutableSequence.warp
   */
   public warp (index : number) : void {

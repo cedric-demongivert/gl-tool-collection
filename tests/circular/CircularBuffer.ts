@@ -88,6 +88,33 @@ export function isCircularBuffer(factory : CircularBufferFactory<number>) {
     })
   })
 
+  describe('#deleteMany', function () {
+    it('delete a sequence of value of the buffer', function () {
+      const circular : CircularBuffer<number> = factory(20)
+      const elements : number[] = []
+
+      expect([...circular]).toEqual([])
+      expect(circular.size).toBe(0)
+
+      for (let index = 0; index < 50; ++index) {
+        elements.push(Math.random())
+        circular.push(elements[index])
+      }
+
+      const current : number[] = elements.slice(30, 50)
+
+      expect([...circular]).toEqual(current)
+      expect(circular.size).toBe(20)
+
+      circular.deleteMany(5, 7)
+
+      current.splice(5, 7)
+
+      expect([...circular]).toEqual(current)
+      expect(circular.size).toBe(13)
+    })
+  })
+
   describe('#warp', function () {
     it('warp a value out of the buffer', function () {
       const circular : CircularBuffer<number> = factory(20)

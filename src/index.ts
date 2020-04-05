@@ -3,6 +3,7 @@ export { StaticCollection } from './StaticCollection'
 export { ReallocableCollection } from './ReallocableCollection'
 
 export { Sequence } from './Sequence'
+export { SequenceIterator } from './SequenceIterator'
 export { MutableSequence } from './MutableSequence'
 
 export { View } from './view/View'

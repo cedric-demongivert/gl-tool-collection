@@ -460,6 +460,35 @@ export function isPack(instantiate : PackFactory<number>) : void{
     })
   })
 
+  describe('#deleteMany', function () {
+    it('delete a sequence of value of the pack', function () {
+      const pack : Pack<number> = instantiate(30)
+      const elements : number[] = []
+
+      for (let index = 0; index < 20; ++index) {
+        elements[index] = Math.random()
+        pack.push(elements[index])
+      }
+
+      expect([...pack]).toEqual(elements)
+      expect(pack.size).toBe(20)
+      expect(pack.capacity).toBe(30)
+
+      pack.deleteMany(5, 7)
+
+      for (let index = 0; index < 5; ++index) {
+        expect(pack.get(index)).toBe(elements[index])
+      }
+
+      for (let index = 5; index < 13; ++index) {
+        expect(pack.get(index)).toBe(elements[index + 7])
+      }
+
+      expect(pack.size).toBe(13)
+      expect(pack.capacity).toBe(30)
+    })
+  })
+
   describe('#warp', function () {
     it('warp a value of the pack', function () {
       const pack : Pack<number> = instantiate(30)

@@ -107,6 +107,17 @@ export interface MutableSequence<Element> extends Sequence<Element> {
   delete (index : number) : void
 
   /**
+  * Delete the given number of element from the given index in this sequence.
+  *
+  * All values after the insertion index will be moved to their previous
+  * available location and the size of will sequence will decrement.
+  *
+  * @param from - First element to delete.
+  * @param count - Number of element to delete.
+  */
+  deleteMany (from : number, count : number) : void
+
+  /**
   * Warp out the element at the given location by replacing it with any element
   * of this sequence. This operation will decrease the size of this sequence.
   *
