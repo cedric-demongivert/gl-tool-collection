@@ -9,6 +9,7 @@ import { IntegerBuffer } from '../native/IntegerBuffer'
 import { PackIterator } from './PackIterator'
 import { BufferPack } from './BufferPack'
 import { ArrayPack } from './ArrayPack'
+import { InstancePack } from './InstancePack'
 
 export interface Pack<Element>
          extends MutableSequence<Element>, ReallocableCollection
@@ -216,5 +217,9 @@ export namespace Pack {
     maximum : number, capacity : number
   ) : BufferPack<IntegerBuffer> {
     return new BufferPack(IntegerBuffer.upTo(maximum, capacity))
+  }
+
+  export function instance (allocator : InstancePack.Allocator<Element>, capacity : number) : InstancePack<Element> {
+    return new InstancePack<Element>(allocator, capacity)
   }
 }
