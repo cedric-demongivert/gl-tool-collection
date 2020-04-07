@@ -9,6 +9,7 @@ export { MutableSequence } from './MutableSequence'
 export { View } from './view/View'
 
 export { Comparator } from './Comparator'
+export { Allocator } from './Allocator'
 
 export * from './algorithm'
 export * from './iterator'

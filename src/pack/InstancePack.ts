@@ -1,3 +1,5 @@
+import { Allocator } from '../Allocator'
+
 import { Comparator } from '../Comparator'
 import { Sequence } from '../Sequence'
 
@@ -22,7 +24,7 @@ export class InstancePack<Element> implements Pack<Element> {
   */
   private _elements : Pack<Element>
 
-  public readonly allocator : InstancePack.Allocator<Element>
+  public readonly allocator : Allocator<Element>
 
   /**
   * Makes an empty instance pack of the given capacity.
@@ -30,7 +32,7 @@ export class InstancePack<Element> implements Pack<Element> {
   * @param allocator - An allocator that allows to manipulate the given instance type.
   * @param [capacity = 32] - Initial capacity of the pack to instantiate.
   */
-  public constructor (allocator : InstancePack.Allocator<Element>, capacity : number = 32) {
+  public constructor (allocator : Allocator<Element>, capacity : number = 32) {
     this.allocator = allocator
     this._pool = Pack.any(capacity)
     this._elements = Pack.any(capacity)
@@ -379,15 +381,6 @@ export class InstancePack<Element> implements Pack<Element> {
 }
 
 export namespace InstancePack {
-  /**
-  * Initial value of each new cell of a pack.
-  */
-  export type Allocator<Instance> = {
-    allocate () : Instance,
-    clear (instance : Instance) : void,
-    copy (source : Instance, destination : Instance) : void
-  }
-
   /**
   * Return an empty array pack of the given capacity.
   *

@@ -1,4 +1,5 @@
 import { Comparator } from '../Comparator'
+import { Allocator } from '../Allocator'
 import { Sequence } from '../Sequence'
 import { MutableSequence } from '../MutableSequence'
 import { ReallocableCollection } from '../ReallocableCollection'
@@ -219,7 +220,7 @@ export namespace Pack {
     return new BufferPack(IntegerBuffer.upTo(maximum, capacity))
   }
 
-  export function instance (allocator : InstancePack.Allocator<Element>, capacity : number) : InstancePack<Element> {
+  export function instance (allocator : Allocator<Element>, capacity : number) : InstancePack<Element> {
     return new InstancePack<Element>(allocator, capacity)
   }
 }
