@@ -220,7 +220,7 @@ export namespace Pack {
     return new BufferPack(IntegerBuffer.upTo(maximum, capacity))
   }
 
-  export function instance (allocator : Allocator<Element>, capacity : number) : InstancePack<Element> {
+  export function instance <Element> (allocator : Allocator<Element>, capacity : number) : InstancePack<Element> {
     return new InstancePack<Element>(allocator, capacity)
   }
 }
