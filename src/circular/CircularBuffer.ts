@@ -23,7 +23,7 @@ export interface CircularBuffer<Element>
   iterator () : CircularBufferIterator<Element>
 }
 
-namespace CircularBuffer {
+export namespace CircularBuffer {
   /**
   * Return a shallow copy the given circular buffer.
   *
