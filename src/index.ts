@@ -6,8 +6,6 @@ export { Sequence } from './Sequence'
 export { SequenceIterator } from './SequenceIterator'
 export { MutableSequence } from './MutableSequence'
 
-export { View } from './view/View'
-
 export { Comparator } from './Comparator'
 export { Allocator } from './Allocator'
 
@@ -18,3 +16,4 @@ export * from './set'
 export * from './circular'
 export * from './heap'
 export * from './native'
+export * from './view'
