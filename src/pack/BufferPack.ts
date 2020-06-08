@@ -293,6 +293,26 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
+  * @see Sequence.hasInSubsequence
+  */
+  public hasInSubsequence (element : number, offset : number, size : number) : boolean {
+    return this.indexOfInSubsequence(element, offset, size) >= 0
+  }
+
+  /**
+  * @see Sequence.indexOfInSubsequence
+  */
+  public indexOfInSubsequence (element : number, offset : number, size : number) : number {
+    for (let index = offset, length = offset + size; index < length; ++index) {
+      if (equals(element, this._elements[index])) {
+        return index
+      }
+    }
+
+    return -1;
+  }
+
+  /**
   * @see Pack.copy
   */
   public copy (toCopy : Sequence<number>) : void {

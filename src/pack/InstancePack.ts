@@ -287,6 +287,20 @@ export class InstancePack<Element> implements Pack<Element> {
   }
 
   /**
+  * @see Sequence.hasInSubsequence
+  */
+  public hasInSubsequence (element : Element, offset : number, size : number) : boolean {
+    return this.indexOfInSubsequence(element, offset, size) >= 0
+  }
+
+  /**
+  * @see Sequence.indexOfInSubsequence
+  */
+  public indexOfInSubsequence (element : Element, offset : number, size : number) : number {
+    return this._elements.indexOfInSubsequence(element, offset, size)
+  }
+
+  /**
   * @see Pack.copy
   */
   public copy (toCopy : Sequence<Element>) : void {

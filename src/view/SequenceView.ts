@@ -67,6 +67,20 @@ export class SequenceView<Element> extends View<Element> implements Sequence<Ele
   }
 
   /**
+  * @see Sequence.hasInSubsequence
+  */
+  public hasInSubsequence (element : Element, offset : number, size : number) : boolean {
+    return this._sequence.hasInSubsequence(element, offset, size)
+  }
+
+  /**
+  * @see Sequence.indexOfInSubsequence
+  */
+  public indexOfInSubsequence (element : Element, offset : number, size : number) : number {
+    return this._sequence.indexOfInSubsequence(element, offset, size)
+  }
+
+  /**
   * @see Sequence.iterator
   */
   public * [Symbol.iterator] () {

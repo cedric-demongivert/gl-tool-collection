@@ -136,6 +136,21 @@ export class BalancedTree<Element> implements Sequence<Element>
   }
 
   /**
+  * @see Sequence.hasInSubsequence
+  */
+  public hasInSubsequence (element : Element, offset : number, size : number) : boolean {
+    return this.indexOfInSubsequence(element, offset, size) >= 0
+  }
+
+  /**
+  * @see Sequence.indexOfInSubsequence
+  */
+  public indexOfInSubsequence (element : Element, offset : number, size : number) : number {
+    const index : number = this.indexOf(element)
+    return index >= offset && index < offset + size ? index : -1
+  }
+
+  /**
   * @see Sequence.first
   */
   public get first () : Element {

@@ -1,5 +1,7 @@
 import { Collection } from './Collection'
 
+import { EmptySequence } from './sequence/EmptySequence'
+
 /**
 * A sequence is an ordered collection of elements in wich repetitions are
 * allowed. A sequence can contains a non-finite number of element.
@@ -91,6 +93,33 @@ export interface Sequence<Element> extends Collection<Element> {
   indexOf (element : Element) : number
 
   /**
+  * @see Sequence.indexOf
+  *
+  * Act like indexOf but only over the given subsequence of element.
+  *
+  * @param element - An element to search for.
+  * @param offset - Number of element to skip from the begining of this sequence.
+  * @param size - Number of element to search.
+  *
+  * @return The index of the first element equal to the given one in this
+  *         sequence of element.
+  */
+  indexOfInSubsequence (element : Element, offset : number, size : number) : number
+
+  /**
+  * @see Sequence.has
+  *
+  * Act like has but only over the given subsequence of element.
+  *
+  * @param element - An element to search for.
+  * @param offset - Number of element to skip from the begining of this sequence.
+  * @param size - Number of element to search.
+  *
+  * @return True if the described subsequence contains the given element.
+  */
+  hasInSubsequence (element : Element, offset : number, size : number) : boolean
+
+  /**
   * @see Collection#clone
   */
   clone () : Sequence<Element>
@@ -116,5 +145,12 @@ export namespace Sequence {
   */
   export function isSequence <Element> (collection : Collection<Element>) : boolean {
     return SEQUENCE in Object.getPrototypeOf(collection).constructor
+  }
+
+  /**
+  * @return An instance of sequence that represent a static empty sequence.
+  */
+  export function empty <Element> () : Sequence<Element> {
+    return EmptySequence.of()
   }
 }

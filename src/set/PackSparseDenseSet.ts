@@ -58,6 +58,22 @@ export class PackSparseDenseSet implements SparseDenseSet, Sequence<number>
   }
 
   /**
+  * @see Sequence.hasInSubsequence
+  */
+  public hasInSubsequence (element : number, offset : number, size : number) : boolean {
+    const index : number = this.indexOf(element)
+    return index >= offset && index < offset + size
+  }
+
+  /**
+  * @see Sequence.indexOfInSubsequence
+  */
+  public indexOfInSubsequence (element : number, offset : number, size : number) : number {
+    const index : number = this.indexOf(element)
+    return index >= offset && index < offset + size ? index : -1
+  }
+
+  /**
   * @see MutableSet.add
   */
   public add (element : number) : void {

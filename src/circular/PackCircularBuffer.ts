@@ -295,6 +295,29 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
+  * @see Sequence.hasInSubsequence
+  */
+  public hasInSubsequence (element : Element, offset : number, size : number) : boolean {
+    return this.indexOfInSubsequence(element, offset, size) >= 0
+  }
+
+  /**
+  * @see Sequence.indexOfInSubsequence
+  */
+  public indexOfInSubsequence (element : Element, offset : number, size : number) : number {
+    for (let index = offset, length = offset + size; index < length; ++index) {
+      if (equals(
+        this._elements.get((this._start + index) % this._elements.capacity),
+        element
+      )) {
+        return index
+      }
+    }
+
+    return -1
+  }
+
+  /**
   * @see Sequence.concat
   */
   public concat (toConcat : Sequence<Element>) : void {

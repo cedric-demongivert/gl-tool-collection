@@ -140,6 +140,20 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   }
 
   /**
+  * @see Sequence.hasInSubsequence
+  */
+  public hasInSubsequence (element : Element, offset : number, size : number) : boolean {
+    return this._elements.hasInSubsequence(element, offset, size)
+  }
+
+  /**
+  * @see Sequence.indexOfInSubsequence
+  */
+  public indexOfInSubsequence (element : Element, offset : number, size : number) : number {
+    return this._elements.indexOfInSubsequence(element, offset, size)
+  }
+
+  /**
   * @see Collection#has
   */
   public has (value : Element) : boolean {
