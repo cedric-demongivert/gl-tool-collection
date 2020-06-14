@@ -3,6 +3,7 @@ import { Pack } from '../pack/Pack'
 
 import { PackSet } from './PackSet'
 import { IdentifierSet } from './IdentifierSet'
+import { NativeSet } from './NativeSet'
 
 /**
 * A collection of elements without order and that does not allows duplicates of
@@ -30,6 +31,17 @@ export namespace Set {
   */
   export function copy <T> (toCopy : Set<T>) : Set<T> {
     return toCopy == null ? null : toCopy.clone()
+  }
+
+  /**
+  * Return a set that wrap an existing pack instance.
+  *
+  * @param pack - A pack instance to wrap into a set.
+  *
+  * @return A set that wrap the given pack instance.
+  */
+  export function native <T> () : NativeSet<T> {
+    return NativeSet.any()
   }
 
   /**
