@@ -1,5 +1,7 @@
 import { ReallocableCollection } from '../ReallocableCollection'
 import { MutableSequence } from '../MutableSequence'
+import { Allocator } from '../Allocator'
+import { Sequence } from '../Sequence'
 import { Pack } from '../pack/Pack'
 
 import { PackCircularBuffer } from '../circular/PackCircularBuffer'
@@ -21,6 +23,11 @@ export interface CircularBuffer<Element>
   * @see Collection.iterator
   */
   iterator () : CircularBufferIterator<Element>
+
+  /**
+  * @see Collection.view
+  */
+  view () : Sequence<Element>
 }
 
 export namespace CircularBuffer {
@@ -143,6 +150,18 @@ export namespace CircularBuffer {
   */
   export function float64 (capacity : number) : PackCircularBuffer<number> {
     return new PackCircularBuffer<number>(Pack.float64(capacity))
+  }
+
+  /**
+  * Instantiate a new circular buffer that wrap an instance pack of the given capacity.
+  *
+  * @param allocator - Capacity of the pack to allocate.
+  * @param capacity - Capacity of the pack to allocate.
+  *
+  * @return A new circular buffer that wrap an instance pack of the given capacity.
+  */
+  export function instance <T> (allocator : Allocator<T>, capacity : number) : PackCircularBuffer<T> {
+    return new PackCircularBuffer<T>(Pack.instance(allocator, capacity))
   }
 
   /**
