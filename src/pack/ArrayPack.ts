@@ -252,6 +252,22 @@ export class ArrayPack<Element> implements Pack<Element> {
   }
 
   /**
+  * @see MutableSequence.empty
+  */
+  public empty (index : number) : void {
+    this.set(index, null)
+  }
+
+  /**
+  * @see MutableSequence.emptyMany
+  */
+  public emptyMany (from : number, size : number) : void {
+    for (let cursor = 0; cursor < size; ++cursor) {
+      this.set(from + cursor, null)
+    }
+  }
+
+  /**
   * @see MutableSequence.warp
   */
   public warp (index : number) : void {

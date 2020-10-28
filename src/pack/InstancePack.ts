@@ -262,6 +262,26 @@ export class InstancePack<Element> implements Pack<Element> {
   }
 
   /**
+  * @see MutableSequence.empty
+  */
+  public empty (index : number) : void {
+    if (index < this._elements.size) {
+      this.allocator.clear(this.get(index))
+    } else {
+      this.size = index + 1
+    }
+  }
+
+  /**
+  * @see MutableSequence.emptyMany
+  */
+  public emptyMany (from : number, size : number) : void {
+    for (let cursor = 0; cursor < size; ++cursor) {
+      this.empty(from + cursor)
+    }
+  }
+
+  /**
   * @see MutableSequence.warp
   */
   public warp (index : number) : void {

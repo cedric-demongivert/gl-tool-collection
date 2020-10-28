@@ -1,6 +1,6 @@
 {
   "name": "@cedric-demongivert/gl-tool-collection",
-  "version": "0.23.1",
+  "version": "0.23.0",
   "description": "A collection library for the gl-tool suit.",
   "main": "./index.js",
   "types": "./types/index.d.ts",
@@ -10,7 +10,8 @@
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
     "preversion": "npm install && npm test",
     "version": "npm run build && git add --all",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "publish": "npm publish ./dist --access public"
   },
   "repository": "https://gitlab.cedric-demongivert.com/gl-tool/gl-tool-ecs.git",
   "author": "Cédric DEMONGIVERT <cedric.demongivert@gmail.com>",

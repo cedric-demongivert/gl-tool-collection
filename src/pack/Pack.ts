@@ -16,6 +16,21 @@ export interface Pack<Element>
          extends MutableSequence<Element>, ReallocableCollection
 {
   /**
+  * Empty the element at the given index, but keep it in the sequence.
+  *
+  * @param index - Where to empty an element.
+  */
+  empty (index : number) : void
+
+  /**
+  * Empty the required number of elements from the given index, but keep them in the sequence.
+  *
+  * @param index - Where to empty an element.
+  * @param count - Number of element to empty.
+  */
+  emptyMany (index : number, count : number) : void
+  
+  /**
   * @see Array.sort
   */
   sort (comparator : Comparator<Element, Element>) : void

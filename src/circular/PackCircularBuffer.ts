@@ -38,6 +38,26 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
+  * @see Collection.size
+  */
+  public set size (newSize : number) {
+    if (this.capacity < newSize) {
+      this.reallocate(newSize)
+    }
+
+    if (newSize > this._size) {
+      const start : number = this._start
+      const capacity : number = this._elements.capacity
+
+      for (let index : number = this._size; index < newSize; ++index) {
+        this._elements.empty((start + index) % capacity)
+      }
+    }
+
+    this._size = newSize
+  }
+
+  /**
   * @see StaticCollection.capacity
   */
   public get capacity () : number {

@@ -265,6 +265,22 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
+  * @see MutableSequence.empty
+  */
+  public empty (index : number) : void {
+    this.set(index, 0)
+  }
+
+  /**
+  * @see MutableSequence.emptyMany
+  */
+  public emptyMany (from : number, size : number) : void {
+    for (let cursor = 0; cursor < size; ++cursor) {
+      this.set(from + cursor, 0)
+    }
+  }
+
+  /**
   * @see MutableSequence.warp
   */
   public warp (index : number) : void {
