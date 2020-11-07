@@ -17,14 +17,14 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
   * Instance pool.
   */
-  private _pool : Pack<Element>
+  private _pool: Pack<Element>
 
   /**
   * Wrapped javascript array.
   */
-  private _elements : Pack<Element>
+  private _elements: Pack<Element>
 
-  public readonly allocator : Allocator<Element>
+  public readonly allocator: Allocator<Element>
 
   /**
   * Makes an empty instance pack of the given capacity.
@@ -32,7 +32,7 @@ export class InstancePack<Element> implements Pack<Element> {
   * @param allocator - An allocator that allows to manipulate the given instance type.
   * @param [capacity = 32] - Initial capacity of the pack to instantiate.
   */
-  public constructor (allocator : Allocator<Element>, capacity : number = 32) {
+  public constructor(allocator: Allocator<Element>, capacity: number = 32) {
     this.allocator = allocator
     this._pool = Pack.any(capacity)
     this._elements = Pack.any(capacity)
@@ -45,14 +45,14 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
   * @see Collection.size
   */
-  public get size () : number {
+  public get size(): number {
     return this._elements.size
   }
 
   /**
   * @see MutableSequence.size
   */
-  public set size (value : number) {
+  public set size(value: number) {
     if (value > this._pool.capacity) {
       this.reallocate(value)
     }
@@ -72,15 +72,15 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
   * @see StaticCollection.capacity
   */
-  public get capacity () : number {
+  public get capacity(): number {
     return this._elements.capacity
   }
 
   /**
   * @see ReallocableCollection.reallocate
   */
-  public reallocate (capacity : number) : void {
-    const oldCapacity : number = this._elements.capacity
+  public reallocate(capacity: number): void {
+    const oldCapacity: number = this._elements.capacity
 
     this._elements.reallocate(capacity)
     this._pool.reallocate(capacity)
@@ -95,21 +95,21 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
   * @see ReallocableCollection.fit
   */
-  public fit () : void {
+  public fit(): void {
     this.reallocate(this._elements.size)
   }
 
   /**
   * @see Sequence.get
   */
-  public get (index : number) : Element {
+  public get(index: number): Element {
     return this._elements.get(index)
   }
 
   /**
   * @see MutableSequence.pop
   */
-  public pop (output : Element = this.allocator.allocate()) : Element {
+  public pop(output: Element = this.allocator.allocate()): Element {
     this.allocator.copy(this._elements.last, output)
     this._pool.push(this._elements.pop())
     this.allocator.clear(this._pool.last)
@@ -120,35 +120,35 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
   * @see Sequence.last
   */
-  public get last () : Element {
+  public get last(): Element {
     return this._elements.last
   }
 
   /**
   * @see Sequence.lastIndex
   */
-  public get lastIndex () : number {
+  public get lastIndex(): number {
     return this._elements.lastIndex
   }
 
   /**
   * @see Sequence.first
   */
-  public get first () : Element {
+  public get first(): Element {
     return this._elements.first
   }
 
   /**
   * @see Sequence.firstIndex
   */
-  public get firstIndex () : number {
+  public get firstIndex(): number {
     return 0
   }
 
   /**
   * @see MutableSequence.fill
   */
-  public fill (element : Element) : void {
+  public fill(element: Element): void {
     for (let index = 0, size = this._elements.size; index < size; ++index) {
       this.allocator.copy(element, this._elements.get(index))
     }
@@ -157,7 +157,7 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
   * @see MutableSequence.shift
   */
-  public shift (output : Element = this.allocator.allocate()) : Element {
+  public shift(output: Element = this.allocator.allocate()): Element {
     this.allocator.copy(this._elements.first, output)
     this._pool.push(this._elements.shift())
     this.allocator.clear(this._pool.last)
@@ -168,28 +168,28 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
   * @see Pack.sort
   */
-  public sort (comparator : Comparator<Element, Element>) : void {
+  public sort(comparator: Comparator<Element, Element>): void {
     this._elements.sort(comparator)
   }
 
   /**
   * @see Pack.subsort
   */
-  public subsort (offset : number, size : number, comparator : Comparator<Element, Element>) : void {
+  public subsort(offset: number, size: number, comparator: Comparator<Element, Element>): void {
     this._elements.subsort(offset, size, comparator)
   }
 
   /**
   * @see MutableSequence.swap
   */
-  public swap (first : number, second : number) : void {
+  public swap(first: number, second: number): void {
     this._elements.swap(first, second)
   }
 
   /**
   * @see MutableSequence.set
   */
-  public set (index : number, value : Element) : void {
+  public set(index: number, value: Element): void {
     if (index >= this._elements.size) {
       this.size = index + 1
     }
@@ -200,7 +200,7 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
   * @see MutableSequence.insert
   */
-  public insert (index : number, value : Element) : void {
+  public insert(index: number, value: Element): void {
     if (index >= this._elements.size) {
       this.set(index, value)
     } else {
@@ -216,7 +216,7 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
   * @see MutableSequence.push
   */
-  public push (value : Element) : void {
+  public push(value: Element): void {
     if (this._elements.size === this._elements.capacity) {
       this.reallocate(this.capacity * 2)
     }
@@ -228,7 +228,7 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
   * @see MutableSequence.unshift
   */
-  public unshift (value : Element) : void {
+  public unshift(value: Element): void {
     if (this._elements.size === this._elements.capacity) {
       this.reallocate(this.capacity * 2)
     }
@@ -240,8 +240,8 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
   * @see MutableSequence.delete
   */
-  public delete (index : number) : void {
-    const element : Element = this._elements.get(index)
+  public delete(index: number): void {
+    const element: Element = this._elements.get(index)
     this._pool.push(element)
     this.allocator.clear(element)
 
@@ -251,9 +251,9 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
   * @see MutableSequence.deleteMany
   */
-  public deleteMany (from : number, size : number) : void {
+  public deleteMany(from: number, size: number): void {
     for (let index = 0; index < size; ++index) {
-      const element : Element = this._elements.get(from + index)
+      const element: Element = this._elements.get(from + index)
       this._pool.push(element)
       this.allocator.clear(element)
     }
@@ -264,7 +264,7 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
   * @see MutableSequence.empty
   */
-  public empty (index : number) : void {
+  public empty(index: number): void {
     if (index < this._elements.size) {
       this.allocator.clear(this.get(index))
     } else {
@@ -275,7 +275,7 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
   * @see MutableSequence.emptyMany
   */
-  public emptyMany (from : number, size : number) : void {
+  public emptyMany(from: number, size: number): void {
     for (let cursor = 0; cursor < size; ++cursor) {
       this.empty(from + cursor)
     }
@@ -284,8 +284,8 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
   * @see MutableSequence.warp
   */
-  public warp (index : number) : void {
-    const element : Element = this._elements.get(index)
+  public warp(index: number): void {
+    const element: Element = this._elements.get(index)
     this._pool.push(element)
     this.allocator.clear(element)
 
@@ -295,35 +295,35 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
   * @see Collection.has
   */
-  public has (element : Element) : boolean {
+  public has(element: Element): boolean {
     return this.indexOf(element) >= 0
   }
 
   /**
   * @see Sequence.indexOf
   */
-  public indexOf (element : Element) : number {
+  public indexOf(element: Element): number {
     return this._elements.indexOf(element)
   }
 
   /**
   * @see Sequence.hasInSubsequence
   */
-  public hasInSubsequence (element : Element, offset : number, size : number) : boolean {
+  public hasInSubsequence(element: Element, offset: number, size: number): boolean {
     return this.indexOfInSubsequence(element, offset, size) >= 0
   }
 
   /**
   * @see Sequence.indexOfInSubsequence
   */
-  public indexOfInSubsequence (element : Element, offset : number, size : number) : number {
+  public indexOfInSubsequence(element: Element, offset: number, size: number): number {
     return this._elements.indexOfInSubsequence(element, offset, size)
   }
 
   /**
   * @see Pack.copy
   */
-  public copy (toCopy : Sequence<Element>) : void {
+  public copy(toCopy: Sequence<Element>): void {
     this.size = toCopy.size
 
     for (let index = 0, length = toCopy.size; index < length; ++index) {
@@ -334,9 +334,9 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
   * @see Sequence.concat
   */
-  public concat (toConcat : Sequence<Element>) : void {
-    const firstIndex : number = toConcat.firstIndex
-    const lastIndex : number = toConcat.lastIndex + 1
+  public concat(toConcat: Sequence<Element>): void {
+    const firstIndex: number = toConcat.firstIndex
+    const lastIndex: number = toConcat.lastIndex + 1
 
     if (this.capacity < this.size + toConcat.size) {
       this.reallocate(this.size + toConcat.size)
@@ -350,29 +350,29 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
   * @see Pack.allocate
   */
-  public allocate (capacity : number) : InstancePack<Element> {
+  public allocate(capacity: number): InstancePack<Element> {
     return new InstancePack(this.allocator, capacity)
   }
 
   /**
   * @see Pack.clone
   */
-  public clone () : InstancePack<Element> {
+  public clone(): InstancePack<Element> {
     return InstancePack.copy(this)
   }
 
   /**
   * @see Collection.view
   */
-  public view () : Sequence<Element> {
+  public view(): Sequence<Element> {
     return SequenceView.wrap(this)
   }
 
   /**
   * @see Collection.iterator
   */
-  public iterator () : PackIterator<Element> {
-    const result : PackIterator<Element> = new PackIterator()
+  public iterator(): PackIterator<Element> {
+    const result: PackIterator<Element> = new PackIterator()
 
     result.pack = this
     result.index = 0
@@ -383,9 +383,9 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
   * @see MutableSequence.clear
   */
-  public clear () : void {
+  public clear(): void {
     while (this._elements.size > 0) {
-      const element : Element = this._elements.pop()
+      const element: Element = this._elements.pop()
       this._pool.push(element)
       this.allocator.clear(element)
     }
@@ -394,20 +394,20 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
   * @see Sequence.iterator
   */
-  public * [Symbol.iterator] () : Iterator<Element> {
-    yield * this._elements
+  public *[Symbol.iterator](): Iterator<Element> {
+    yield* this._elements
   }
 
   /**
   * @see Collection.equals
   */
-  public equals (other : any) : boolean {
+  public equals(other: any): boolean {
     if (other == null) return false
     if (other === this) return true
 
     if (other instanceof InstancePack) {
       return this.allocator === other.allocator &&
-             this._elements.equals(other._elements)
+        this._elements.equals(other._elements)
     }
 
     return false
@@ -422,7 +422,7 @@ export namespace InstancePack {
   *
   * @return An empty array pack of the given capacity.
   */
-  export function allocate <Element> (allocator : Allocator<Element>, capacity : number) : InstancePack<Element> {
+  export function allocate<Element>(allocator: Allocator<Element>, capacity: number): InstancePack<Element> {
     return new InstancePack<Element>(allocator, capacity)
   }
 
@@ -433,8 +433,8 @@ export namespace InstancePack {
   *
   * @return An array pack that is a shallow copy of the given pack.
   */
-  export function copy <Element> (toCopy : InstancePack<Element>) : InstancePack<Element> {
-    const result : InstancePack<Element> = toCopy.allocate(toCopy.capacity)
+  export function copy<Element>(toCopy: InstancePack<Element>): InstancePack<Element> {
+    const result: InstancePack<Element> = toCopy.allocate(toCopy.capacity)
 
     result.copy(toCopy)
 
