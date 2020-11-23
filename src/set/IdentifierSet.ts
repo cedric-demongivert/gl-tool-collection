@@ -9,16 +9,16 @@ import { MutableSet } from './MutableSet'
 import { IdentifierSetIterator } from './IdentifierSetIterator'
 
 export class IdentifierSet implements MutableSet<number>, Sequence<number>, ReallocableCollection {
-  private _sparse : UnsignedIntegerBuffer
-  private _dense : UnsignedIntegerBuffer
-  private _size : number
+  private _sparse: UnsignedIntegerBuffer
+  private _dense: UnsignedIntegerBuffer
+  private _size: number
 
   /**
   * Create a new empty identifier set.
   *
   * @param capacity - Number of identifier to allocate.
   */
-  public constructor (capacity : number) {
+  public constructor(capacity: number) {
     this._sparse = UnsignedIntegerBuffer.upTo(capacity - 1, capacity)
     this._dense = UnsignedIntegerBuffer.upTo(capacity - 1, capacity)
     this._size = 0
@@ -32,56 +32,56 @@ export class IdentifierSet implements MutableSet<number>, Sequence<number>, Real
   /**
   * @see Collection.size
   */
-  public get size () : number {
+  public get size(): number {
     return this._size
   }
 
   /**
   * @see StaticCollection.capacity
   */
-  public get capacity () : number {
+  public get capacity(): number {
     return this._dense.length
   }
 
   /**
   * @see Collection.has
   */
-  public has (element : number) : boolean {
+  public has(element: number): boolean {
     return this._sparse[element] < this._size
   }
 
   /**
   * @see Sequence.indexOf
   */
-  public indexOf (element : number) : number {
-    const index : number = this._sparse[element]
+  public indexOf(element: number): number {
+    const index: number = this._sparse[element]
     return index < this._size ? index : -1
   }
 
   /**
   * @see Sequence.hasInSubsequence
   */
-  public hasInSubsequence (element : number, offset : number, size : number) : boolean {
-    const index : number = this.indexOf(element)
+  public hasInSubsequence(element: number, offset: number, size: number): boolean {
+    const index: number = this.indexOf(element)
     return index >= offset && index < offset + size
   }
 
   /**
   * @see Sequence.indexOfInSubsequence
   */
-  public indexOfInSubsequence (element : number, offset : number, size : number) : number {
-    const index : number = this.indexOf(element)
+  public indexOfInSubsequence(element: number, offset: number, size: number): number {
+    const index: number = this.indexOf(element)
     return index >= offset && index < offset + size ? index : -1
   }
 
   /**
   * @see MutableSet.add
   */
-  public add (element : number) : void {
-    const index : number = this._sparse[element]
+  public add(element: number): void {
+    const index: number = this._sparse[element]
 
     if (index >= this._size) {
-      const swap : number = this._dense[this._size]
+      const swap: number = this._dense[this._size]
       this._sparse[swap] = index
       this._sparse[element] = this._size
       this._dense[this._size] = element
@@ -90,7 +90,7 @@ export class IdentifierSet implements MutableSet<number>, Sequence<number>, Real
     }
   }
 
-  public next () : number {
+  public next(): number {
     this._size += 1
     return this._dense[this._size - 1]
   }
@@ -98,13 +98,13 @@ export class IdentifierSet implements MutableSet<number>, Sequence<number>, Real
   /**
   * @see MutableSet.delete
   */
-  public delete (element : number) : void {
-    const index : number = this._sparse[element]
+  public delete(element: number): void {
+    const index: number = this._sparse[element]
 
     if (index < this._size) {
       this._size -= 1
 
-      const last : number = this._dense[this._size]
+      const last: number = this._dense[this._size]
 
       this._dense[this._size] = element
       this._dense[index] = last
@@ -116,16 +116,16 @@ export class IdentifierSet implements MutableSet<number>, Sequence<number>, Real
   /**
   * @see Sequence.get
   */
-  public get (index : number) : number {
+  public get(index: number): number {
     return this._dense[index]
   }
 
   /**
   * @see StaticCollection.reallocate
   */
-  public reallocate (capacity : number) : void {
-    const oldDense : UnsignedIntegerBuffer = this._dense
-    const oldSize : number = this._size
+  public reallocate(capacity: number): void {
+    const oldDense: UnsignedIntegerBuffer = this._dense
+    const oldSize: number = this._size
 
     this._dense = UnsignedIntegerBuffer.upTo(capacity - 1, capacity)
     this._sparse = UnsignedIntegerBuffer.upTo(capacity - 1, capacity)
@@ -137,15 +137,16 @@ export class IdentifierSet implements MutableSet<number>, Sequence<number>, Real
     }
 
     for (let index = 0; index < oldSize; ++index) {
-      const element : number = oldDense[index]
+      const element: number = oldDense[index]
 
       if (element < capacity) {
-        const swap : number = this._dense[this._size]
+        const swap: number = this._dense[this._size]
+        const swapIndex: number = this._sparse[element]
 
-        this._sparse[swap] = index
+        this._sparse[swap] = swapIndex
         this._sparse[element] = this._size
         this._dense[this._size] = element
-        this._dense[index] = swap
+        this._dense[swapIndex] = swap
         this._size += 1
       }
     }
@@ -154,8 +155,8 @@ export class IdentifierSet implements MutableSet<number>, Sequence<number>, Real
   /**
   * @see StaticCollection.fit
   */
-  public fit () : void {
-    const max : number = this.max()
+  public fit(): void {
+    const max: number = this.max()
     this.reallocate(max)
   }
 
@@ -164,13 +165,13 @@ export class IdentifierSet implements MutableSet<number>, Sequence<number>, Real
   *
   * @return The maximum element of this set.
   */
-  public max () : number {
+  public max(): number {
     if (this._size <= 0) return undefined
 
-    let result : number = this._dense[0]
+    let result: number = this._dense[0]
 
     for (let index = 1, length = this._size; index < length; ++index) {
-      const cell : number = this._dense[index]
+      const cell: number = this._dense[index]
       result = cell > result ? cell : result
     }
 
@@ -182,13 +183,13 @@ export class IdentifierSet implements MutableSet<number>, Sequence<number>, Real
   *
   * @return The minimum element of this set.
   */
-  public min () : number {
+  public min(): number {
     if (this._size <= 0) return undefined
 
-    let result : number = this._dense[0]
+    let result: number = this._dense[0]
 
     for (let index = 1, length = this._size; index < length; ++index) {
-      const cell : number = this._dense[index]
+      const cell: number = this._dense[index]
       result = cell < result ? cell : result
     }
 
@@ -198,43 +199,43 @@ export class IdentifierSet implements MutableSet<number>, Sequence<number>, Real
   /**
   * @see MutableSet.clear
   */
-  public clear () : void {
+  public clear(): void {
     this._size = 0
   }
 
   /**
   * @see Sequence.first
   */
-  public get first () : number {
+  public get first(): number {
     return this._dense[0]
   }
 
   /**
   * @see Sequence.firstIndex
   */
-  public get firstIndex () : number {
+  public get firstIndex(): number {
     return 0
   }
 
   /**
   * @see Sequence.last
   */
-  public get last () : number {
+  public get last(): number {
     return this._dense[this._size - 1]
   }
 
   /**
   * @see Sequence.lastIndex
   */
-  public get lastIndex () : number {
+  public get lastIndex(): number {
     return this._size - 1
   }
 
   /**
   * @see Collection.iterator
   */
-  public iterator () : IdentifierSetIterator {
-    const iterator : IdentifierSetIterator =  new IdentifierSetIterator()
+  public iterator(): IdentifierSetIterator {
+    const iterator: IdentifierSetIterator = new IdentifierSetIterator()
 
     iterator.identifierSet = this
     iterator.index = 0
@@ -245,7 +246,7 @@ export class IdentifierSet implements MutableSet<number>, Sequence<number>, Real
   /**
   * @see Set.copy
   */
-  public copy (toCopy : Set<number>) : void {
+  public copy(toCopy: Set<number>): void {
     this.clear()
 
     for (const element of toCopy) {
@@ -256,15 +257,15 @@ export class IdentifierSet implements MutableSet<number>, Sequence<number>, Real
   /**
   * @see Collection.view
   */
-  public view () : Sequence<number> {
+  public view(): Sequence<number> {
     return SequenceView.wrap(this)
   }
 
   /**
   * @see Collection.clone
   */
-  public clone () : IdentifierSet {
-    const result : IdentifierSet = IdentifierSet.allocate(this._dense.length)
+  public clone(): IdentifierSet {
+    const result: IdentifierSet = IdentifierSet.allocate(this._dense.length)
 
     result.copy(this)
 
@@ -274,7 +275,7 @@ export class IdentifierSet implements MutableSet<number>, Sequence<number>, Real
   /**
   * @see Collection.iterator
   */
-  public * [Symbol.iterator] () : Iterator<number> {
+  public *[Symbol.iterator](): Iterator<number> {
     for (let index = 0, length = this._size; index < length; ++index) {
       yield this._dense[index]
     }
@@ -283,7 +284,7 @@ export class IdentifierSet implements MutableSet<number>, Sequence<number>, Real
   /**
   * @see Collection.equals
   */
-  public equals (other : any) : boolean {
+  public equals(other: any): boolean {
     if (other == null) return false
     if (other === this) return true
 
@@ -302,11 +303,11 @@ export class IdentifierSet implements MutableSet<number>, Sequence<number>, Real
 }
 
 export namespace IdentifierSet {
-  export function copy (toCopy : IdentifierSet) : IdentifierSet {
+  export function copy(toCopy: IdentifierSet): IdentifierSet {
     return toCopy == null ? null : toCopy.clone()
   }
 
-  export function allocate (capacity : number) : IdentifierSet {
+  export function allocate(capacity: number): IdentifierSet {
     return new IdentifierSet(capacity)
   }
 }
