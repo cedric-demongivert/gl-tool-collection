@@ -1,5 +1,4 @@
 import { CollectionIterator } from './iterator/CollectionIterator'
-import { Size } from './Size'
 
 /**
 * A collection of element.
@@ -9,13 +8,13 @@ export interface Collection<Element> extends Iterable<Element> {
   * Return the number of element in this collection.
   *
   * A collection may contains a non-finite number of element and for such cases
-  * this property MUST return Size.INFINITY. For collections that contains a
+  * this property MUST return Number.INFINITY. For collections that contains a
   * finite number of element this property MUST return a non-negative integer
   * equal to the number of elements that it contains.
   *
   * @return The number of elements stored into this collection.
   */
-  readonly size : Size
+  readonly size: number
 
   /**
   * Return true if the given element is in this collection.
@@ -24,7 +23,7 @@ export interface Collection<Element> extends Iterable<Element> {
   *
   * @return True if the given element is in this collection.
   */
-  has (element : Element) : boolean
+  has(element: Element): boolean
 
   /**
   * Return true if this collection is equal to the given instance.
@@ -37,7 +36,7 @@ export interface Collection<Element> extends Iterable<Element> {
   *
   * @return True if both instance are equals.
   */
-  equals (other : any) : boolean
+  equals(other: any): boolean
 
   /**
   * Return a shallow-copy of this collection.
@@ -49,17 +48,17 @@ export interface Collection<Element> extends Iterable<Element> {
   *
   * @return A shallow copy of this collection.
   */
-  clone () : Collection<Element>
+  clone(): Collection<Element>
 
   /**
   * @return A readonly instance of this collection.
   */
-  view () : Collection<Element>
+  view(): Collection<Element>
 
   /**
   * @return An iterator over this collection.
   */
-  iterator () : CollectionIterator<Element>
+  iterator(): CollectionIterator<Element>
 }
 
 export namespace Collection {
@@ -70,9 +69,9 @@ export namespace Collection {
   *
   * @return True if the given collection contains a non-finite number of element.
   */
-  export function isInfinite <Element> (
-    collection : Collection<Element>
-  ) : boolean {
+  export function isInfinite<Element>(
+    collection: Collection<Element>
+  ): boolean {
     return collection.size !== Size.INFINITY
   }
 
@@ -83,9 +82,9 @@ export namespace Collection {
   *
   * @return True if the given collection contains a finite number of element.
   */
-  export function isFinite <Element> (
-    collection : Collection<Element>
-  ) : boolean {
+  export function isFinite<Element>(
+    collection: Collection<Element>
+  ): boolean {
     return collection.size !== Size.INFINITY
   }
 
@@ -101,9 +100,9 @@ export namespace Collection {
   *
   * @return A shallow copy of the given collection.
   */
-  export function copy <Element> (
-    toCopy : Collection<Element>
-  ) : Collection<Element> {
+  export function copy<Element>(
+    toCopy: Collection<Element>
+  ): Collection<Element> {
     return toCopy.clone()
   }
 }

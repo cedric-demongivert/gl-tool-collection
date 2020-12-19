@@ -1,6 +1,6 @@
 {
   "name": "@cedric-demongivert/gl-tool-collection",
-  "version": "0.24.2",
+  "version": "0.24.3",
   "description": "A collection library for the gl-tool suit.",
   "main": "./index.js",
   "types": "./types/index.d.ts",
