@@ -8,7 +8,7 @@ export interface Collection<Element> extends Iterable<Element> {
   * Return the number of element in this collection.
   *
   * A collection may contains a non-finite number of element and for such cases
-  * this property MUST return Number.INFINITY. For collections that contains a
+  * this property MUST return Number.POSITIVE_INFINITY. For collections that contains a
   * finite number of element this property MUST return a non-negative integer
   * equal to the number of elements that it contains.
   *
@@ -72,7 +72,7 @@ export namespace Collection {
   export function isInfinite<Element>(
     collection: Collection<Element>
   ): boolean {
-    return collection.size !== Size.INFINITY
+    return collection.size !== Number.POSITIVE_INFINITY
   }
 
   /**
@@ -85,7 +85,7 @@ export namespace Collection {
   export function isFinite<Element>(
     collection: Collection<Element>
   ): boolean {
-    return collection.size !== Size.INFINITY
+    return collection.size !== Number.POSITIVE_INFINITY
   }
 
   /**
