@@ -1,6 +1,7 @@
-import { Allocator } from '../Allocator'
+import { Allocator } from '../allocator/Allocator'
 
 import { Comparator } from '../Comparator'
+import { Copiable } from '../Copiable'
 import { Sequence } from '../Sequence'
 
 import { SequenceView } from '../view/SequenceView'
@@ -15,11 +16,6 @@ import { Pack } from './Pack'
 */
 export class InstancePack<Element> implements Pack<Element> {
   /**
-  * Instance pool.
-  */
-  private _pool: Pack<Element>
-
-  /**
   * Wrapped javascript array.
   */
   private _elements: Pack<Element>
@@ -30,16 +26,11 @@ export class InstancePack<Element> implements Pack<Element> {
   * Makes an empty instance pack of the given capacity.
   *
   * @param allocator - An allocator that allows to manipulate the given instance type.
-  * @param [capacity = 32] - Initial capacity of the pack to instantiate.
+  * @param [capacity = 32] - Initial capacity of the pack.
   */
   public constructor(allocator: Allocator<Element>, capacity: number = 32) {
     this.allocator = allocator
-    this._pool = Pack.any(capacity)
     this._elements = Pack.any(capacity)
-
-    while (this._pool.size < this._pool.capacity) {
-      this._pool.push(this.allocator.allocate())
-    }
   }
 
   /**
@@ -53,19 +44,15 @@ export class InstancePack<Element> implements Pack<Element> {
   * @see MutableSequence.size
   */
   public set size(value: number) {
-    if (value > this._pool.capacity) {
-      this.reallocate(value)
-    }
-
     /**
     * @see https://v8.dev/blog/elements-kinds?fbclid=IwAR337wb3oxEpjz_5xVHL-Y14gUpVElementOztLSIikVVQLGN6qcKidEjMLJ4vO3M
     */
     while (this._elements.size < value) {
-      this._elements.push(this._pool.pop())
+      this._elements.push(this.allocator.allocate())
     }
 
     while (this._elements.size > value) {
-      this._pool.push(this._elements.pop())
+      this.allocator.free(this._elements.pop())
     }
   }
 
@@ -80,16 +67,11 @@ export class InstancePack<Element> implements Pack<Element> {
   * @see ReallocableCollection.reallocate
   */
   public reallocate(capacity: number): void {
-    const oldCapacity: number = this._elements.capacity
-
-    this._elements.reallocate(capacity)
-    this._pool.reallocate(capacity)
-
-    for (let index = oldCapacity; index < capacity; ++index) {
-      this._pool.push(this.allocator.allocate())
+    while (this._elements.size > capacity) {
+      this.allocator.free(this._elements.pop())
     }
 
-    this._pool.size = capacity - this._elements.size
+    this._elements.reallocate(capacity)
   }
 
   /**
@@ -109,12 +91,17 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
   * @see MutableSequence.pop
   */
-  public pop(output: Element = this.allocator.allocate()): Element {
-    this.allocator.copy(this._elements.last, output)
-    this._pool.push(this._elements.pop())
-    this.allocator.clear(this._pool.last)
-
-    return output
+  public pop(): Element
+  public pop<T extends Copiable<Element>>(output: T): T
+  public pop<T extends Copiable<Element>>(output: T = null): Element | T {
+    if (output == null) {
+      return this._elements.pop()
+    } else {
+      const result: Element = this._elements.pop()
+      output.copy(result)
+      this.allocator.free(result)
+      return output
+    }
   }
 
   /**
@@ -149,20 +136,29 @@ export class InstancePack<Element> implements Pack<Element> {
   * @see MutableSequence.fill
   */
   public fill(element: Element): void {
-    for (let index = 0, size = this._elements.size; index < size; ++index) {
-      this.allocator.copy(element, this._elements.get(index))
+    const elements: Pack<Element> = this._elements
+    const allocator: Allocator<Element> = this.allocator
+
+    for (let index = 0, size = elements.size; index < size; ++index) {
+      allocator.free(elements.get(index))
+      elements.set(index, allocator.copy(element))
     }
   }
 
   /**
   * @see MutableSequence.shift
   */
-  public shift(output: Element = this.allocator.allocate()): Element {
-    this.allocator.copy(this._elements.first, output)
-    this._pool.push(this._elements.shift())
-    this.allocator.clear(this._pool.last)
-
-    return output
+  public shift(): Element
+  public shift<T extends Copiable<Element>>(output: T): T
+  public shift<T extends Copiable<Element>>(output: T = null): Element | T {
+    if (output == null) {
+      return this._elements.shift()
+    } else {
+      const result: Element = this._elements.shift()
+      output.copy(result)
+      this.allocator.free(result)
+      return output
+    }
   }
 
   /**
@@ -194,7 +190,8 @@ export class InstancePack<Element> implements Pack<Element> {
       this.size = index + 1
     }
 
-    this.allocator.copy(value, this._elements.get(index))
+    this.allocator.free(this._elements.get(index))
+    this._elements.set(index, this.allocator.copy(value))
   }
 
   /**
@@ -208,8 +205,7 @@ export class InstancePack<Element> implements Pack<Element> {
         this.reallocate(this.capacity * 2)
       }
 
-      this._elements.insert(index, this._pool.pop())
-      this.allocator.copy(value, this._elements.get(index))
+      this._elements.insert(index, this.allocator.copy(value))
     }
   }
 
@@ -221,8 +217,7 @@ export class InstancePack<Element> implements Pack<Element> {
       this.reallocate(this.capacity * 2)
     }
 
-    this._elements.push(this._pool.pop())
-    this.allocator.copy(value, this._elements.last)
+    this._elements.push(this.allocator.copy(value))
   }
 
   /**
@@ -233,18 +228,14 @@ export class InstancePack<Element> implements Pack<Element> {
       this.reallocate(this.capacity * 2)
     }
 
-    this._elements.unshift(this._pool.pop())
-    this.allocator.copy(value, this._elements.first)
+    this._elements.unshift(this.allocator.copy(value))
   }
 
   /**
   * @see MutableSequence.delete
   */
   public delete(index: number): void {
-    const element: Element = this._elements.get(index)
-    this._pool.push(element)
-    this.allocator.clear(element)
-
+    this.allocator.free(this._elements.get(index))
     this._elements.delete(index)
   }
 
@@ -254,8 +245,7 @@ export class InstancePack<Element> implements Pack<Element> {
   public deleteMany(from: number, size: number): void {
     for (let index = 0; index < size; ++index) {
       const element: Element = this._elements.get(from + index)
-      this._pool.push(element)
-      this.allocator.clear(element)
+      this.allocator.free(element)
     }
 
     this._elements.deleteMany(from, size)
@@ -266,7 +256,8 @@ export class InstancePack<Element> implements Pack<Element> {
   */
   public empty(index: number): void {
     if (index < this._elements.size) {
-      this.allocator.clear(this.get(index))
+      this.allocator.free(this._elements.get(index))
+      this._elements.set(index, this.allocator.allocate())
     } else {
       this.size = index + 1
     }
@@ -286,8 +277,7 @@ export class InstancePack<Element> implements Pack<Element> {
   */
   public warp(index: number): void {
     const element: Element = this._elements.get(index)
-    this._pool.push(element)
-    this.allocator.clear(element)
+    this.allocator.free(element)
 
     this._elements.warp(index)
   }
@@ -385,9 +375,7 @@ export class InstancePack<Element> implements Pack<Element> {
   */
   public clear(): void {
     while (this._elements.size > 0) {
-      const element: Element = this._elements.pop()
-      this._pool.push(element)
-      this.allocator.clear(element)
+      this.allocator.free(this._elements.pop())
     }
   }
 

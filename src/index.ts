@@ -1,15 +1,16 @@
+export { Clearable } from './Clearable'
 export { Collection } from './Collection'
-export { StaticCollection } from './StaticCollection'
+export { Comparator } from './Comparator'
+export { Copiable } from './Copiable'
+export { Factory } from './Factory'
+export { MutableSequence } from './MutableSequence'
 export { ReallocableCollection } from './ReallocableCollection'
-
 export { Sequence } from './Sequence'
 export { SequenceIterator } from './SequenceIterator'
-export { MutableSequence } from './MutableSequence'
-
-export { Comparator } from './Comparator'
-export { Allocator } from './Allocator'
+export { StaticCollection } from './StaticCollection'
 
 export * from './algorithm'
+export * from './allocator'
 export * from './iterator'
 export * from './pack'
 export * from './set'
