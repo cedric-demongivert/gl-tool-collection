@@ -4,6 +4,7 @@ import { Pack } from '../pack/Pack'
 import { PackSet } from './PackSet'
 import { IdentifierSet } from './IdentifierSet'
 import { NativeSet } from './NativeSet'
+import { BitSet } from './BitSet'
 
 /**
 * A collection of elements without order and that does not allows duplicates of
@@ -13,12 +14,12 @@ export interface Set<Element> extends Collection<Element> {
   /**
   * @see Collection.clone
   */
-  clone () : Set<Element>
+  clone(): Set<Element>
 
   /**
   * @return A javascript iterator over this sequence of elements.
   */
-  [Symbol.iterator] () : Iterator<Element>
+  [Symbol.iterator](): Iterator<Element>
 }
 
 export namespace Set {
@@ -29,7 +30,7 @@ export namespace Set {
   *
   * @return A shallow copy of the given set instance.
   */
-  export function copy <T> (toCopy : Set<T>) : Set<T> {
+  export function copy<T>(toCopy: Set<T>): Set<T> {
     return toCopy == null ? null : toCopy.clone()
   }
 
@@ -40,7 +41,7 @@ export namespace Set {
   *
   * @return A set that wrap the given pack instance.
   */
-  export function native <T> () : NativeSet<T> {
+  export function native<T>(): NativeSet<T> {
     return NativeSet.any()
   }
 
@@ -51,11 +52,21 @@ export namespace Set {
   *
   * @return A set that wrap the given pack instance.
   */
-  export function fromPack <T> (pack : Pack<T>) : PackSet<T> {
+  export function fromPack<T>(pack: Pack<T>): PackSet<T> {
     return new PackSet<T>(pack)
   }
 
-  export function identifier (capacity : number) : IdentifierSet {
+  /**
+  *
+  */
+  export function identifier(capacity: number): IdentifierSet {
     return new IdentifierSet(capacity)
+  }
+
+  /**
+  *
+  */
+  export function bitset(capacity: number): BitSet {
+    return new BitSet(capacity)
   }
 }

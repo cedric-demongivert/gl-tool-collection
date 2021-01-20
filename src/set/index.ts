@@ -1,3 +1,4 @@
+export { BitSet } from './BitSet'
 export { Set } from './Set'
 export { MutableSet } from './MutableSet'
 export { PackSet } from './PackSet'
