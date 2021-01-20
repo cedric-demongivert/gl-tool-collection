@@ -1,6 +1,6 @@
 import { ReallocableCollection } from '../ReallocableCollection'
 import { MutableSequence } from '../MutableSequence'
-import { Allocator } from '../Allocator'
+import { Duplicator } from '../allocator/Duplicator'
 import { Sequence } from '../Sequence'
 import { Pack } from '../pack/Pack'
 
@@ -12,22 +12,21 @@ import { CircularBufferIterator } from '../circular/CircularBufferIterator'
 * element is added beyond of its own capacity.
 */
 export interface CircularBuffer<Element>
-         extends ReallocableCollection, MutableSequence<Element>
-{
+  extends ReallocableCollection, MutableSequence<Element> {
   /**
   * @see Collection.clone
   */
-  clone () : CircularBuffer<Element>
+  clone(): CircularBuffer<Element>
 
   /**
   * @see Collection.iterator
   */
-  iterator () : CircularBufferIterator<Element>
+  iterator(): CircularBufferIterator<Element>
 
   /**
   * @see Collection.view
   */
-  view () : Sequence<Element>
+  view(): Sequence<Element>
 }
 
 export namespace CircularBuffer {
@@ -38,7 +37,7 @@ export namespace CircularBuffer {
   *
   * @return A shallow copy the given circular buffer.
   */
-  export function copy <T> (buffer : CircularBuffer<T>) : CircularBuffer<T> {
+  export function copy<T>(buffer: CircularBuffer<T>): CircularBuffer<T> {
     return buffer == null ? null : buffer.clone()
   }
 
@@ -49,7 +48,7 @@ export namespace CircularBuffer {
   *
   * @return A circular buffer that wraps the given pack.
   */
-  export function fromPack <T> (pack : Pack<T>) : PackCircularBuffer<T> {
+  export function fromPack<T>(pack: Pack<T>): PackCircularBuffer<T> {
     return new PackCircularBuffer<T>(pack)
   }
 
@@ -60,7 +59,7 @@ export namespace CircularBuffer {
   *
   * @return A new buffer that wrap a pack of the given type of instance.
   */
-  export function any <T> (capacity : number) : PackCircularBuffer<T> {
+  export function any<T>(capacity: number): PackCircularBuffer<T> {
     return new PackCircularBuffer<T>(Pack.any(capacity))
   }
 
@@ -71,7 +70,7 @@ export namespace CircularBuffer {
   *
   * @return A new circular buffer that wrap a unsigned byte pack of the given capacity.
   */
-  export function uint8 (capacity : number) : PackCircularBuffer<number> {
+  export function uint8(capacity: number): PackCircularBuffer<number> {
     return new PackCircularBuffer<number>(Pack.uint8(capacity))
   }
 
@@ -82,7 +81,7 @@ export namespace CircularBuffer {
   *
   * @return A new circular buffer that wrap a unsigned short pack of the given capacity.
   */
-  export function uint16 (capacity : number) : PackCircularBuffer<number> {
+  export function uint16(capacity: number): PackCircularBuffer<number> {
     return new PackCircularBuffer<number>(Pack.uint16(capacity))
   }
 
@@ -93,7 +92,7 @@ export namespace CircularBuffer {
   *
   * @return A new circular buffer that wrap a unsigned integer pack of the given capacity.
   */
-  export function uint32 (capacity : number) : PackCircularBuffer<number> {
+  export function uint32(capacity: number): PackCircularBuffer<number> {
     return new PackCircularBuffer<number>(Pack.uint32(capacity))
   }
 
@@ -104,7 +103,7 @@ export namespace CircularBuffer {
   *
   * @return A new circular buffer that wrap a byte pack of the given capacity.
   */
-  export function int8 (capacity : number) : PackCircularBuffer<number> {
+  export function int8(capacity: number): PackCircularBuffer<number> {
     return new PackCircularBuffer<number>(Pack.int8(capacity))
   }
 
@@ -115,7 +114,7 @@ export namespace CircularBuffer {
   *
   * @return A new circular buffer that wrap a short pack of the given capacity.
   */
-  export function int16 (capacity : number) : PackCircularBuffer<number> {
+  export function int16(capacity: number): PackCircularBuffer<number> {
     return new PackCircularBuffer<number>(Pack.int16(capacity))
   }
 
@@ -126,7 +125,7 @@ export namespace CircularBuffer {
   *
   * @return A new circular buffer that wrap a integer pack of the given capacity.
   */
-  export function int32 (capacity : number) : PackCircularBuffer<number> {
+  export function int32(capacity: number): PackCircularBuffer<number> {
     return new PackCircularBuffer<number>(Pack.int32(capacity))
   }
 
@@ -137,7 +136,7 @@ export namespace CircularBuffer {
   *
   * @return A new circular buffer that wrap a float pack of the given capacity.
   */
-  export function float32 (capacity : number) : PackCircularBuffer<number> {
+  export function float32(capacity: number): PackCircularBuffer<number> {
     return new PackCircularBuffer<number>(Pack.float32(capacity))
   }
 
@@ -148,7 +147,7 @@ export namespace CircularBuffer {
   *
   * @return A new circular buffer that wrap a double pack of the given capacity.
   */
-  export function float64 (capacity : number) : PackCircularBuffer<number> {
+  export function float64(capacity: number): PackCircularBuffer<number> {
     return new PackCircularBuffer<number>(Pack.float64(capacity))
   }
 
@@ -160,7 +159,7 @@ export namespace CircularBuffer {
   *
   * @return A new circular buffer that wrap an instance pack of the given capacity.
   */
-  export function instance <T> (allocator : Allocator<T>, capacity : number) : PackCircularBuffer<T> {
+  export function instance<T>(allocator: Duplicator<T>, capacity: number): PackCircularBuffer<T> {
     return new PackCircularBuffer<T>(Pack.instance(allocator, capacity))
   }
 
@@ -174,7 +173,7 @@ export namespace CircularBuffer {
   * @return A new pack that wrap a unsigned integer pack that can store values
   *         in range [0, maximum] and that is of the given capacity.
   */
-  export function unsignedUpTo (maximum : number, capacity : number) : PackCircularBuffer<number> {
+  export function unsignedUpTo(maximum: number, capacity: number): PackCircularBuffer<number> {
     return new PackCircularBuffer<number>(Pack.unsignedUpTo(maximum, capacity))
   }
 
@@ -188,7 +187,7 @@ export namespace CircularBuffer {
   * @return A new circular buffer that wrap a signed integer pack that can store values
   *         in range [-maximum, maximum] and that is of the given capacity.
   */
-  export function signedUpTo (maximum : number, capacity : number) : PackCircularBuffer<number> {
+  export function signedUpTo(maximum: number, capacity: number): PackCircularBuffer<number> {
     return new PackCircularBuffer<number>(Pack.signedUpTo(maximum, capacity))
   }
 }
