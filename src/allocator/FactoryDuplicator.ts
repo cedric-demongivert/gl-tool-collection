@@ -1,11 +1,12 @@
 import { Pack } from '../pack/Pack'
 
 import { Clearable } from '../Clearable'
+import { Copiable } from '../Copiable'
 import { Factory } from '../Factory'
 
-import { Allocator } from './Allocator'
+import { Duplicator } from './Duplicator'
 
-export class FactoryAllocator<T extends Clearable> implements Allocator<T> {
+export class FactoryDuplicator<T extends Clearable & Copiable<T>> implements Duplicator<T> {
   /**
   * The factory used for creating new instances of the managed type of object.
   */
@@ -45,6 +46,21 @@ export class FactoryAllocator<T extends Clearable> implements Allocator<T> {
   }
 
   /**
+  * @see Allocator.copy
+  */
+  public copy(toCopy: T): T {
+    if (this._instances.size > 0) {
+      const result: T = this._instances.pop()
+      result.copy(toCopy)
+      return result
+    } else {
+      const result: T = this._factory()
+      result.copy(toCopy)
+      return result
+    }
+  }
+
+  /**
   * @see Allocator.free
   */
   public free(instance: T): void {
@@ -65,11 +81,11 @@ export class FactoryAllocator<T extends Clearable> implements Allocator<T> {
   }
 }
 
-export namespace FactoryAllocator {
+export namespace FactoryDuplicator {
   /**
   *
   */
-  export function create<T extends Clearable>(factory: Factory<T>, capacity: number = 16): FactoryAllocator<T> {
-    return new FactoryAllocator(factory, capacity)
+  export function create<T extends Clearable & Copiable<T>>(factory: Factory<T>, capacity: number = 16): FactoryDuplicator<T> {
+    return new FactoryDuplicator(factory, capacity)
   }
 }

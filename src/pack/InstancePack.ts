@@ -1,4 +1,4 @@
-import { Allocator } from '../allocator/Allocator'
+import { Duplicator } from '../allocator/Duplicator'
 
 import { Comparator } from '../Comparator'
 import { Copiable } from '../Copiable'
@@ -20,16 +20,16 @@ export class InstancePack<Element> implements Pack<Element> {
   */
   private _elements: Pack<Element>
 
-  public readonly allocator: Allocator<Element>
+  public readonly duplicator: Duplicator<Element>
 
   /**
   * Makes an empty instance pack of the given capacity.
   *
-  * @param allocator - An allocator that allows to manipulate the given instance type.
+  * @param duplicator - A duplicator that allows to manipulate the given instance type.
   * @param [capacity = 32] - Initial capacity of the pack.
   */
-  public constructor(allocator: Allocator<Element>, capacity: number = 32) {
-    this.allocator = allocator
+  public constructor(duplicator: Duplicator<Element>, capacity: number = 32) {
+    this.duplicator = duplicator
     this._elements = Pack.any(capacity)
   }
 
@@ -48,11 +48,11 @@ export class InstancePack<Element> implements Pack<Element> {
     * @see https://v8.dev/blog/elements-kinds?fbclid=IwAR337wb3oxEpjz_5xVHL-Y14gUpVElementOztLSIikVVQLGN6qcKidEjMLJ4vO3M
     */
     while (this._elements.size < value) {
-      this._elements.push(this.allocator.allocate())
+      this._elements.push(this.duplicator.allocate())
     }
 
     while (this._elements.size > value) {
-      this.allocator.free(this._elements.pop())
+      this.duplicator.free(this._elements.pop())
     }
   }
 
@@ -68,7 +68,7 @@ export class InstancePack<Element> implements Pack<Element> {
   */
   public reallocate(capacity: number): void {
     while (this._elements.size > capacity) {
-      this.allocator.free(this._elements.pop())
+      this.duplicator.free(this._elements.pop())
     }
 
     this._elements.reallocate(capacity)
@@ -99,7 +99,7 @@ export class InstancePack<Element> implements Pack<Element> {
     } else {
       const result: Element = this._elements.pop()
       output.copy(result)
-      this.allocator.free(result)
+      this.duplicator.free(result)
       return output
     }
   }
@@ -137,11 +137,11 @@ export class InstancePack<Element> implements Pack<Element> {
   */
   public fill(element: Element): void {
     const elements: Pack<Element> = this._elements
-    const allocator: Allocator<Element> = this.allocator
+    const duplicator: Duplicator<Element> = this.duplicator
 
     for (let index = 0, size = elements.size; index < size; ++index) {
-      allocator.free(elements.get(index))
-      elements.set(index, allocator.copy(element))
+      duplicator.free(elements.get(index))
+      elements.set(index, duplicator.copy(element))
     }
   }
 
@@ -156,7 +156,7 @@ export class InstancePack<Element> implements Pack<Element> {
     } else {
       const result: Element = this._elements.shift()
       output.copy(result)
-      this.allocator.free(result)
+      this.duplicator.free(result)
       return output
     }
   }
@@ -190,8 +190,8 @@ export class InstancePack<Element> implements Pack<Element> {
       this.size = index + 1
     }
 
-    this.allocator.free(this._elements.get(index))
-    this._elements.set(index, this.allocator.copy(value))
+    this.duplicator.free(this._elements.get(index))
+    this._elements.set(index, this.duplicator.copy(value))
   }
 
   /**
@@ -205,7 +205,7 @@ export class InstancePack<Element> implements Pack<Element> {
         this.reallocate(this.capacity * 2)
       }
 
-      this._elements.insert(index, this.allocator.copy(value))
+      this._elements.insert(index, this.duplicator.copy(value))
     }
   }
 
@@ -217,7 +217,7 @@ export class InstancePack<Element> implements Pack<Element> {
       this.reallocate(this.capacity * 2)
     }
 
-    this._elements.push(this.allocator.copy(value))
+    this._elements.push(this.duplicator.copy(value))
   }
 
   /**
@@ -228,14 +228,14 @@ export class InstancePack<Element> implements Pack<Element> {
       this.reallocate(this.capacity * 2)
     }
 
-    this._elements.unshift(this.allocator.copy(value))
+    this._elements.unshift(this.duplicator.copy(value))
   }
 
   /**
   * @see MutableSequence.delete
   */
   public delete(index: number): void {
-    this.allocator.free(this._elements.get(index))
+    this.duplicator.free(this._elements.get(index))
     this._elements.delete(index)
   }
 
@@ -245,7 +245,7 @@ export class InstancePack<Element> implements Pack<Element> {
   public deleteMany(from: number, size: number): void {
     for (let index = 0; index < size; ++index) {
       const element: Element = this._elements.get(from + index)
-      this.allocator.free(element)
+      this.duplicator.free(element)
     }
 
     this._elements.deleteMany(from, size)
@@ -256,8 +256,8 @@ export class InstancePack<Element> implements Pack<Element> {
   */
   public empty(index: number): void {
     if (index < this._elements.size) {
-      this.allocator.free(this._elements.get(index))
-      this._elements.set(index, this.allocator.allocate())
+      this.duplicator.free(this._elements.get(index))
+      this._elements.set(index, this.duplicator.allocate())
     } else {
       this.size = index + 1
     }
@@ -277,7 +277,7 @@ export class InstancePack<Element> implements Pack<Element> {
   */
   public warp(index: number): void {
     const element: Element = this._elements.get(index)
-    this.allocator.free(element)
+    this.duplicator.free(element)
 
     this._elements.warp(index)
   }
@@ -341,7 +341,7 @@ export class InstancePack<Element> implements Pack<Element> {
   * @see Pack.allocate
   */
   public allocate(capacity: number): InstancePack<Element> {
-    return new InstancePack(this.allocator, capacity)
+    return new InstancePack(this.duplicator, capacity)
   }
 
   /**
@@ -375,7 +375,7 @@ export class InstancePack<Element> implements Pack<Element> {
   */
   public clear(): void {
     while (this._elements.size > 0) {
-      this.allocator.free(this._elements.pop())
+      this.duplicator.free(this._elements.pop())
     }
   }
 
@@ -394,7 +394,7 @@ export class InstancePack<Element> implements Pack<Element> {
     if (other === this) return true
 
     if (other instanceof InstancePack) {
-      return this.allocator === other.allocator &&
+      return this.duplicator === other.duplicator &&
         this._elements.equals(other._elements)
     }
 
@@ -410,8 +410,8 @@ export namespace InstancePack {
   *
   * @return An empty array pack of the given capacity.
   */
-  export function allocate<Element>(allocator: Allocator<Element>, capacity: number): InstancePack<Element> {
-    return new InstancePack<Element>(allocator, capacity)
+  export function allocate<Element>(duplicator: Duplicator<Element>, capacity: number): InstancePack<Element> {
+    return new InstancePack<Element>(duplicator, capacity)
   }
 
   /**

@@ -12,15 +12,6 @@ export interface Allocator<Instance> {
   allocate(): Instance
 
   /**
-  * Allocate and return a new instance of the managed type of object that is a copy of an existing one.
-  *
-  * @param toCopy - An instance to copy.
-  *
-  * @return A new instance of the managed type of object that is a copy of the given one.
-  */
-  copy(toCopy: Instance): Instance
-
-  /**
   * Free the given instance and return it to the allocator.
   *
   * Once freed, an object returned to the allocator must not be referenced by
@@ -32,5 +23,8 @@ export interface Allocator<Instance> {
 }
 
 export namespace Allocator {
+  /**
+  *
+  */
   export const fromFactory = FactoryAllocator.create
 }

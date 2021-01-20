@@ -1,5 +1,5 @@
 import { Comparator } from '../Comparator'
-import { Allocator } from '../Allocator'
+import { Duplicator } from '../allocator/Duplicator'
 import { Sequence } from '../Sequence'
 import { MutableSequence } from '../MutableSequence'
 import { ReallocableCollection } from '../ReallocableCollection'
@@ -13,14 +13,13 @@ import { ArrayPack } from './ArrayPack'
 import { InstancePack } from './InstancePack'
 
 export interface Pack<Element>
-         extends MutableSequence<Element>, ReallocableCollection
-{
+  extends MutableSequence<Element>, ReallocableCollection {
   /**
   * Empty the element at the given index, but keep it in the sequence.
   *
   * @param index - Where to empty an element.
   */
-  empty (index : number) : void
+  empty(index: number): void
 
   /**
   * Empty the required number of elements from the given index, but keep them in the sequence.
@@ -28,12 +27,12 @@ export interface Pack<Element>
   * @param index - Where to empty an element.
   * @param count - Number of element to empty.
   */
-  emptyMany (index : number, count : number) : void
-  
+  emptyMany(index: number, count: number): void
+
   /**
   * @see Array.sort
   */
-  sort (comparator : Comparator<Element, Element>) : void
+  sort(comparator: Comparator<Element, Element>): void
 
   /**
   * Like Array.sort but on a given range of this pack.
@@ -42,7 +41,7 @@ export interface Pack<Element>
   * @param size - Number of elements to sort.
   * @param comparator - Comparison order to use.
   */
-  subsort (offset : number, size : number, comparator : Comparator<Element, Element>) : void
+  subsort(offset: number, size: number, comparator: Comparator<Element, Element>): void
 
   /**
   * Allocate a new empty pack similar to this one with the given capacity.
@@ -51,22 +50,22 @@ export interface Pack<Element>
   *
   * @return A new empty pack similar to this one.
   */
-  allocate (capacity : number) : Pack<Element>
+  allocate(capacity: number): Pack<Element>
 
   /**
   * @see Collection.clone
   */
-  clone () : Pack<Element>
+  clone(): Pack<Element>
 
   /**
   * @see Collection.view
   */
-  view () : Sequence<Element>
+  view(): Sequence<Element>
 
   /**
   * @see Collection.iterator
   */
-  iterator () : PackIterator<Element>
+  iterator(): PackIterator<Element>
 }
 
 export namespace Pack {
@@ -77,7 +76,7 @@ export namespace Pack {
   *
   * @return A new instance, shallow copy of the given one.
   */
-  export function copy <T> (toCopy : Pack<T>) : Pack<T> {
+  export function copy<T>(toCopy: Pack<T>): Pack<T> {
     return toCopy == null ? null : toCopy.clone()
   }
 
@@ -88,7 +87,7 @@ export namespace Pack {
   *
   * @return The default value used by the given pack instance.
   */
-  export function defaultValue <T> (pack : Pack<T>) : T {
+  export function defaultValue<T>(pack: Pack<T>): T {
     return (Object.getPrototypeOf(pack).constructor as any).DEFAULT_VALUE
   }
 
@@ -100,7 +99,7 @@ export namespace Pack {
   *
   * @return A new pack that wrap an array of the given type of instance.
   */
-  export function like <T> (pack : Pack<T>, capacity : number) : Pack<T> {
+  export function like<T>(pack: Pack<T>, capacity: number): Pack<T> {
     return pack.allocate(capacity)
   }
 
@@ -111,7 +110,7 @@ export namespace Pack {
   *
   * @return A new pack that wrap an array of the given type of instance.
   */
-  export function any <T> (capacity : number) : ArrayPack<T> {
+  export function any<T>(capacity: number): ArrayPack<T> {
     return ArrayPack.allocate(capacity)
   }
 
@@ -122,7 +121,7 @@ export namespace Pack {
   *
   * @return A new pack that wrap a unsigned byte buffer of the given capacity.
   */
-  export function uint8 (capacity : number) : BufferPack<Uint8Array> {
+  export function uint8(capacity: number): BufferPack<Uint8Array> {
     return new BufferPack<Uint8Array>(new Uint8Array(capacity))
   }
 
@@ -133,7 +132,7 @@ export namespace Pack {
   *
   * @return A new pack that wrap a unsigned short buffer of the given capacity.
   */
-  export function uint16 (capacity : number) : BufferPack<Uint16Array> {
+  export function uint16(capacity: number): BufferPack<Uint16Array> {
     return new BufferPack<Uint16Array>(new Uint16Array(capacity))
   }
 
@@ -144,7 +143,7 @@ export namespace Pack {
   *
   * @return A new pack that wrap a unsigned integer buffer of the given capacity.
   */
-  export function uint32 (capacity : number) : BufferPack<Uint32Array> {
+  export function uint32(capacity: number): BufferPack<Uint32Array> {
     return new BufferPack<Uint32Array>(new Uint32Array(capacity))
   }
 
@@ -155,7 +154,7 @@ export namespace Pack {
   *
   * @return A new pack that wrap a byte buffer of the given capacity.
   */
-  export function int8 (capacity : number) : BufferPack<Int8Array> {
+  export function int8(capacity: number): BufferPack<Int8Array> {
     return new BufferPack<Int8Array>(new Int8Array(capacity))
   }
 
@@ -166,7 +165,7 @@ export namespace Pack {
   *
   * @return A new pack that wrap a short buffer of the given capacity.
   */
-  export function int16 (capacity : number) : BufferPack<Int16Array> {
+  export function int16(capacity: number): BufferPack<Int16Array> {
     return new BufferPack<Int16Array>(new Int16Array(capacity))
   }
 
@@ -177,7 +176,7 @@ export namespace Pack {
   *
   * @return A new pack that wrap a integer buffer of the given capacity.
   */
-  export function int32 (capacity : number) : BufferPack<Int32Array> {
+  export function int32(capacity: number): BufferPack<Int32Array> {
     return new BufferPack<Int32Array>(new Int32Array(capacity))
   }
 
@@ -188,7 +187,7 @@ export namespace Pack {
   *
   * @return A new pack that wrap a float buffer of the given capacity.
   */
-  export function float32 (capacity : number) : BufferPack<Float32Array> {
+  export function float32(capacity: number): BufferPack<Float32Array> {
     return new BufferPack<Float32Array>(new Float32Array(capacity))
   }
 
@@ -199,7 +198,7 @@ export namespace Pack {
   *
   * @return A new pack that wrap a double buffer of the given capacity.
   */
-  export function float64 (capacity : number) : BufferPack<Float64Array> {
+  export function float64(capacity: number): BufferPack<Float64Array> {
     return new BufferPack<Float64Array>(new Float64Array(capacity))
   }
 
@@ -213,9 +212,9 @@ export namespace Pack {
   * @return A new pack that wrap a unsigned integer buffer that can store values
   *         in range [0, maximum] and that is of the given capacity.
   */
-  export function unsignedUpTo (
-    maximum : number, capacity : number
-  ) : BufferPack<UnsignedIntegerBuffer> {
+  export function unsignedUpTo(
+    maximum: number, capacity: number
+  ): BufferPack<UnsignedIntegerBuffer> {
     return new BufferPack(UnsignedIntegerBuffer.upTo(maximum, capacity))
   }
 
@@ -229,13 +228,13 @@ export namespace Pack {
   * @return A new pack that wrap a signed integer buffer that can store values
   *         in range [-maximum, maximum] and that is of the given capacity.
   */
-  export function signedUpTo (
-    maximum : number, capacity : number
-  ) : BufferPack<IntegerBuffer> {
+  export function signedUpTo(
+    maximum: number, capacity: number
+  ): BufferPack<IntegerBuffer> {
     return new BufferPack(IntegerBuffer.upTo(maximum, capacity))
   }
 
-  export function instance <Element> (allocator : Allocator<Element>, capacity : number) : InstancePack<Element> {
+  export function instance<Element>(allocator: Duplicator<Element>, capacity: number): InstancePack<Element> {
     return new InstancePack<Element>(allocator, capacity)
   }
 }
