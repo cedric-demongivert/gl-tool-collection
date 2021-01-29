@@ -36,9 +36,7 @@ export class FactoryAllocator<T extends Clearable> implements Allocator<T> {
   */
   public allocate(): T {
     if (this._instances.size > 0) {
-      const result: T = this._instances.pop()
-      result.clear()
-      return result
+      return this._instances.pop()
     } else {
       return this._factory()
     }
@@ -48,6 +46,7 @@ export class FactoryAllocator<T extends Clearable> implements Allocator<T> {
   * @see Allocator.free
   */
   public free(instance: T): void {
+    instance.clear()
     this._instances.push(instance)
   }
 
