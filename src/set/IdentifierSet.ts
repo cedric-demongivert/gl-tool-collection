@@ -8,9 +8,23 @@ import { Set } from './Set'
 import { MutableSet } from './MutableSet'
 import { IdentifierSetIterator } from './IdentifierSetIterator'
 
+/**
+ * 
+ */
 export class IdentifierSet implements MutableSet<number>, Sequence<number>, ReallocableCollection {
+  /**
+   * 
+   */
   private _sparse: UnsignedIntegerBuffer
+
+  /**
+   * 
+   */
   private _dense: UnsignedIntegerBuffer
+
+  /**
+   * 
+   */
   private _size: number
 
   /**
@@ -127,29 +141,34 @@ export class IdentifierSet implements MutableSet<number>, Sequence<number>, Real
     const oldDense: UnsignedIntegerBuffer = this._dense
     const oldSize: number = this._size
 
-    this._dense = UnsignedIntegerBuffer.upTo(capacity - 1, capacity)
-    this._sparse = UnsignedIntegerBuffer.upTo(capacity - 1, capacity)
-    this._size = 0
+    const newDense: UnsignedIntegerBuffer = UnsignedIntegerBuffer.upTo(capacity - 1, capacity)
+    const newSparse: UnsignedIntegerBuffer = UnsignedIntegerBuffer.upTo(capacity - 1, capacity)
+
+    this._dense = newDense
+    this._sparse = newSparse
+    let size: number = 0
 
     for (let index = 0; index < capacity; ++index) {
-      this._dense[index] = index
-      this._sparse[index] = index
+      newDense[index] = index
+      newSparse[index] = index
     }
 
     for (let index = 0; index < oldSize; ++index) {
       const element: number = oldDense[index]
 
       if (element < capacity) {
-        const swap: number = this._dense[this._size]
-        const swapIndex: number = this._sparse[element]
+        const swap: number = newDense[size]
+        const swapIndex: number = newSparse[element]
 
-        this._sparse[swap] = swapIndex
-        this._sparse[element] = this._size
-        this._dense[this._size] = element
-        this._dense[swapIndex] = swap
-        this._size += 1
+        newSparse[swap] = swapIndex
+        newSparse[element] = size
+        newDense[size] = element
+        newDense[swapIndex] = swap
+        size += 1
       }
     }
+
+    this._size = size
   }
 
   /**

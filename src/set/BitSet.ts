@@ -15,8 +15,8 @@ function countBits(bits: number): number {
 }
 
 /**
-*
-*/
+ *
+ */
 const BITSUMS: Pack<number> = Pack.uint32(32)
 
 for (let index = 0; index < 32; ++index) {

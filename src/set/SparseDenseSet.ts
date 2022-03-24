@@ -5,17 +5,16 @@ import { MutableSet } from './MutableSet'
 import { PackSparseDenseSet } from './PackSparseDenseSet'
 
 export interface SparseDenseSet
-         extends Sequence<number>, MutableSet<number>, ReallocableCollection
-{
+  extends Sequence<number>, MutableSet<number>, ReallocableCollection {
   /**
   * @see Collection.view
   */
-  view () : Sequence<number>
+  view(): Sequence<number>
 
   /**
   * @see Collection.clone
   */
-  clone () : SparseDenseSet
+  clone(): SparseDenseSet
 }
 
 export namespace SparseDenseSet {
@@ -26,7 +25,7 @@ export namespace SparseDenseSet {
   *
   * @return A copy of the given instance.
   */
-  export function copy (toCopy : SparseDenseSet) : SparseDenseSet {
+  export function copy(toCopy: SparseDenseSet): SparseDenseSet {
     return toCopy == null ? null : toCopy.clone()
   }
 
@@ -37,7 +36,7 @@ export namespace SparseDenseSet {
   *
   * @return A new sparse-dense set of the given capacity.
   */
-  export function uint32 (capacity : number) : SparseDenseSet {
+  export function uint32(capacity: number): SparseDenseSet {
     return PackSparseDenseSet.uint32(capacity)
   }
 
@@ -48,7 +47,7 @@ export namespace SparseDenseSet {
   *
   * @return A new sparse-dense set of the given capacity.
   */
-  export function uint16 (capacity : number) : SparseDenseSet {
+  export function uint16(capacity: number): SparseDenseSet {
     return PackSparseDenseSet.uint16(capacity)
   }
 
@@ -59,7 +58,7 @@ export namespace SparseDenseSet {
   *
   * @return A new sparse-dense set of the given capacity.
   */
-  export function uint8 (capacity : number) : SparseDenseSet {
+  export function uint8(capacity: number): SparseDenseSet {
     return PackSparseDenseSet.uint8(capacity)
   }
 
@@ -70,7 +69,7 @@ export namespace SparseDenseSet {
   *
   * @return A new sparse-dense set of the given capacity.
   */
-  export function any (capacity : number) : SparseDenseSet {
+  export function any(capacity: number): SparseDenseSet {
     return PackSparseDenseSet.any(capacity)
   }
 
@@ -81,7 +80,7 @@ export namespace SparseDenseSet {
   *
   * @return A new sparse-dense set that can store numbers up to the given value.
   */
-  export function upTo (capacity : number) : SparseDenseSet {
+  export function upTo(capacity: number): SparseDenseSet {
     return PackSparseDenseSet.upTo(capacity)
   }
 }

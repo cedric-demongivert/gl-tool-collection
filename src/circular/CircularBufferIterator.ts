@@ -5,97 +5,97 @@ import { CircularBuffer } from '../circular/CircularBuffer'
 export class CircularBufferIterator<Element> implements BidirectionalIterator<Element>
 {
   /**
-  * The parent pack of this iterator.
-  */
-  public buffer : CircularBuffer<Element>
+   * The parent circular buffer.
+   */
+  public buffer: CircularBuffer<Element>
 
   /**
-  * The location of the element described by this iterator in the parent pack.
-  */
-  public index : number
+   * Index of the element pointed by this iterator in the parent buffer.
+   */
+  public index: number
 
   /**
-  * Instantiate a new random access iterator instance.
-  */
-  public constructor () {
+   * Instantiate a new iterator instance.
+   */
+  public constructor() {
     this.buffer = null
     this.index = 0
   }
 
   /**
-  * @see Iterator.collection
-  */
-  public collection () : CircularBuffer<Element> {
+   * @see Iterator.collection
+   */
+  public collection(): CircularBuffer<Element> {
     return this.buffer
   }
 
   /**
-  * @see ForwardIterator.hasNext
-  */
-  public hasNext () : boolean {
+   * @see ForwardIterator.hasNext
+   */
+  public hasNext(): boolean {
     return this.buffer && this.index < this.buffer.size
   }
 
   /**
-  * @see ForwardIterator.next
-  */
-  public next () : void {
+   * @see ForwardIterator.next
+   */
+  public next(): void {
     this.index += 1
   }
 
   /**
-  * @see ForwardIterator.forward
-  */
-  public forward (count : number) : void {
+   * @see ForwardIterator.forward
+   */
+  public forward(count: number): void {
     this.index += count
   }
 
   /**
-  * @see ForwardIterator.end
-  */
-  public end () : void {
+   * @see ForwardIterator.end
+   */
+  public end(): void {
     this.index = this.buffer ? this.buffer.lastIndex : 0
   }
 
   /**
-  * @see BackwardIterator.hasPrevious
-  */
-  public hasPrevious () : boolean {
+   * @see BidirectionalIterator.hasPrevious
+   */
+  public hasPrevious(): boolean {
     return this.buffer && this.index > 0
   }
 
   /**
-  * @see BackwardIterator.previous
-  */
-  public previous () : void {
+   * @see BidirectionalIterator.previous
+   */
+  public previous(): void {
     this.index -= 1
   }
 
   /**
-  * @see BackwardIterator.backward
-  */
-  public backward (count : number) : void {
+   * @see BidirectionalIterator.backward
+   */
+  public backward(count: number): void {
     this.index -= count
   }
 
   /**
-  * @see BackwardIterator.start
-  */
-  public start () : void {
+   * @see BidirectionalIterator.start
+   */
+  public start(): void {
     this.index = 0
   }
 
   /**
-  * @see Iterator.get
-  */
-  public get () : Element {
+   * @see CollectionIterator.get
+   */
+  public get(): Element {
     return this.buffer.get(this.index)
   }
 
   /**
-  * @see Iterator.move
-  */
-  public move (iterator : CollectionIterator<Element>) : void {
+   * @see CollectionIterator.move
+   */
+  public move(iterator: CollectionIterator<Element>): void {
     if (iterator instanceof CircularBufferIterator) {
       this.buffer = iterator.buffer
       this.index = iterator.index
@@ -108,27 +108,27 @@ export class CircularBufferIterator<Element> implements BidirectionalIterator<El
   }
 
   /**
-  * @see BidirectionalIterator.go
-  */
-  public go (index : number) : void {
+   * @see BidirectionalIterator.go
+   */
+  public go(index: number): void {
     this.index = index
   }
 
   /**
-  * Shallow-copy the given instance.
-  *
-  * @param toCopy
-  */
-  public copy (toCopy : CircularBufferIterator<Element>) : void {
+   * Shallow-copy the given instance.
+   *
+   * @param toCopy
+   */
+  public copy(toCopy: CircularBufferIterator<Element>): void {
     this.buffer = toCopy.buffer
     this.index = toCopy.index
   }
 
   /**
-  * @see Iterator.clone
-  */
-  public clone () : CircularBufferIterator<Element> {
-    const copy : CircularBufferIterator<Element> = new CircularBufferIterator<Element>()
+   * @see Iterator.clone
+   */
+  public clone(): CircularBufferIterator<Element> {
+    const copy: CircularBufferIterator<Element> = new CircularBufferIterator<Element>()
 
     copy.copy(this)
 
@@ -136,15 +136,15 @@ export class CircularBufferIterator<Element> implements BidirectionalIterator<El
   }
 
   /**
-  * @see Iterator.equals
-  */
-  public equals (other : any) : boolean {
+   * @see Iterator.equals
+   */
+  public equals(other: any): boolean {
     if (other == null) return false
     if (other === this) return true
 
     if (other instanceof CircularBufferIterator) {
       return other.buffer === this.buffer &&
-             other.index === this.index
+        other.index === this.index
     }
 
     return false
@@ -153,18 +153,18 @@ export class CircularBufferIterator<Element> implements BidirectionalIterator<El
 
 export namespace CircularBufferIterator {
   /**
-  * Return a shallow copy of the given iterator.
-  *
-  * A shallow-copy *b* of an iterator *a* is an instance that follow both
-  * properties :
-  *  - b !== a
-  *  - b.equals(a)
-  *
-  * @param toCopy - An iterator to copy.
-  *
-  * @return A shallow copy of the given iterator.
-  */
-  export function copy <Element> (toCopy : CircularBufferIterator<Element>) : CircularBufferIterator<Element> {
+   * Return a shallow copy of the given iterator.
+   *
+   * A shallow-copy *b* of an iterator *a* is an instance that follow both
+   * properties :
+   *  - b !== a
+   *  - b.equals(a)
+   *
+   * @param toCopy - An iterator to copy.
+   *
+   * @return A shallow copy of the given iterator.
+   */
+  export function copy<Element>(toCopy: CircularBufferIterator<Element>): CircularBufferIterator<Element> {
     return toCopy.clone()
   }
 }
