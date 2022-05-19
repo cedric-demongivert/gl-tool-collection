@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   root: true,
   parser: '@typescript-eslint/parser',
   plugins: [
@@ -9,6 +9,11 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
   ],
   rules: {
+    '@typescript-eslint/ban-types': ['error', {
+      types: {
+        Function: false
+      }
+    }],
     '@typescript-eslint/no-namespace': 'off',
     '@typescript-eslint/member-ordering': ['warn', {
       default: {

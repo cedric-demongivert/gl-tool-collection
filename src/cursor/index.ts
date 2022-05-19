@@ -1,3 +1,5 @@
-export { CollectionIterator } from './CollectionIterator'
-export { ForwardIterator } from './ForwardIterator'
-export { BidirectionalIterator } from './BidirectionalIterator'
+export { BidirectionalCursor } from './BidirectionalCursor'
+export { Cursor } from './Cursor'
+export { ForwardCursor } from './ForwardCursor'
+export { ForwardCursorView } from './ForwardCursorView'
+export { RandomAccessCursor } from './RandomAccessCursor'

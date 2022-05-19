@@ -1,12 +1,11 @@
 import { Collection } from '../Collection'
+import { Protomark } from '../mark'
 
 import { EmptySequence } from './EmptySequence'
 
 /**
  * A sequence is an ordered collection of elements in which repetitions are allowed; 
  * it may contain a non-finite number of elements.
- *
- * @see Collection#isSequence
  */
 export interface Sequence<Element> extends Collection<Element> {
   /**
@@ -127,16 +126,6 @@ export interface Sequence<Element> extends Collection<Element> {
   view(): Sequence<Element>
 
   /**
-   * @see Collection.is
-   */
-  is(marker: Sequence.MARKER): true
-
-  /**
-   * @see Collection.is
-   */
-  is(marker: symbol): boolean
-
-  /**
   * @return A javascript iterator over this sequence of elements.
   */
   [Symbol.iterator](): IterableIterator<Element>
@@ -146,12 +135,17 @@ export namespace Sequence {
   /**
    * 
    */
-  export const MARKER: unique symbol = Symbol('gl-tool-collection/sequence-marker')
+  export const MARK: unique symbol = Symbol('gl-tool-collection/sequence-mark')
 
   /**
    * 
    */
-  export type MARKER = typeof MARKER
+  export type MARK = typeof MARK
+
+  /**
+   * @see Markable.protomark
+   */
+  export const protomark = Protomark(MARK)
 
   /**
    * Return true if the given collection is a sequence.
@@ -161,13 +155,11 @@ export namespace Sequence {
    * @return True if the given collection is a sequence.
    */
   export function is<Element>(collection: Collection<Element>): collection is Sequence<Element> {
-    return collection.is(MARKER)
+    return collection.is(MARK)
   }
 
   /**
-   * @return An instance of sequence that represent a static empty sequence.
+   * @see EmptySequence.get
    */
-  export function empty<Element>(): Sequence<Element> {
-    return EmptySequence.create<Element>()
-  }
+  export const empty = EmptySequence.get
 }

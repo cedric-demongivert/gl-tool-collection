@@ -1,6 +1,6 @@
 import { Comparable, Clonable } from '@cedric-demongivert/gl-tool-utils'
 
-import { ForwardIterator } from './cursor'
+import { ForwardCursor } from './cursor'
 
 /**
  * A collection is a container of elements.
@@ -29,9 +29,11 @@ export interface Collection<Element> extends Iterable<Element>, Comparable, Clon
   equals(other: unknown): boolean
 
   /**
+   * Returns a forward iterator over this collection.
+   * 
    * @return A forward iterator over this collection.
    */
-  forward(): ForwardIterator<Element>
+  forward(): ForwardCursor<Element>
 
   /**
    * Return true if the given element is in this collection.

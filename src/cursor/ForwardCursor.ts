@@ -1,4 +1,7 @@
+import { Protomark } from '../mark'
+
 import { Cursor } from './Cursor'
+import { EmptyForwardCursor } from './EmptyForwardCursor'
 
 /**
  * A cursor over a sequence of values that can only move from an element to its consecutive one.
@@ -20,10 +23,8 @@ export interface ForwardCursor<Element> extends Cursor<Element> {
    * Moves this cursor forward of the given number of elements.
    *
    * @param count - Number of elements to skip.
-   * 
-   * @return This cursor instance for chaining purposes.
    */
-  forward(count: number): this
+  forward(count: number): void
 
   /**
    * Returns true if this cursor points to the end of its underlying sequence.
@@ -41,8 +42,43 @@ export interface ForwardCursor<Element> extends Cursor<Element> {
 
   /**
    * Moves this cursor to the next available element or the end of its underlying sequence.
-   * 
-   * @return This cursor instance for chaining purposes.
    */
-  next(): this
+  next(): void
+}
+
+/**
+ * 
+ */
+export namespace ForwardCursor {
+  /**
+   * 
+   */
+  export const MARK: unique symbol = Symbol('gl-tool-collection/cursor/forward-mark')
+
+  /**
+   * 
+   */
+  export type MARK = typeof MARK
+
+  /**
+   * 
+   */
+  export const protomark = Protomark(MARK)
+
+  /**
+   * 
+   */
+  export function is<Element>(instance: Cursor<Element>): instance is ForwardCursor<Element> {
+    return instance.is(MARK)
+  }
+
+  /**
+   * @see EmptyForwardCursor.INSTANCE
+   */
+  export const EMPTY = EmptyForwardCursor.INSTANCE
+
+  /**
+   * @see EmptyForwardCursor.get
+   */
+  export const empty = EmptyForwardCursor.get
 }

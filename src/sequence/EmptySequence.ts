@@ -1,12 +1,14 @@
-import { ImmutableCollection } from '../marker/ImmutableCollection'
+import { ForwardCursor } from '../cursor'
+import { ReadonlyMark, EmptyMark, Protomark } from '../mark'
 
 import { Sequence } from './Sequence'
-import { SequenceIterator } from './SequenceIterator'
 
 /**
  * An empty sequence, e.g., a sequence of zero elements.
  */
-export class EmptySequence<Output = any> implements Sequence<Output>, ImmutableCollection<Output> {
+@ReadonlyMark.protomark
+@EmptyMark.protomark
+export class EmptySequence<Output = any> implements Sequence<Output>, ReadonlyMark.Marked, EmptyMark.Marked {
   /**
    * @see Sequence.size
    */
@@ -78,25 +80,6 @@ export class EmptySequence<Output = any> implements Sequence<Output>, ImmutableC
   }
 
   /**
-   * @see Sequence.is
-   */
-  public is(marker: Sequence.MARKER): true
-
-  /**
-   * @see Sequence.is
-   */
-  public is(marker: ImmutableCollection.MARKER): true
-  /**
-   * @see Sequence.is
-   */
-  public is(marker: Symbol): boolean {
-    return (
-      marker === Sequence.MARKER ||
-      marker === ImmutableCollection.MARKER
-    )
-  }
-
-  /**
    * @see Sequence.clone
    */
   public clone(): EmptySequence<Output> {
@@ -113,12 +96,8 @@ export class EmptySequence<Output = any> implements Sequence<Output>, ImmutableC
   /**
    * @see Sequence.iterator
    */
-  public forward(): SequenceIterator<Output> {
-    const iterator: SequenceIterator<Output> = new SequenceIterator<Output>()
-
-    iterator.sequence = this
-
-    return iterator
+  public forward(): ForwardCursor<Output> {
+    return ForwardCursor.EMPTY
   }
 
   /**
@@ -136,6 +115,11 @@ export class EmptySequence<Output = any> implements Sequence<Output>, ImmutableC
   }
 
   /**
+   * 
+   */
+  public is = Protomark.is
+
+  /**
    * @see Sequence.equals
    */
   public equals(other: any): boolean {
@@ -146,6 +130,9 @@ export class EmptySequence<Output = any> implements Sequence<Output>, ImmutableC
   }
 }
 
+/**
+ * 
+ */
 export namespace EmptySequence {
   /**
    * 
@@ -155,7 +142,7 @@ export namespace EmptySequence {
   /**
    * 
    */
-  export function create<Output>(): EmptySequence<Output> {
+  export function get<Output>(): EmptySequence<Output> {
     return INSTANCE
   }
 }

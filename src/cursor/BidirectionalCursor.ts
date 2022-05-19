@@ -1,3 +1,6 @@
+import { Protomark } from '../mark'
+import { Cursor } from './Cursor'
+import { EmptyBidirectionalCursor } from './EmptyBidirectionalCursor'
 import { ForwardCursor } from './ForwardCursor'
 
 /**
@@ -11,7 +14,7 @@ export interface BidirectionalCursor<Element> extends ForwardCursor<Element> {
    * 
    * @return This cursor instance for chaining purposes.
    */
-  at(index: number): this
+  at(index: number): void
 
   /**
    * Moves this cursor backward of the given number of elements.
@@ -20,7 +23,7 @@ export interface BidirectionalCursor<Element> extends ForwardCursor<Element> {
    * 
    * @return This cursor instance for chaining purposes.
    */
-  backward(count: number): this
+  backward(count: number): void
 
   /**
    * @see Clonable.prototype.clone
@@ -40,4 +43,41 @@ export interface BidirectionalCursor<Element> extends ForwardCursor<Element> {
    * @return This cursor instance for chaining purposes.
    */
   previous(): void
+}
+
+/**
+ * 
+ */
+export namespace BidirectionalCursor {
+  /**
+   * 
+   */
+  export const MARK: unique symbol = Symbol('gl-tool-collection/cursor/bidirectional-mark')
+
+  /**
+   * 
+   */
+  export type MARK = typeof MARK
+
+  /**
+   * 
+   */
+  export const protomark = Protomark(MARK)
+
+  /**
+   * 
+   */
+  export function is<Element>(instance: Cursor<Element>): instance is BidirectionalCursor<Element> {
+    return instance.is(MARK)
+  }
+
+  /**
+   * @see EmptyBidirectionalCursor.INSTANCE
+   */
+  export const EMPTY = EmptyBidirectionalCursor.INSTANCE
+
+  /**
+   * @see EmptyBidirectionalCursor.get
+   */
+  export const empty = EmptyBidirectionalCursor.get
 }
