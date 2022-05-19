@@ -1,26 +1,37 @@
-import { Comparable } from '@cedric-demongivert/gl-tool-utils'
+import { Comparable, Clonable } from '@cedric-demongivert/gl-tool-utils'
 
-import { CollectionIterator } from './iterator'
-import { ForwardIterator } from './iterator/ForwardIterator'
+import { ForwardIterator } from './cursor'
 
 /**
  * A collection is a container of elements.
  */
-export interface Collection<Element> extends Iterable<Element>, Comparable {
+export interface Collection<Element> extends Iterable<Element>, Comparable, Clonable {
   /**
-   * Return the number of elements stored into this collection.
+   * Return the number of elements in this collection.
    *
    * A container may hold an infinite number of elements, and for such cases, 
    * this property MUST return the value Number.POSITIVE_INFINITY. Otherwise, 
    * this property MUST return a non-negative integer equal to the number of 
    * elements in the collection.
    * 
-   * A container can't "partially" hold elements and, as a result, must always 
-   * return an integer as its size.
-   * 
-   * Return the number of elements stored into this collection.
+   * @return The number of elements in this collection.
    */
   readonly size: number
+
+  /**
+   * @see Clonable.prototype.clone
+   */
+  clone(): Collection<Element>
+
+  /**
+   * @see Comparable.prototype.equals
+   */
+  equals(other: unknown): boolean
+
+  /**
+   * @return A forward iterator over this collection.
+   */
+  forward(): ForwardIterator<Element>
 
   /**
    * Return true if the given element is in this collection.
@@ -30,47 +41,6 @@ export interface Collection<Element> extends Iterable<Element>, Comparable {
    * @return True if the given element is in this collection.
    */
   has(element: Element): boolean
-
-  /**
-   * Return true if this collection is equal to the given object instance or value.
-   * 
-   * A collection is never equal to any non-collection value; two matching containers 
-   * MUST hold matching elements; finally, two equal collections follow the other 
-   * constraints of the equality operator.
-   *
-   * @param other - The object instance or value to compare to this collection.
-   *
-   * @return True if the given object instance or value is equal to this collection.
-   */
-  equals(other: any): boolean
-
-  /**
-   * Return a shallow copy of this collection.
-   *
-   * A shallow copy of a collection is an instance not strictly equal to its 
-   * original containing the same values or references.
-   * 
-   * For optimization purposes, all immutable collections MUST return themselves.
-   *
-   * @return A shallow copy of this collection.
-   */
-  clone(): Collection<Element>
-
-  /**
-   * Return an immutable instance of the collection. 
-   * 
-   * A call to this method MUST always return the same collection instance.
-   * 
-   * An immutable collection MUST always return itself.
-   * 
-   * @return A read-only instance of the collection. 
-   */
-  view(): Collection<Element>
-
-  /**
-   * @return A forward iterator over this collection.
-   */
-  forward(): ForwardIterator<Element>
 
   /**
    * Return true if this collection matches the given marker.
@@ -86,12 +56,23 @@ export interface Collection<Element> extends Iterable<Element>, Comparable {
   /**
    * @return A javascript iterator over this collection.
    */
-  values(): IterableIterator<Element>
+  [Symbol.iterator](): IterableIterator<Element>
 
   /**
    * @return A javascript iterator over this collection.
    */
-  [Symbol.iterator](): IterableIterator<Element>
+  values(): IterableIterator<Element>
+
+  /**
+   * Return an immutable instance of the collection. 
+   * 
+   * A call to this method MUST always return the same collection instance.
+   * 
+   * An immutable collection MUST always return itself.
+   * 
+   * @return A read-only instance of the collection. 
+   */
+  view(): Collection<Element>
 }
 
 export namespace Collection {

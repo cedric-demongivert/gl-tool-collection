@@ -10,45 +10,30 @@ module.exports = {
   ],
   rules: {
     '@typescript-eslint/no-namespace': 'off',
-    '@typescript-eslint/member-ordering': ['warning', {
-      default: [
-        {
-          memberType: 'static-field',
-          order: 'alphabetically'
-        },
-        {
-          memberType: 'static-method',
-          order: 'alphabetically'
-        },
-        {
-          memberType: 'static-get',
-          order: 'alphabetically'
-        },
-        {
-          memberType: 'static-set',
-          order: 'alphabetically'
-        },
-        {
-          memberType: 'instance-field',
-          order: 'alphabetically'
-        },
-        {
-          memberType: 'instance-get',
-          order: 'alphabetically'
-        },
-        {
-          memberType: 'instance-set',
-          order: 'alphabetically'
-        },
-        {
-          memberType: 'constructor',
-          order: 'alphabetically'
-        },
-        {
-          memberType: 'instance-method',
-          order: 'alphabetically'
-        }
-      ]
+    '@typescript-eslint/member-ordering': ['warn', {
+      default: {
+        memberTypes: [
+          'static-field',
+          'static-method',
+          'static-get',
+          'static-set',
+          'instance-field',
+          'instance-get',
+          'instance-set',
+          'constructor',
+          'instance-method'
+        ],
+        order: 'alphabetically-case-insensitive'
+      },
+      interfaces: {
+        memberTypes: [
+          'field',
+          'constructor',
+          'method',
+          'signature'
+        ],
+        order: 'alphabetically-case-insensitive'
+      }
     }]
   }
 };
