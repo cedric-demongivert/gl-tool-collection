@@ -1,8 +1,21 @@
-node_modules
-dist
-doc
-docs
-coverage
-npm-debug.log
-yarn-error.log
-*.d.ts
+# Ignore everything.
+*
+
+# Except sources.
+!/src/**/*
+
+# Except tests.
+!/tests/**/*
+
+# Except configuration files.
+!.babelrc
+!.gitignore
+!.npmingore
+!jest.config.js
+!package.json
+!tsconfig.json
+!webpack.mix.js
+
+# Except content.
+!LICENSE.md
+!README.md
