@@ -1,17 +1,19 @@
+import { Comparable } from '@cedric-demongivert/gl-tool-utils'
+
 import { CollectionIterator } from './iterator'
 import { ForwardIterator } from './iterator/ForwardIterator'
 
 /**
- * A collection is a container that holds various elements.
+ * A collection is a container of elements.
  */
-export interface Collection<Element> extends Iterable<Element> {
+export interface Collection<Element> extends Iterable<Element>, Comparable {
   /**
    * Return the number of elements stored into this collection.
    *
-   * A container may hold a non-finite number of elements, and for such cases, 
+   * A container may hold an infinite number of elements, and for such cases, 
    * this property MUST return the value Number.POSITIVE_INFINITY. Otherwise, 
-   * for collections containing a finite number of elements, this property MUST 
-   * return a non-negative integer equal to the number of elements it has.
+   * this property MUST return a non-negative integer equal to the number of 
+   * elements in the collection.
    * 
    * A container can't "partially" hold elements and, as a result, must always 
    * return an integer as its size.
@@ -94,11 +96,6 @@ export interface Collection<Element> extends Iterable<Element> {
 
 export namespace Collection {
   /**
-   * 
-   */
-  export type Factory<T> = () => Collection<T>
-
-  /**
    * Return true if the given collection contains a non-finite number of elements.
    *
    * @param collection - A collection to assert.
@@ -131,32 +128,5 @@ export namespace Collection {
    */
   export function copy<Element>(toCopy: Collection<Element>): Collection<Element> {
     return toCopy.clone()
-  }
-
-  /**
-   * Particular case when a null reference is used as a right operand.
-   */
-  export function equals<Element>(left: Collection<Element>, right: null | undefined): false
-  /**
-   * Particular case when a null reference is used as a left operand.
-   */
-  export function equals<Element>(left: null | undefined, right: Collection<Element>): false
-  /**
-   * Particular case when two null references are compared.
-   */
-  export function equals<Element>(left: null | undefined, right: null | undefined): true
-  /**
-   * Return true if both collections are equals.
-   *
-   * @see Collection.equals
-   *
-   * @param left - The left operand.
-   * @param right - The right operand.
-   *
-   * @return True if both collections are equals.
-   */
-  export function equals<Element>(left: Collection<Element> | null | undefined, right: Collection<Element> | null | undefined): boolean
-  export function equals<Element>(left: Collection<Element> | null | undefined, right: Collection<Element> | null | undefined): boolean {
-    return left ? left.equals(right) : left == right
   }
 }

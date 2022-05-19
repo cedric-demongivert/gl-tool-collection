@@ -15,6 +15,7 @@
 !package.json
 !tsconfig.json
 !webpack.mix.js
+!.eslintrc.js
 
 # Except content.
 !LICENSE.md
