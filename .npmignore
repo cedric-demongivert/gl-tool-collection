@@ -2,8 +2,8 @@
 *
 
 # Except sources.
-!src
-!src/**
+!sources
+!sources/**
 
 # Except tests.
 !tests
