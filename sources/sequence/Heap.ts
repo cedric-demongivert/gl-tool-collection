@@ -1,14 +1,13 @@
-import { Sequence } from '../Sequence'
-import { Comparator } from '../Comparator'
-import { Pack } from '../pack/Pack'
+import { Clearable, Comparator } from '@cedric-demongivert/gl-tool-utils'
+import { Sequence, Pack } from '../sequence'
 
 import { PackHeap } from './PackHeap'
-import { Collection } from '../Collection'
+import { Mark, Markable } from '../mark'
 
 /**
  * A heap implementation.
  */
-export interface Heap<Element> extends Sequence<Element> {
+export interface Heap<Element> extends Sequence<Element>, Clearable {
   /**
    * @returns The comparator used by this heap.
    */
@@ -48,27 +47,7 @@ export interface Heap<Element> extends Sequence<Element> {
   next(): Element
 
   /**
-   * @see Sequence.is
-   */
-  is(marker: Sequence.MARKER): true
-
-  /**
-   * @see Collection.is
-   */
-  is(marker: Heap.MARKER): true
-
-  /**
-   * @see Collection.is
-   */
-  is(marker: symbol): boolean
-
-  /**
-   * Empty this heap of its elements.
-   */
-  clear(): void
-
-  /**
-   * @see Collection.clone
+   * @see Collection.prototype.clone
    */
   clone(): Heap<Element>
 }
@@ -80,12 +59,14 @@ export namespace Heap {
   /**
    * 
    */
-  export const MARKER: unique symbol = Symbol('gl-tool-collection/heap-marker')
+  export const MARK: Mark = Symbol('gl-tool-collection/collection/heap')
 
   /**
-   * 
+   * @see Mark.Container
    */
-  export type MARKER = typeof MARKER
+  export function mark(): Mark {
+    return MARK
+  }
 
   /**
    * Return true if the given collection is a sequence.
@@ -94,15 +75,8 @@ export namespace Heap {
    *
    * @returns True if the given collection is a sequence.
    */
-  export function is<Element>(collection: Collection<Element>): collection is Heap<Element> {
-    return collection.is(MARKER)
-  }
-
-  /**
-   * 
-   */
-  export function copy<T>(pack: Heap<T>): Heap<T> {
-    return pack == null ? null : pack.clone()
+  export function is<Element>(collection: Markable): collection is Heap<Element> {
+    return collection.is(MARK)
   }
 
   /**

@@ -1,12 +1,11 @@
-import { ReallocableCollection } from '../ReallocableCollection'
-import { Comparator } from '../Comparator'
-import { Sequence } from '../Sequence'
+import { Comparator } from '@cedric-demongivert/gl-tool-utils'
+import { Sequence, Pack } from '../sequence'
 
-import { Pack } from '../pack/Pack'
-import { BidirectionalIterator } from '../iterator/BidirectionalIterator'
-import { SequenceView } from '../view/SequenceView'
+import { ReallocableCollection } from '../ReallocableCollection'
 
 import { Heap } from './Heap'
+import { ForwardCursor } from '../cursor'
+import { protomark } from '../mark'
 
 /**
  * An object that uses a Pack instance as a Heap.
@@ -24,6 +23,11 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   private _comparator: Comparator<Element, Element>
 
   /**
+   *  
+   */
+  private _view: Sequence<Element>
+
+  /**
    * Instantiate a new empty heap.
    *
    * @param elements - Pack to use as a heap.
@@ -32,10 +36,11 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   public constructor(elements: Pack<Element>, comparator: Comparator<Element, Element>) {
     this._comparator = comparator
     this._elements = elements
+    this._view = Sequence.view(this)
   }
 
   /**
-   * @see Heap.next
+   * @see Heap.prototype.next
    */
   public next(): Element {
     const result: Element = this._elements.get(0)
@@ -44,7 +49,7 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   }
 
   /**
-   * @see Heap.add
+   * @see Heap.prototype.push
    */
   public push(value: Element): void {
     this._elements.push(value)
@@ -112,7 +117,7 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   }
 
   /**
-   * @see Heap.delete
+   * @see Heap.prototype.delete
    */
   public delete(index: number): void {
     const size: number = this._elements.size
@@ -125,7 +130,7 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   }
 
   /**
-   * @see Heap.compare
+   * @see Heap.prototype.compare
    */
   public compare(left: number, right: number): number {
     const elements: Pack<Element> = this._elements
@@ -133,154 +138,139 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   }
 
   /**
-   * @see Sequence.get
+   * @see Sequence.prototype.get
    */
   public get(index: number): Element {
     return this._elements.get(index)
   }
 
   /**
-   * @see Sequence.indexOf
+   * @see Sequence.prototype.indexOf
    */
   public indexOf(value: Element): number {
     return this._elements.indexOf(value)
   }
 
   /**
-   * @see Sequence.hasInSubsequence
+   * @see Sequence.prototype.hasInSubsequence
    */
   public hasInSubsequence(element: Element, offset: number, size: number): boolean {
     return this._elements.hasInSubsequence(element, offset, size)
   }
 
   /**
-   * @see Sequence.indexOfInSubsequence
+   * @see Sequence.prototype.indexOfInSubsequence
    */
   public indexOfInSubsequence(element: Element, offset: number, size: number): number {
     return this._elements.indexOfInSubsequence(element, offset, size)
   }
 
   /**
-   * @see Collection.has
+   * @see Collection.prototype.has
    */
   public has(value: Element): boolean {
     return this._elements.has(value)
   }
 
   /**
-   * @see Sequence.first
+   * @see Sequence.prototype.first
    */
   public get first(): Element {
     return this._elements.first
   }
 
   /**
-   * @see Sequence.firstIndex
+   * @see Sequence.prototype.firstIndex
    */
   public get firstIndex(): number {
     return this._elements.firstIndex
   }
 
   /**
-   * @see Sequence.last
+   * @see Sequence.prototype.last
    */
   public get last(): Element {
     return this._elements.last
   }
 
   /**
-   * @see Sequence.lastIndex
+   * @see Sequence.prototype.lastIndex
    */
   public get lastIndex(): number {
     return this._elements.lastIndex
   }
 
   /**
-   * @see Collection.iterator
+   * @see Collection.prototype.forward
    */
-  public iterator(): BidirectionalIterator<Element> {
-    return this._elements.iterator()
+  public forward(): ForwardCursor<Element> {
+    return this._elements.forward()
   }
 
   /**
-   * @see Collection.get size
+   * @see Collection.prototype.size
    */
   public get size(): number {
     return this._elements.size
   }
 
   /**
-   * @see Heap.get comparator
+   * @see Heap.prototype.comparator
    */
   public get comparator(): Comparator<Element, Element> {
     return this._comparator
   }
 
   /**
-   * @see StaticCollection.get capacity
+   * @see StaticCollection.prototype.capacity
    */
   public get capacity(): number {
     return this._elements.capacity
   }
 
   /**
-   * @see ReallocableCollection.reallocate
+   * @see ReallocableCollection.prototype.reallocate
    */
   public reallocate(capacity: number): void {
     this._elements.reallocate(capacity)
   }
 
   /**
-   * @see ReallocableCollection.fit
+   * @see ReallocableCollection.prototype.fit
    */
   public fit(): void {
     this._elements.fit()
   }
 
   /**
-   * @see Sequence.is
+   * @see Markable.prototype.is
    */
-  public is(marker: Sequence.MARKER): true
+  public is = protomark.is
 
   /**
-   * @see Heap.is
-   */
-  public is(marker: Heap.MARKER): true
-  /**
-   * @see Collection.is
-   */
-  public is(marker: Symbol): boolean
-  /**
-   * @see Sequence.is
-   */
-  public is(marker: Symbol): boolean {
-    return marker === Heap.MARKER || marker === Sequence.MARKER
-  }
-
-  /**
-   * @see Heap.clear
+   * @see Clearable.prototype.clear
    */
   public clear(): void {
     this._elements.clear()
   }
 
   /**
-  * @see Collection.clone
-  */
+   * @see Clonable.prototype.clone
+   */
   public clone(): PackHeap<Element> {
-    return new PackHeap<Element>(Pack.copy(this._elements), this._comparator)
+    return new PackHeap<Element>(this._elements.clone(), this._comparator)
   }
 
   /**
-  * @see Collection.view
-  */
+   * @see Collection.prototype.view
+   */
   public view(): Sequence<Element> {
-    return SequenceView.wrap(this)
+    return this._view
   }
 
   /**
-  * @see Collection.equals
-  */
+   * @see Comparable.prototype.equals
+   */
   public equals(other: any): boolean {
     if (other == null) return false
     if (other === this) return true
@@ -301,10 +291,17 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   }
 
   /**
-  * @see ReallocableCollection.iterator
-  */
-  public *[Symbol.iterator]() {
-    yield* this._elements
+   * @see ReallocableCollection.prototype.values
+   */
+  public values(): IterableIterator<Element> {
+    return this._elements.values()
+  }
+
+  /**
+   * @see ReallocableCollection.prototype[Symbol.iterator]
+   */
+  public [Symbol.iterator](): IterableIterator<Element> {
+    return this._elements.values()
   }
 }
 
@@ -312,17 +309,6 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
  * 
  */
 export namespace PackHeap {
-  /**
-   * Copy an existing heap instance.
-   *
-   * @param toCopy - An heap instance to copy.
-   *
-   * @returns A copy of the given heap instance.
-   */
-  export function copy<Element>(toCopy: PackHeap<Element>): PackHeap<Element> {
-    return toCopy == null ? null : toCopy.clone()
-  }
-
   /**
    * 
    */
