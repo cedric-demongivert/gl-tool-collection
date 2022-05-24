@@ -1,126 +1,129 @@
-import { ForwardCursor } from '../cursor'
-import { ReadonlyMark, EmptyMark, protomark } from '../mark'
+import { EmptyForwardCursor, ForwardCursor } from '../cursor'
+import { Readonly, Empty, protomark } from '../mark'
 
+import { Collection } from '../Collection'
 import { Sequence } from './Sequence'
 
 /**
  * An empty sequence, e.g., a sequence of zero elements.
  */
-@ReadonlyMark.protomark
-@EmptyMark.protomark
-export class EmptySequence<Output = any> implements Sequence<Output>, ReadonlyMark.Marked, EmptyMark.Marked {
+@protomark(Readonly)
+@protomark(Empty)
+@protomark(Collection)
+@protomark(Sequence)
+export class EmptySequence<Element> implements Sequence<Element> {
   /**
-   * @see Sequence.size
+   * @see Sequence.prototype.size
    */
   public get size(): number {
     return 0
   }
 
   /**
-   * @see Sequence.get
+   * @see Sequence.prototype.get
    */
   public get(index: number): undefined {
     return undefined
   }
 
   /**
-   * @see Sequence.last
+   * @see Sequence.prototype.last
    */
   public get last(): undefined {
     return undefined
   }
 
   /**
-   * @see Sequence.lastIndex
+   * @see Sequence.prototype.lastIndex
    */
   public get lastIndex(): number {
     return 0
   }
 
   /**
-   * @see Sequence.first
+   * @see Sequence.prototype.first
    */
   public get first(): undefined {
     return undefined
   }
 
   /**
-   * @see Sequence.firstIndex
+   * @see Sequence.prototype.firstIndex
    */
   public get firstIndex(): number {
     return 0
   }
 
   /**
-   * @see Sequence.indexOf
+   * @see Sequence.prototype.indexOf
    */
   public indexOf(element: any): undefined {
     return undefined
   }
 
   /**
-   * @see Sequence.indexOfInSubsequence
+   * @see Sequence.prototype.indexOfInSubsequence
    */
-  public indexOfInSubsequence(element: Output, offset: number, size: number): undefined {
+  public indexOfInSubsequence(element: Element, offset: number, size: number): undefined {
     return undefined
   }
 
   /**
-   * @see Sequence.has
+   * @see Collection.prototype.has
    */
-  public has(element: Output): false {
+  public has(element: Element): false {
     return false
   }
 
   /**
-   * @see Sequence.hasInSubsequence
+   * @see Sequence.prototype.hasInSubsequence
    */
-  public hasInSubsequence(element: Output, offset: number, size: number): false {
+  public hasInSubsequence(element: Element, offset: number, size: number): false {
     return false
   }
 
   /**
-   * @see Sequence.clone
+   * @see Clonable.prototype.clone
    */
-  public clone(): EmptySequence<Output> {
+  public clone(): this {
     return this
   }
 
   /**
-   * @see Sequence.view
+   * @see Collection.prototype.view
    */
-  public view(): EmptySequence<Output> {
+  public view(): this {
     return this
   }
 
   /**
-   * @see Sequence.iterator
+   * @see Collection.prototype.forward
    */
-  public forward(): ForwardCursor<Output> {
-    return ForwardCursor.EMPTY
+  public forward(): ForwardCursor<Element> {
+    return ForwardCursor.empty()
   }
 
   /**
-   * 
+   * @see Collection.prototype.values
    */
-  public *values(): IterableIterator<Output> {
+  public *values(): IterableIterator<Element> {
 
   }
 
   /**
-   * @see Sequence[Symbol.iterator]
+   * @see Collection.prototype[Symbol.iterator]
    */
-  public [Symbol.iterator](): IterableIterator<Output> {
+  public [Symbol.iterator](): IterableIterator<Element> {
     return this.values()
   }
 
   /**
-   * 
+   * @see Markable.prototype.is
    */
   public is = protomark.is
 
   /**
-   * @see Sequence.equals
+   * @see Comparable.prototype.equals
    */
   public equals(other: any): boolean {
     if (other == null) return false
@@ -142,7 +145,7 @@ export namespace EmptySequence {
   /**
    * 
    */
-  export function get<Output>(): EmptySequence<Output> {
+  export function get<Element>(): EmptySequence<Element> {
     return INSTANCE
   }
 }

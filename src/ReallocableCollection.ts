@@ -1,4 +1,4 @@
-import { Collection } from './Collection'
+import { Mark, Markable } from './mark'
 import { StaticCollection } from './StaticCollection'
 
 /**
@@ -26,21 +26,32 @@ export interface ReallocableCollection extends StaticCollection {
  * 
  */
 export namespace ReallocableCollection {
-  /**
-   * 
-   */
-  type FactoryParameters<
-    Element,
-    BaseCollection extends Collection<Element>,
-    BaseFactory extends () => BaseCollection
-    > = [...Parameters<BaseFactory>, number?]
 
   /**
    * 
    */
-  export type Factory<
-    Element,
-    BaseCollection extends Collection<Element>,
-    BaseFactory extends () => BaseCollection
-    > = (...args: FactoryParameters<Element, BaseCollection, BaseFactory>) => ReallocableCollection & BaseCollection
+  export namespace StaticCollection {
+    /**
+     * 
+     */
+    export const MARK: Mark = Symbol('gl-tool-collection/mark/reallocable-collection')
+
+    /**
+     * @see Mark.Container
+     */
+    export function mark(): Mark {
+      return MARK
+    }
+
+    /**
+     * Return true if the given collection is a sequence.
+     *
+     * @param collection - A collection to assert.
+     *
+     * @return True if the given collection is a sequence.
+     */
+    export function is(collection: Markable): collection is ReallocableCollection {
+      return collection.is(MARK)
+    }
+  }
 }

@@ -1,5 +1,5 @@
-import { Comparator } from '../Comparator'
-import { Sequence } from '../sequence/Sequence'
+import { Comparator } from '@cedric-demongivert/gl-tool-utils'
+import { protomark } from '../mark'
 
 import { equals } from '../algorithm/equals'
 import { quicksort } from '../algorithm/quicksort'
@@ -8,14 +8,24 @@ import { Buffer } from '../native/Buffer'
 import { UnsignedIntegerBuffer } from '../native/UnsignedIntegerBuffer'
 import { IntegerBuffer } from '../native/IntegerBuffer'
 
-import { SequenceView } from '../view/SequenceView'
-
+import { Sequence } from './Sequence'
 import { Pack } from './Pack'
-import { PackIterator } from './PackIterator'
+
+import { SequenceCursor } from './SequenceCursor'
+import { Collection } from '../Collection'
+import { List } from './List'
+import { StaticCollection } from '../StaticCollection'
+import { ReallocableCollection } from '../ReallocableCollection'
 
 /**
  * A wrapper for handling javascript ArrayBuffer instances as gl-tool Packs.
  */
+@protomark(Collection)
+@protomark(Sequence)
+@protomark(List)
+@protomark(Pack)
+@protomark(StaticCollection)
+@protomark(ReallocableCollection)
 export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   /**
    * Wrapped buffer.
@@ -28,6 +38,11 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   private _size: number
 
   /**
+   * 
+   */
+  private _view: Sequence<number>
+
+  /**
    * Wrap an existing buffer into a new pack instance.
    *
    * @param elements - The buffer to wrap; the resulting pack will have the capacity of the given buffer.
@@ -36,6 +51,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   public constructor(elements: Wrapped, size: number = 0) {
     this._elements = elements
     this._size = size
+    this._view = Sequence.view(this)
   }
 
   /**
@@ -53,14 +69,14 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see Collection.size
+   * @see Collection.prototype.size
    */
   public get size(): number {
     return this._size
   }
 
   /**
-   * @see List.size
+   * @see List.prototype.size
    */
   public set size(value: number) {
     if (value > this._elements.length) {
@@ -75,21 +91,21 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see StaticCollection.capacity
+   * @see StaticCollection.prototype.capacity
    */
   public get capacity(): number {
     return this._elements.length
   }
 
   /**
-   * @see List.defaultValue
+   * @see List.prototype.defaultValue
    */
   public defaultValue(): 0 {
     return 0
   }
 
   /**
-   * @see ReallocableCollection.reallocate
+   * @see ReallocableCollection.prototype.reallocate
    */
   public reallocate(capacity: number): void {
     const old: any = this._elements
@@ -104,21 +120,21 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see ReallocableCollection.fit
+   * @see ReallocableCollection.prototype.fit
    */
   public fit(): void {
     this.reallocate(this._size)
   }
 
   /**
-   * @see Sequence.get
+   * @see Sequence.prototype.get
    */
   public get(index: number): number {
     return this._elements[index]
   }
 
   /**
-   * @see List.fill
+   * @see List.prototype.fill
    */
   public fill(element: number): void {
     for (let index = 0, size = this._size; index < size; ++index) {
@@ -127,35 +143,35 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see Sequence.last
+   * @see Sequence.prototype.last
    */
   public get last(): number {
     return this._elements[Math.max(this._size - 1, 0)]
   }
 
   /**
-   * @see Sequence.last
+   * @see Sequence.prototype.lastIndex
    */
   public get lastIndex(): number {
     return Math.max(this._size - 1, 0)
   }
 
   /**
-   * @see Sequence.first
+   * @see Sequence.prototype.first
    */
   public get first(): number {
     return this._elements[0]
   }
 
   /**
-   * @see Sequence.firstIndex
+   * @see Sequence.prototype.firstIndex
    */
   public get firstIndex(): number {
     return 0
   }
 
   /**
-   * @see List.pop
+   * @see List.prototype.pop
    */
   public pop(): number {
     const last: number = this._size - 1
@@ -165,7 +181,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see List.shift
+   * @see List.prototype.shift
    */
   public shift(): number {
     const value: number = this._elements[0]
@@ -174,21 +190,21 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see Pack.sort
+   * @see Pack.prototype.sort
    */
   public sort(comparator: Comparator<number, number>): void {
     quicksort(this, comparator, 0, this._size)
   }
 
   /**
-   * @see Pack.subsort
+   * @see Pack.prototype.subsort
    */
   public subsort(offset: number, size: number, comparator: Comparator<number, number>): void {
     quicksort(this, comparator, offset, size)
   }
 
   /**
-   * @see List.swap
+   * @see List.prototype.swap
    */
   public swap(first: number, second: number): void {
     const tmp: number = this._elements[first]
@@ -197,7 +213,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see List.set
+   * @see List.prototype.set
    */
   public set(index: number, value: number): void {
     if (index >= this._size) this.size = index + 1
@@ -205,7 +221,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see List.setMany
+   * @see List.prototype.setMany
    */
   public setMany(from: number, count: number, value: number): void {
     const to: number = from + count
@@ -222,7 +238,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see List.insert
+   * @see List.prototype.insert
    */
   public insert(index: number, value: number): void {
     if (index >= this._size) {
@@ -239,7 +255,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see List.push
+   * @see List.prototype.push
    */
   public push(value: number): void {
     const index: number = this._size
@@ -249,7 +265,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see List.unshift
+   * @see List.prototype.unshift
    */
   public unshift(value: number): void {
     this.size += 1
@@ -262,7 +278,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see List.delete
+   * @see List.prototype.delete
    */
   public delete(index: number): void {
     for (let cursor = index, size = this._size - 1; cursor < size; ++cursor) {
@@ -273,7 +289,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see List.deleteMany
+   * @see List.prototype.deleteMany
    */
   public deleteMany(from: number, size: number): void {
     const toMove: number = this._size - from - size
@@ -287,14 +303,14 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see List.empty
+   * @see List.prototype.empty
    */
   public empty(index: number): void {
     this.set(index, 0)
   }
 
   /**
-   * @see List.emptyMany
+   * @see List.prototype.emptyMany
    */
   public emptyMany(from: number, size: number): void {
     for (let cursor = 0; cursor < size; ++cursor) {
@@ -303,7 +319,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see List.warp
+   * @see List.prototype.warp
    */
   public warp(index: number): void {
     this._elements[index] = this._elements[this._size - 1]
@@ -311,7 +327,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see List.warpMany
+   * @see List.prototype.warpMany
    */
   public warpMany(from: number, count: number): void {
     const size: number = this._size
@@ -330,14 +346,14 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see Collection.has
+   * @see Collection.prototype.has
    */
   public has(element: number): boolean {
     return this.indexOf(element) >= 0
   }
 
   /**
-   * @see Sequence.indexOf
+   * @see Sequence.prototype.indexOf
    */
   public indexOf(element: number): number {
     for (let index = 0, length = this._size; index < length; ++index) {
@@ -350,14 +366,14 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see Sequence.hasInSubsequence
+   * @see Sequence.prototype.hasInSubsequence
    */
   public hasInSubsequence(element: number, offset: number, size: number): boolean {
     return this.indexOfInSubsequence(element, offset, size) >= 0
   }
 
   /**
-   * @see Sequence.indexOfInSubsequence
+   * @see Sequence.prototype.indexOfInSubsequence
    */
   public indexOfInSubsequence(element: number, offset: number, size: number): number {
     for (let index = offset, length = offset + size; index < length; ++index) {
@@ -370,7 +386,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see Pack.copy
+   * @see List.prototype.copy
    */
   public copy(toCopy: Sequence<number>): void {
     this.size = toCopy.size
@@ -383,7 +399,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see Sequence.concat
+   * @see Sequence.prototype.concat
    */
   public concat(toConcat: Sequence<number>): void {
     const firstIndex: number = toConcat.firstIndex
@@ -399,30 +415,32 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see Sequence.is
+   * @see Sequence.prototype.concat
    */
-  public is(marker: Sequence.MARKER): true
-  /**
-   * @see Pack.is
-   */
-  public is(marker: Pack.MARKER): true
-  /**
-   * @see Collection.is
-   */
-  public is(marker: Symbol): boolean
-  public is(marker: Symbol): boolean {
-    return marker === Pack.MARKER || marker === Sequence.MARKER
+  public concatArray(toConcat: number[]): void {
+    if (this.capacity < this.size + toConcat.length) {
+      this.reallocate(this.size + toConcat.length)
+    }
+
+    for (let index = 0, size = toConcat.length; index < size; ++index) {
+      this.push(toConcat[index])
+    }
   }
 
   /**
-   * @see Pack.allocate
+   * @see Markable.is
+   */
+  public is = protomark.is
+
+  /**
+   * @see Pack.prototype.allocate
    */
   public allocate(capacity: number): BufferPack<Wrapped> {
     return new BufferPack<Wrapped>(Buffer.reallocate(this._elements, capacity))
   }
 
   /**
-   * @see Collection.clone
+   * @see Clonable.prototype.clone
    */
   public clone(): BufferPack<Wrapped> {
     const result: BufferPack<Wrapped> = this.allocate(this._elements.length)
@@ -433,38 +451,40 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see List.clear
+   * @see Clearable.prototype.clear
    */
   public clear(): void {
     this._size = 0
   }
 
   /**
-   * @see Collection.view
+   * @see Collection.prototype.view
    */
   public view(): Sequence<number> {
-    return SequenceView.wrap(this)
+    return this._view
   }
 
   /**
-   * @see Collection.iterator
+   * @see Collection.prototype.forward
    */
-  public iterator(): PackIterator<number> {
-    const result: PackIterator<number> = new PackIterator()
-
-    result.pack = this
-    result.index = 0
-
-    return result
+  public forward(): SequenceCursor<number> {
+    return new SequenceCursor(this, 0)
   }
 
   /**
-   * @see Collection.iterator
+   * @see Collection.prototype.values
    */
-  public *[Symbol.iterator](): IterableIterator<number> {
+  public * values(): IterableIterator<number> {
     for (let index = 0; index < this._size; ++index) {
       yield this._elements[index]
     }
+  }
+
+  /**
+   * @see Collection.prototype[Symbol.iterator]
+   */
+  public [Symbol.iterator](): IterableIterator<number> {
+    return this.values()
   }
 
   /**

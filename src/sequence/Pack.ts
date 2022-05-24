@@ -6,11 +6,11 @@ import { UnsignedIntegerBuffer } from '../native/UnsignedIntegerBuffer'
 import { IntegerBuffer } from '../native/IntegerBuffer'
 
 import { ReallocableCollection } from '../ReallocableCollection'
-import { Collection } from '../Collection'
 
 import { BufferPack } from './BufferPack'
 import { ArrayPack } from './ArrayPack'
 import { InstancePack } from './InstancePack'
+import { Mark, Markable } from '../mark'
 
 /**
  * A pack is a re-allocable mutable sequence of values.
@@ -26,31 +26,19 @@ export interface Pack<Element> extends List<Element>, ReallocableCollection {
   allocate(capacity: number): Pack<Element>
 
   /**
-   * @see Collection.clone
+   * @see Collection.prototype.clone
    */
   clone(): Pack<Element>
 
   /**
-   * @see Collection.view
+   * @see Collection.prototype.view
    */
   view(): Sequence<Element>
-
-  /**
-   * @see Collection.view
-   */
-  is(marker: Pack.MARKER): true
-
-  /**
-   * @see Collection.view
-   */
-  is(marker: Sequence.MARKER): true
-
-  /**
-   * @see Collection.view
-   */
-  is(marker: Symbol): boolean
 }
 
+/**
+ * 
+ */
 export namespace Pack {
   /**
    * 
@@ -60,12 +48,14 @@ export namespace Pack {
   /**
    * 
    */
-  export const MARKER: unique symbol = Symbol('gl-tool-collection/pack-marker')
+  export const MARK: Mark = Symbol('gl-tool-collection/mark/collection/pack')
 
   /**
-   * 
+   * @see Mark.Container
    */
-  export type MARKER = typeof MARKER
+  export function mark(): Mark {
+    return MARK
+  }
 
   /**
    * Return true if the given collection is a pack.
@@ -74,19 +64,8 @@ export namespace Pack {
    *
    * @return True if the given collection is a pack.
    */
-  export function is<Element>(collection: Collection<Element>): collection is Pack<Element> {
-    return collection.is(MARKER)
-  }
-
-  /**
-   * Shallow copy the given instance and return it.
-   *
-   * @param toCopy - An instance to shallow copy.
-   *
-   * @return A new instance that is a shallow copy of the given one.
-   */
-  export function copy<T>(toCopy: Pack<T>): Pack<T> {
-    return toCopy == null ? null : toCopy.clone()
+  export function is<Element>(collection: Markable): collection is Pack<Element> {
+    return collection.is(MARK)
   }
 
   /**

@@ -1,7 +1,7 @@
+import { protomark } from '../mark'
 import { Sequence } from '../Sequence'
-import { SequenceView } from '../view/SequenceView'
 
-import { SequenceIterator } from './SequenceIterator'
+import { SequenceCursor } from './SequenceCursor'
 
 /** 
  * 
@@ -25,95 +25,95 @@ export class SubSequence<Output> implements Sequence<Output> {
   /**
    * 
    */
+  private _view: Sequence<Output>
+
+  /**
+   * 
+   */
   public constructor(sequence: Sequence<Output>) {
     this.parent = sequence
     this.from = sequence.firstIndex
     this.to = sequence.lastIndex + 1
+    this._view = Sequence.view(this)
   }
 
   /**
-   * @see Sequence.size
+   * @see Sequence.prototype.size
    */
   public get size(): number {
     return this.to - this.from
   }
 
   /**
-   * @see Sequence.get
+   * @see Sequence.prototype.get
    */
   public get(index: number): Output {
     return this.parent.get(index - this.from)
   }
 
   /**
-   * @see Sequence.last
+   * @see Sequence.prototype.last
    */
   public get last(): Output {
     return this.to === this.from ? undefined : this.parent.get(this.to - 1)
   }
 
   /**
-   * @see Sequence.lastIndex
+   * @see Sequence.prototype.lastIndex
    */
   public get lastIndex(): number {
     return this.to === this.from ? 0 : this.size - 1
   }
 
   /**
-   * @see Sequence.first
+   * @see Sequence.prototype.first
    */
   public get first(): Output {
     return this.to === this.from ? undefined : this.parent.get(this.from)
   }
 
   /**
-   * @see Sequence.firstIndex
+   * @see Sequence.prototype.firstIndex
    */
   public get firstIndex(): number {
     return 0
   }
 
   /**
-   * @see Sequence.indexOf
+   * @see Sequence.prototype.indexOf
    */
   public indexOf(element: Output): number {
     return this.parent.indexOfInSubsequence(element, this.from, this.size)
   }
 
   /**
-   * @see Sequence.has
+   * @see Sequence.prototype.has
    */
   public has(element: Output): boolean {
     return this.parent.hasInSubsequence(element, this.from, this.size)
   }
 
   /**
-   * @see Sequence.hasInSubsequence
+   * @see Sequence.prototype.hasInSubsequence
    */
   public hasInSubsequence(element: Output, offset: number, size: number): boolean {
     return this.parent.hasInSubsequence(element, this.from + offset, size)
   }
 
   /**
-   * @see Sequence.indexOfInSubsequence
+   * @see Sequence.prototype.indexOfInSubsequence
    */
   public indexOfInSubsequence(element: Output, offset: number, size: number): number {
     return this.parent.indexOfInSubsequence(element, this.from + offset, size)
   }
 
   /**
-   * @see Sequence.is
+   * @see Markable.prototype.is
    */
-  public is(marker: Sequence.MARKER): true
-  /**
-   * @see Sequence.is
-   */
-  public is(marker: Symbol): boolean {
-    return marker === Sequence.MARKER
-  }
+  public is = protomark.is
 
   /**
-   * @see Sequence.clone
+   * @see Clonable.prototype.clone
    */
   public clone(): SubSequence<Output> {
     const result: SubSequence<Output> = new SubSequence<Output>(this.parent)
@@ -124,34 +124,37 @@ export class SubSequence<Output> implements Sequence<Output> {
   }
 
   /**
-   * @see Sequence.view
+   * @see Collection.prototype.view
    */
   public view(): Sequence<Output> {
-    return SequenceView.wrap(this)
+    return this._view
   }
 
   /**
-   * @see Sequence.iterator
+   * @see Collection.prototype.forward
    */
-  public iterator(): SequenceIterator<Output> {
-    const iterator: SequenceIterator<Output> = new SequenceIterator<Output>()
-
-    iterator.sequence = this
-
-    return iterator
+  public forward(): SequenceCursor<Output> {
+    return new SequenceCursor<Output>(this, 0)
   }
 
   /**
-   * @see Sequence[Symbol.iterator]
+   * @see Collection.prototype.values
    */
-  public *[Symbol.iterator](): IterableIterator<Output> {
+  public * values(): IterableIterator<Output> {
     for (let index = this.from, length = this.to; index < length; ++index) {
       yield this.parent.get(index)
     }
   }
 
   /**
-   * @see Sequence.equals
+   * @see Collection.prototype[Symbol.iterator]
+   */
+  public [Symbol.iterator](): IterableIterator<Output> {
+    return this.values()
+  }
+
+  /**
+   * @see Comparable.prototype.equals
    */
   public equals(other: any): boolean {
     if (other == null) return false
@@ -167,8 +170,8 @@ export class SubSequence<Output> implements Sequence<Output> {
   }
 }
 
+/**
+ * 
+ */
 export namespace SubSequence {
-  export function clone<Output>(sequence: SubSequence<Output>): SubSequence<Output> {
-    return sequence == null ? sequence : sequence.clone()
-  }
 }

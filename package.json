@@ -34,6 +34,6 @@
     "webpack": "^4.33.0"
   },
   "dependencies": {
-    "@cedric-demongivert/gl-tool-utils": "^0.0.5"
+    "@cedric-demongivert/gl-tool-utils": "^0.0.6"
   }
 }

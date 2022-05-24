@@ -1,11 +1,12 @@
-import { Comparator } from '../Comparator'
+import { Clearable, Comparator } from '@cedric-demongivert/gl-tool-utils'
+import { Mark, Markable } from '../mark'
 
 import { Sequence } from './Sequence'
 
 /**
  * A mutable sequence of elements.
  */
-export interface List<Element> extends Sequence<Element> {
+export interface List<Element> extends Sequence<Element>, Clearable {
   /**
    * Return the number of elements in this sequence or update the current size of this sequence. 
    *
@@ -225,9 +226,9 @@ export interface List<Element> extends Sequence<Element> {
   copy(toCopy: Sequence<Element>): void
 
   /**
-   * Remove all elements of this sequence.
+   * @see Collection.prototype.view
    */
-  clear(): void
+  view(): Sequence<Element>
 }
 
 /**
@@ -237,5 +238,23 @@ export namespace List {
   /**
    * 
    */
-  export type Factory<Element> = () => List<Element>
+  export const MARK: Mark = Symbol('gl-tool-collection/mark/collection/list')
+
+  /**
+   * @see Mark.Container
+   */
+  export function mark(): Mark {
+    return MARK
+  }
+
+  /**
+   * Return true if the given collection is a sequence.
+   *
+   * @param collection - A collection to assert.
+   *
+   * @return True if the given collection is a sequence.
+   */
+  export function is<Element>(collection: Markable): collection is List<Element> {
+    return collection.is(MARK)
+  }
 }

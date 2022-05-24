@@ -1,19 +1,24 @@
-import { ForwardIterator } from '../iterator'
-import { ForwardIteratorView } from '../iterator/ForwardIteratorView'
-import { ImmutableCollection } from '../marker/ImmutableCollection'
+import { protomark, Readonly } from '../mark'
+
+import { Collection } from '../Collection'
+
 import { Sequence } from '../sequence/Sequence'
+import { ForwardCursor } from '../cursor'
 
 /**
 * A read-only view over a given sequence.
 */
-export class SequenceView<Element> implements Sequence<Element>, ImmutableCollection<Element> {
+@protomark(Readonly)
+@protomark(Collection)
+@protomark(Sequence)
+export class SequenceView<Element> implements Sequence<Element> {
   /**
    * The underlying sequence.
    */
   private _sequence: Sequence<Element>
 
   /**
-   * @see Collection.size
+   * @see Collection.prototype.size
    */
   public get size(): number {
     return this._sequence.size
@@ -29,107 +34,96 @@ export class SequenceView<Element> implements Sequence<Element>, ImmutableCollec
   }
 
   /**
-   * @see Sequence.get
+   * @see Sequence.prototype.get
    */
   public get(index: number): Element {
     return this._sequence.get(index)
   }
 
   /**
-   * @see Sequence.firstIndex
+   * @see Sequence.prototype.firstIndex
    */
   public get firstIndex(): number {
     return this._sequence.firstIndex
   }
 
   /**
-   * @see Sequence.first
+   * @see Sequence.prototype.first
    */
   public get first(): Element {
     return this._sequence.first
   }
 
   /**
-   * @see Sequence.lastIndex
+   * @see Sequence.prototype.lastIndex
    */
   public get lastIndex(): number {
     return this._sequence.lastIndex
   }
 
   /**
-   * @see Sequence.last
+   * @see Sequence.prototype.last
    */
   public get last(): Element {
     return this._sequence.last
   }
 
   /**
-   * @see Collection.has
+   * @see Collection.prototype.has
    */
   public has(value: Element): boolean {
     return this._sequence.has(value)
   }
 
   /**
-   * @see Collection.clone
+   * @see Clonable.prototype.clone
    */
   public clone(): SequenceView<Element> {
     return SequenceView.wrap(this._sequence)
   }
 
   /**
-   * @see Sequence.indexOf
+   * @see Sequence.prototype.indexOf
    */
   public indexOf(element: Element): number | undefined {
     return this._sequence.indexOf(element)
   }
 
   /**
-  * @see Sequence.indexOfInSubsequence
+  * @see Sequence.prototype.indexOfInSubsequence
   */
   public indexOfInSubsequence(element: Element, offset: number, size: number): number | undefined {
     return this._sequence.indexOfInSubsequence(element, offset, size)
   }
 
   /**
-   * @see Sequence.hasInSubsequence
+   * @see Sequence.prototype.hasInSubsequence
    */
   public hasInSubsequence(element: Element, offset: number, size: number): boolean {
     return this._sequence.hasInSubsequence(element, offset, size)
   }
 
   /**
-   * @see Sequence.is
+   * @see Markable.prototype.is
    */
-  public is(marker: Sequence.MARKER): true
-  /**
-   * 
-   */
-  public is(marker: ImmutableCollection.MARKER): true
-  /**
- * 
- */
-  public is(marker: Symbol): boolean
-  public is(marker: Symbol): boolean {
-    return marker === Sequence.MARKER || marker === ImmutableCollection.MARKER
-  }
+  public is = protomark.is
 
   /**
-   * @see Sequence.view
+   * @see Collection.prototype.view
    */
   public view(): SequenceView<Element> {
     return this
   }
 
   /**
-   * @see Sequence.view
+   * @see Collection.prototype.forward
    */
-  public forward(): ForwardIterator<Element> {
-    return new ForwardIteratorView(this, this._sequence.forward())
+  public forward(): ForwardCursor<Element> {
+    return this._sequence.forward().view()
   }
 
   /**
-   * @see Collection.equals
+   * @see Comparable.prototype.equals
    */
   public equals(other: any): boolean {
     if (other == null) return false
@@ -143,14 +137,14 @@ export class SequenceView<Element> implements Sequence<Element>, ImmutableCollec
   }
 
   /**
-  * @see Sequence.iterator
+  * @see Collection.prototype.values
   */
   public values(): IterableIterator<Element> {
     return this._sequence.values()
   }
 
   /**
-  * @see Sequence.iterator
+  * @see Collection.prototype[Symbol.iterator]
   */
   public [Symbol.iterator](): IterableIterator<Element> {
     return this._sequence.values()
@@ -169,10 +163,6 @@ export namespace SequenceView {
    * @return A view over the given collection.
    */
   export function wrap<Element>(collection: Sequence<Element>): SequenceView<Element> {
-    if (collection instanceof SequenceView) {
-      return collection
-    } else {
-      return new SequenceView<Element>(collection)
-    }
+    return new SequenceView<Element>(collection)
   }
 }
