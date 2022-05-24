@@ -14,7 +14,7 @@ export interface Allocator<Instance> {
   /**
    * Free the given instance and return it to the allocator.
    *
-   * Once freed, an object returned to the allocator must not be referenced by
+   * Once freed, an object returned to an allocator must not be referenced by
    * any other object than the allocator itself.
    *
    * @param instance - An instance to free.

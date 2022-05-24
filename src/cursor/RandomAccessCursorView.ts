@@ -1,18 +1,22 @@
 import { protomark, Readonly } from "../mark"
+import { BidirectionalCursor } from "./BidirectionalCursor"
 import { Cursor } from "./Cursor"
 import { ForwardCursor } from "./ForwardCursor"
+import { RandomAccessCursor } from "./RandomAccessCursor"
 
 /**
  * 
  */
 @protomark(Cursor)
 @protomark(ForwardCursor)
+@protomark(BidirectionalCursor)
+@protomark(RandomAccessCursor)
 @protomark(Readonly)
-export class ForwardCursorView<Element> implements ForwardCursor<Element> {
+export class RandomAccessCursorView<Element> implements RandomAccessCursor<Element> {
   /**
    * 
    */
-  private _cursor: ForwardCursor<Element>
+  private _cursor: RandomAccessCursor<Element>
 
   /**
    * @see ForwardCursor.prototype.index
@@ -26,15 +30,15 @@ export class ForwardCursorView<Element> implements ForwardCursor<Element> {
    * 
    * @param cursor - A cursor instance to wrap.
    */
-  public constructor(cursor: ForwardCursor<Element>) {
+  public constructor(cursor: RandomAccessCursor<Element>) {
     this._cursor = cursor
   }
 
   /**
-   * @see ForwardCursor.prototype.clone
+   * @see BidirectionalCursor.prototype.clone
    */
-  public clone(): ForwardCursorView<Element> {
-    return new ForwardCursorView(this._cursor)
+  public clone(): RandomAccessCursorView<Element> {
+    return new RandomAccessCursorView(this._cursor)
   }
 
   /**
@@ -44,7 +48,7 @@ export class ForwardCursorView<Element> implements ForwardCursor<Element> {
     if (other == null) return false
     if (other === this) return true
 
-    if (other instanceof ForwardCursorView) {
+    if (other instanceof RandomAccessCursorView) {
       return other._cursor.equals(this._cursor)
     }
 
@@ -52,10 +56,31 @@ export class ForwardCursorView<Element> implements ForwardCursor<Element> {
   }
 
   /**
+   * @see BidirectionalCursor.prototype.at
+   */
+  public at(index: number): void {
+    this._cursor.at(index)
+  }
+
+  /**
    * @see ForwardCursor.prototype.forward
    */
   public forward(count: number): void {
     this._cursor.forward(count)
+  }
+
+  /**
+   * @see BidirectionalCursor.prototype.backward
+   */
+  public backward(count: number): void {
+    this._cursor.backward(count)
+  }
+
+  /**
+   * @see BidirectionalCursor.prototype.isStart
+   */
+  public isStart(): boolean {
+    return this._cursor.isStart()
   }
 
   /**
@@ -92,9 +117,16 @@ export class ForwardCursorView<Element> implements ForwardCursor<Element> {
   }
 
   /**
+   * @see BidirectionalCursor.prototype.previous
+   */
+  public previous(): void {
+    return this._cursor.previous()
+  }
+
+  /**
    * 
    */
-  public wrap(cursor: ForwardCursor<Element>): void {
+  public wrap(cursor: RandomAccessCursor<Element>): void {
     this._cursor = cursor
   }
 
@@ -109,11 +141,11 @@ export class ForwardCursorView<Element> implements ForwardCursor<Element> {
 /**
  * 
  */
-export namespace ForwardCursorView {
+export namespace RandomAccessCursorView {
   /**
    * 
    */
-  export function wrap<Element>(cursor: ForwardCursor<Element>): ForwardCursorView<Element> {
-    return new ForwardCursorView(cursor)
+  export function wrap<Element>(cursor: RandomAccessCursor<Element>): RandomAccessCursorView<Element> {
+    return new RandomAccessCursorView(cursor)
   }
 }

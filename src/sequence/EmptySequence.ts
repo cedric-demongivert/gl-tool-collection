@@ -1,5 +1,5 @@
 import { ForwardCursor } from '../cursor'
-import { ReadonlyMark, EmptyMark, Protomark } from '../mark'
+import { ReadonlyMark, EmptyMark, protomark } from '../mark'
 
 import { Sequence } from './Sequence'
 
@@ -117,7 +117,7 @@ export class EmptySequence<Output = any> implements Sequence<Output>, ReadonlyMa
   /**
    * 
    */
-  public is = Protomark.is
+  public is = protomark.is
 
   /**
    * @see Sequence.equals

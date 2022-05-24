@@ -1,16 +1,17 @@
+import { Mark } from './Mark'
+
 /**
- * A type that allows is instances to store marks that describe different behaviors.
+ * A type of object that stores marks that describe different behaviors.
  */
 export interface Markable {
   /**
-   * Returns true if this instance matches the given mark.
+   * Returns true if this instance matches a given mark.
+   *
+   * @see Mark
    * 
-   * Markers assert the implementation of registerable interfaces or
-   * the existence of a behavior.
+   * @param mark - A mark-like object to check.
    * 
-   * @param mark - A mark to check.
-   * 
-   * @return True if this instance matches the given mark.
+   * @return True if this instance matches the given mark-like object.
    */
-  is(mark: symbol): boolean
+  is(mark: Mark.Alike): boolean
 }

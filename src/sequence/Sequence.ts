@@ -1,5 +1,5 @@
 import { Collection } from '../Collection'
-import { Protomark } from '../mark'
+import { protomark } from '../mark'
 
 import { EmptySequence } from './EmptySequence'
 
@@ -145,7 +145,7 @@ export namespace Sequence {
   /**
    * @see Markable.protomark
    */
-  export const protomark = Protomark(MARK)
+  export const protomark = protomark(MARK)
 
   /**
    * Return true if the given collection is a sequence.

@@ -1,5 +1,6 @@
-import { Comparator } from '../Comparator'
-import { Sequence } from '../sequence/Sequence'
+import { Comparator } from '@cedric-demongivert/gl-tool-utils'
+
+import { Sequence } from './Sequence'
 
 import { equals } from '../algorithm/equals'
 import { quicksort } from '../algorithm/quicksort'

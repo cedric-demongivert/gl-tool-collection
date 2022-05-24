@@ -1,11 +1,11 @@
-import { EmptyMark, ReadonlyMark } from "../mark"
+import { protomark } from "../mark"
 import { BidirectionalCursor } from "./BidirectionalCursor"
 import { EmptyForwardCursor } from "./EmptyForwardCursor"
 
 /**
  * 
  */
-@BidirectionalCursor.protomark
+@protomark(BidirectionalCursor)
 export class EmptyBidirectionalCursor<Element> extends EmptyForwardCursor<Element> implements BidirectionalCursor<Element> {
   /**
    * @see BidirectionalCursor.prototype.at
@@ -17,7 +17,7 @@ export class EmptyBidirectionalCursor<Element> extends EmptyForwardCursor<Elemen
   /**
    * @see Clonable.prototype.clone
    */
-  public clone(): EmptyBidirectionalCursor<Element> {
+  public clone(): this {
     return this
   }
 
@@ -39,6 +39,13 @@ export class EmptyBidirectionalCursor<Element> extends EmptyForwardCursor<Elemen
    * @see BidirectionalCursor.prototype.previous
    */
   public previous(): void { }
+
+  /**
+   * @see Cursor.prototype.view
+   */
+  public view(): this {
+    return this
+  }
 
   /**
    * @see Comparable.prototype.equals

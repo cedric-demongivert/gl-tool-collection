@@ -1,13 +1,12 @@
-import { EmptyMark, ReadonlyMark, Protomark } from "../mark"
+import { protomark } from "../mark"
 import { ForwardCursor } from "./ForwardCursor"
+import { EmptyCursor } from "./EmptyCursor"
 
 /**
  * 
  */
-@EmptyMark.protomark
-@ReadonlyMark.protomark
-@ForwardCursor.protomark
-export class EmptyForwardCursor<Element> implements ForwardCursor<Element>, EmptyMark.Marked, ReadonlyMark.Marked {
+@protomark(ForwardCursor)
+export class EmptyForwardCursor<Element> extends EmptyCursor<Element> implements ForwardCursor<Element> {
   /**
    * @see ForwardCursor.prototype.index
    */
@@ -16,7 +15,7 @@ export class EmptyForwardCursor<Element> implements ForwardCursor<Element>, Empt
   /**
    * @see Clonable.prototype.clone
    */
-  public clone(): EmptyForwardCursor<Element> {
+  public clone(): this {
     return this
   }
 
@@ -45,13 +44,6 @@ export class EmptyForwardCursor<Element> implements ForwardCursor<Element>, Empt
   public next(): void { }
 
   /**
-   * @see ForwardCursor.prototype.get
-   */
-  public get(): undefined {
-    return undefined
-  }
-
-  /**
    * @see Comparable.prototype.equals
    */
   public equals(other: unknown): boolean {
@@ -62,9 +54,16 @@ export class EmptyForwardCursor<Element> implements ForwardCursor<Element>, Empt
   }
 
   /**
-   * @see Protomark.is
+   * @see protomark.is
    */
-  public is = Protomark.is
+  public is = protomark.is
+
+  /**
+   * @see Cursor.prototype.view
+   */
+  public view(): this {
+    return this
+  }
 }
 
 /**

@@ -67,9 +67,7 @@ export interface Collection<Element> extends Iterable<Element>, Comparable, Clon
 
   /**
    * Return an immutable instance of the collection. 
-   * 
-   * A call to this method MUST always return the same collection instance.
-   * 
+   *  
    * An immutable collection MUST always return itself.
    * 
    * @return A read-only instance of the collection. 

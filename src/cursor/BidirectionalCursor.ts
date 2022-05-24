@@ -1,5 +1,5 @@
-import { Protomark } from '../mark'
-import { Cursor } from './Cursor'
+import { Markable, Mark } from '../mark'
+import { BidirectionalCursorView } from './BidirectionalCursorView'
 import { EmptyBidirectionalCursor } from './EmptyBidirectionalCursor'
 import { ForwardCursor } from './ForwardCursor'
 
@@ -43,6 +43,11 @@ export interface BidirectionalCursor<Element> extends ForwardCursor<Element> {
    * @return This cursor instance for chaining purposes.
    */
   previous(): void
+
+  /**
+   * @see Cursor.prototype.view
+   */
+  view(): BidirectionalCursor<Element>
 }
 
 /**
@@ -52,22 +57,19 @@ export namespace BidirectionalCursor {
   /**
    * 
    */
-  export const MARK: unique symbol = Symbol('gl-tool-collection/cursor/bidirectional-mark')
+  export const MARK: Mark = Symbol('gl-tool-collection/mark/cursor/bidirectional')
+
+  /**
+   * @see Mark.Container
+   */
+  export function mark(): Mark {
+    return MARK
+  }
 
   /**
    * 
    */
-  export type MARK = typeof MARK
-
-  /**
-   * 
-   */
-  export const protomark = Protomark(MARK)
-
-  /**
-   * 
-   */
-  export function is<Element>(instance: Cursor<Element>): instance is BidirectionalCursor<Element> {
+  export function is<Element>(instance: Markable): instance is BidirectionalCursor<Element> {
     return instance.is(MARK)
   }
 
@@ -80,4 +82,9 @@ export namespace BidirectionalCursor {
    * @see EmptyBidirectionalCursor.get
    */
   export const empty = EmptyBidirectionalCursor.get
+
+  /**
+   * @see BidirectionalCursor.wrap
+   */
+  export const view = BidirectionalCursorView.wrap
 }

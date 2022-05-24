@@ -1,4 +1,5 @@
-export { ReadonlyMark } from './ReadonlyMark'
-export { EmptyMark } from './EmptyMark'
+export { Empty } from './Empty'
+export { Mark } from './Mark'
 export { Markable } from './Markable'
-export { Protomark } from './Protomark'
+export { protomark } from './protomark'
+export { Readonly } from './Readonly'
