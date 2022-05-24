@@ -1,17 +1,25 @@
-import { equals } from '../algorithm/equals'
-import { Pack } from '../pack/Pack'
-import { quicksort } from '../algorithm/quicksort'
-import { CircularBuffer } from '../circular/CircularBuffer'
-import { CircularBufferIterator } from '../circular/CircularBufferIterator'
-import { Sequence } from '../Sequence'
-import { Comparator } from '../Comparator'
-import { SequenceView } from '../view/SequenceView'
+import { Comparator } from '@cedric-demongivert/gl-tool-utils'
+
+import { List, Pack, Sequence } from '../sequence'
+import { protomark } from '../mark'
+import { Duplicator } from '../allocator'
+import { quicksort, equals } from '../algorithm'
+
+import { Collection } from '../Collection'
+import { StaticCollection } from '../StaticCollection'
+import { ReallocableCollection } from '../ReallocableCollection'
+import { SequenceCursor } from './SequenceCursor'
 
 /**
- * An implementation of CircularBuffer over a Pack instance.
+ * A sequence that drops the first inserted element when it has to add a new item beyond its capacity.
  */
-export class PackCircularBuffer<Element> implements CircularBuffer<Element>
-{
+@protomark(Collection)
+@protomark(Sequence)
+@protomark(List)
+@protomark(Pack)
+@protomark(StaticCollection)
+@protomark(ReallocableCollection)
+export class CircularPack<Element> implements Pack<Element> {
   /**
    * The underlying pack used as a circular buffer.
    */
@@ -28,6 +36,11 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   private _size: number
 
   /**
+   * 
+   */
+  private readonly _view: Sequence<Element>
+
+  /**
    * Create a new circular buffer uppon an existing pack implementation.
    *
    * @param elements - A pack to use for storing this circular buffer elements.
@@ -40,17 +53,25 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
 
     this._start = offset
     this._size = size
+    this._view = Sequence.view(this)
   }
 
   /**
-   * @see Collection.size
+   * @see Collection.prototype.size
    */
   public get size(): number {
     return this._size
   }
 
   /**
-   * @see Collection.size
+   * @see Pack.prototype.allocate
+   */
+  public allocate(capacity: number): CircularPack<Element> {
+    return new CircularPack(this._elements.allocate(capacity))
+  }
+
+  /**
+   * @see List.prototype.size
    */
   public set size(newSize: number) {
     const elements: Pack<Element> = this._elements
@@ -72,24 +93,24 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
-   * @see StaticCollection.capacity
+   * @see StaticCollection.prototype.capacity
    */
   public get capacity(): number {
     return this._elements.capacity
   }
 
   /**
-   * @see List.defaultValue
+   * @see List.prototype.defaultValue
    */
   public defaultValue(): Element {
     return this._elements.defaultValue()
   }
 
   /**
-   * @see ReallocableCollection.reallocate
+   * @see ReallocableCollection.prototype.reallocate
    */
   public reallocate(capacity: number): void {
-    const next: Pack<Element> = Pack.copy(this._elements)
+    const next: Pack<Element> = this._elements.clone()
     next.reallocate(capacity)
 
     const nextSize: number = Math.min(capacity, this._size)
@@ -104,61 +125,56 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
-   * @see ReallocableCollection.fit
+   * @see ReallocableCollection.prototype.fit
    */
   public fit(): void {
     this.reallocate(this._size)
   }
 
   /**
-   * @see Sequence.first
+   * @see Sequence.prototype.first
    */
   public get first(): Element {
     return this._size > 0 ? this._elements.get(this._start) : undefined
   }
 
   /**
-   * @see Sequence.firstIndex
+   * @see Sequence.prototype.firstIndex
    */
   public get firstIndex(): number {
     return 0
   }
 
   /**
-   * @see Sequence.last
+   * @see Sequence.prototype.last
    */
   public get last(): Element {
     return this._size > 0 ? this._elements.get((this._start + this._size) % this._elements.capacity) : undefined
   }
 
   /**
-   * @see Sequence.lastIndex
+   * @see Sequence.prototype.lastIndex
    */
   public get lastIndex(): number {
     return Math.max(this._size - 1, 0)
   }
 
   /**
-   * @see Collection.iterator
+   * @see Collection.prototype.forward
    */
-  public iterator(): CircularBufferIterator<Element> {
-    const result: CircularBufferIterator<Element> = new CircularBufferIterator()
-
-    result.buffer = this
-    result.index = 0
-
-    return result
+  public forward(): SequenceCursor<Element> {
+    return new SequenceCursor(this, 0)
   }
 
   /**
-   * @see Sequence.get
+   * @see Sequence.prototype.get
    */
   public get(index: number): Element {
     return this._elements.get((this._start + index) % this._elements.capacity)
   }
 
   /**
-   * @see List.fill
+   * @see List.prototype.fill
    */
   public fill(element: Element): void {
     for (let index = 0, size = this._size; index < size; ++index) {
@@ -167,7 +183,7 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
-   * @see List.pop
+   * @see List.prototype.pop
    */
   public pop(): Element {
     const last: number = this._size - 1
@@ -179,7 +195,7 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
-   * @see List.shift
+   * @see List.prototype.shift
    */
   public shift(): Element {
     const result: Element = this.get(0)
@@ -190,7 +206,7 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
-   * @see List.swap
+   * @see List.prototype.swap
    */
   public swap(first: number, second: number): void {
     const rfirst: number = (this._start + first) % this._elements.capacity
@@ -200,7 +216,7 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
-   * @see List.set
+   * @see List.prototype.set
    */
   public set(index: number, value: Element): void {
     if (index >= this._elements.capacity) {
@@ -219,8 +235,7 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
-   * @see List.setMany
-   * @TODO
+   * @see List.prototype.setMany
    */
   public setMany(start: number, count: number, value: Element): void {
     let until: number = start + count - 1
@@ -246,21 +261,21 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
-   * @see Array.sort
+   * @see List.prototype.sort
    */
   public sort(comparator: Comparator<Element, Element>): void {
     quicksort(this, comparator, 0, this._size)
   }
 
   /**
-   * @see List.subsort
+   * @see List.prototype.subsort
    */
   public subsort(offset: number, size: number, comparator: Comparator<Element, Element>): void {
     quicksort(this, comparator, offset, size)
   }
 
   /**
-   * @see List.insert
+   * @see List.prototype.insert
    */
   public insert(index: number, value: Element): void {
     if (index >= this._size) {
@@ -282,7 +297,7 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
-   * @see List.push
+   * @see List.prototype.push
    */
   public push(value: Element): void {
     if (this._size < this._elements.capacity) {
@@ -298,7 +313,7 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
-   * @see List.unshift
+   * @see List.prototype.unshift
    */
   public unshift(value: Element): void {
     this._start -= 1
@@ -315,7 +330,7 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
-   * @see List.delete
+   * @see List.prototype.delete
    */
   public delete(index: number): void {
     for (let toMove = index; toMove > 0; --toMove) {
@@ -327,7 +342,7 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
-   * @see List.deleteMany
+   * @see List.prototype.deleteMany
    */
   public deleteMany(from: number, size: number): void {
     const end: number = from + size
@@ -341,7 +356,7 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
-   * @see List.warp
+   * @see List.prototype.warp
    */
   public warp(index: number): void {
     this.set(index, this.get(0))
@@ -351,7 +366,7 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
-   * @see List.warpMany
+   * @see List.prototype.warpMany
    */
   public warpMany(start: number, count: number): void {
     count = Math.min(this._size - start, count)
@@ -365,14 +380,14 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
-   * @see Collection.has
+   * @see Collection.prototype.has
    */
   public has(element: Element): boolean {
     return this.indexOf(element) >= 0
   }
 
   /**
-   * @see Sequence.indexOf
+   * @see Sequence.prototype.indexOf
    */
   public indexOf(element: Element): number {
     for (let index = 0, length = this._size; index < length; ++index) {
@@ -388,14 +403,14 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
-   * @see Sequence.hasInSubsequence
+   * @see Sequence.prototype.hasInSubsequence
    */
   public hasInSubsequence(element: Element, offset: number, size: number): boolean {
     return this.indexOfInSubsequence(element, offset, size) >= 0
   }
 
   /**
-   * @see Sequence.indexOfInSubsequence
+   * @see Sequence.prototype.indexOfInSubsequence
    */
   public indexOfInSubsequence(element: Element, offset: number, size: number): number {
     for (let index = offset, length = offset + size; index < length; ++index) {
@@ -411,7 +426,7 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
-   * @see Sequence.concat
+   * @see List.prototype.concat
    */
   public concat(toConcat: Sequence<Element>): void {
     const firstIndex: number = toConcat.firstIndex
@@ -423,7 +438,16 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
-   * @see Sequence.copy
+   * @see List.prototype.concatArray
+   */
+  public concatArray(toConcat: Element[]): void {
+    for (const element of toConcat) {
+      this.push(element)
+    }
+  }
+
+  /**
+   * @see List.prototype.copy
    */
   public copy(toCopy: Sequence<Element>): void {
     if (toCopy.size > this.capacity) {
@@ -438,26 +462,15 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
-   * @see Sequence.is
+   * @see Markable.prototype.is
    */
-  public is(marker: Sequence.MARKER): true
-  /**
-   * @see CircularBuffer.is
-   */
-  public is(marker: CircularBuffer.MARKER): true
-  /**
-   * @see Collection.is
-   */
-  public is(marker: Symbol): boolean
-  public is(marker: Symbol): boolean {
-    return marker === CircularBuffer.MARKER || marker === Sequence.MARKER
-  }
+  public is = protomark.is
 
   /**
-   * @see CircularBuffer.clone
+   * @see Clonable.prototype.clone
    */
-  public clone(): PackCircularBuffer<Element> {
-    return new PackCircularBuffer(
+  public clone(): CircularPack<Element> {
+    return new CircularPack(
       this._elements.clone(),
       this._start,
       this._size
@@ -465,14 +478,14 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
-   * @see Collection.view
+   * @see Collection.prototype.view
    */
   public view(): Sequence<Element> {
-    return SequenceView.wrap(this)
+    return this._view
   }
 
   /**
-   * @see CircularBuffer.clear
+   * @see Clearable.prototype.clear
    */
   public clear(): void {
     this._start = 0
@@ -480,22 +493,29 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 
   /**
-   * @see Collection.iterator
+   * @see Collection.prototype.values
    */
-  public *[Symbol.iterator](): IterableIterator<Element> {
+  public * values(): IterableIterator<Element> {
     for (let index = 0, length = this._size; index < length; ++index) {
       yield this._elements.get((this._start + index) % this._elements.capacity)
     }
   }
 
   /**
-   * @see Collection.equals
+   * @see Collection.prototype[Symbol.iterator]
+   */
+  public [Symbol.iterator](): IterableIterator<Element> {
+    return this.values()
+  }
+
+  /**
+   * @see Comparable.prototype.equals
    */
   public equals(other: any): boolean {
     if (other == null) return false
     if (other === this) return true
 
-    if (other instanceof PackCircularBuffer) {
+    if (other instanceof CircularPack) {
       if (other.size !== this._size) return false
 
       for (let index = 0, size = this._size; index < size; ++index) {
@@ -509,16 +529,19 @@ export class PackCircularBuffer<Element> implements CircularBuffer<Element>
   }
 }
 
-export namespace PackCircularBuffer {
+/**
+ * 
+ */
+export namespace CircularPack {
   /**
-   * Shallow copy an existing pack circular buffer instance.
+   * Return a circular buffer that wraps the given pack.
    *
-   * @param toCopy - An instance to shallow copy.
+   * @param pack - An existing pack instance to wrap.
    *
-   * @returns A shallow copy of the given instance.
+   * @returns A circular buffer that wraps the given pack.
    */
-  export function copy<Element>(toCopy: PackCircularBuffer<Element>): PackCircularBuffer<Element> {
-    return toCopy == null ? null : toCopy.clone()
+  export function fromPack<T>(pack: Pack<T>): CircularPack<T> {
+    return new CircularPack<T>(pack)
   }
 
   /**
@@ -528,8 +551,8 @@ export namespace PackCircularBuffer {
    *
    * @returns A new buffer that wrap a pack of the given type of instance.
    */
-  export function any<T>(capacity: number): PackCircularBuffer<T> {
-    return new PackCircularBuffer<T>(Pack.any(capacity))
+  export function any<T>(capacity: number): CircularPack<T> {
+    return new CircularPack<T>(Pack.any(capacity))
   }
 
   /**
@@ -539,8 +562,8 @@ export namespace PackCircularBuffer {
    *
    * @returns A new circular buffer that wrap a unsigned byte pack of the given capacity.
    */
-  export function uint8(capacity: number): PackCircularBuffer<number> {
-    return new PackCircularBuffer<number>(Pack.uint8(capacity))
+  export function uint8(capacity: number): CircularPack<number> {
+    return new CircularPack<number>(Pack.uint8(capacity))
   }
 
   /**
@@ -550,8 +573,8 @@ export namespace PackCircularBuffer {
    *
    * @returns A new circular buffer that wrap a unsigned short pack of the given capacity.
    */
-  export function uint16(capacity: number): PackCircularBuffer<number> {
-    return new PackCircularBuffer<number>(Pack.uint16(capacity))
+  export function uint16(capacity: number): CircularPack<number> {
+    return new CircularPack<number>(Pack.uint16(capacity))
   }
 
   /**
@@ -561,8 +584,8 @@ export namespace PackCircularBuffer {
    *
    * @returns A new circular buffer that wrap a unsigned integer pack of the given capacity.
    */
-  export function uint32(capacity: number): PackCircularBuffer<number> {
-    return new PackCircularBuffer<number>(Pack.uint32(capacity))
+  export function uint32(capacity: number): CircularPack<number> {
+    return new CircularPack<number>(Pack.uint32(capacity))
   }
 
   /**
@@ -572,8 +595,8 @@ export namespace PackCircularBuffer {
    *
    * @returns A new circular buffer that wrap a byte pack of the given capacity.
    */
-  export function int8(capacity: number): PackCircularBuffer<number> {
-    return new PackCircularBuffer<number>(Pack.int8(capacity))
+  export function int8(capacity: number): CircularPack<number> {
+    return new CircularPack<number>(Pack.int8(capacity))
   }
 
   /**
@@ -583,8 +606,8 @@ export namespace PackCircularBuffer {
    *
    * @returns A new circular buffer that wrap a short pack of the given capacity.
    */
-  export function int16(capacity: number): PackCircularBuffer<number> {
-    return new PackCircularBuffer<number>(Pack.int16(capacity))
+  export function int16(capacity: number): CircularPack<number> {
+    return new CircularPack<number>(Pack.int16(capacity))
   }
 
   /**
@@ -594,8 +617,8 @@ export namespace PackCircularBuffer {
    *
    * @returns A new circular buffer that wrap a integer pack of the given capacity.
    */
-  export function int32(capacity: number): PackCircularBuffer<number> {
-    return new PackCircularBuffer<number>(Pack.int32(capacity))
+  export function int32(capacity: number): CircularPack<number> {
+    return new CircularPack<number>(Pack.int32(capacity))
   }
 
   /**
@@ -605,8 +628,8 @@ export namespace PackCircularBuffer {
    *
    * @returns A new circular buffer that wrap a float pack of the given capacity.
    */
-  export function float32(capacity: number): PackCircularBuffer<number> {
-    return new PackCircularBuffer<number>(Pack.float32(capacity))
+  export function float32(capacity: number): CircularPack<number> {
+    return new CircularPack<number>(Pack.float32(capacity))
   }
 
   /**
@@ -616,8 +639,20 @@ export namespace PackCircularBuffer {
    *
    * @returns A new circular buffer that wrap a double pack of the given capacity.
    */
-  export function float64(capacity: number): PackCircularBuffer<number> {
-    return new PackCircularBuffer<number>(Pack.float64(capacity))
+  export function float64(capacity: number): CircularPack<number> {
+    return new CircularPack<number>(Pack.float64(capacity))
+  }
+
+  /**
+   * Instantiate a new circular buffer that wrap an instance pack of the given capacity.
+   *
+   * @param allocator - Capacity of the pack to allocate.
+   * @param capacity - Capacity of the pack to allocate.
+   *
+   * @returns A new circular buffer that wrap an instance pack of the given capacity.
+   */
+  export function instance<T>(allocator: Duplicator<T>, capacity: number): CircularPack<T> {
+    return new CircularPack<T>(Pack.instance(allocator, capacity))
   }
 
   /**
@@ -630,8 +665,8 @@ export namespace PackCircularBuffer {
    * @returns A new pack that wrap a unsigned integer pack that can store values
    *         in range [0, maximum] and that is of the given capacity.
    */
-  export function unsignedUpTo(maximum: number, capacity: number): PackCircularBuffer<number> {
-    return new PackCircularBuffer<number>(Pack.unsignedUpTo(maximum, capacity))
+  export function unsignedUpTo(maximum: number, capacity: number): CircularPack<number> {
+    return new CircularPack<number>(Pack.unsignedUpTo(maximum, capacity))
   }
 
   /**
@@ -644,7 +679,7 @@ export namespace PackCircularBuffer {
    * @returns A new circular buffer that wrap a signed integer pack that can store values
    *         in range [-maximum, maximum] and that is of the given capacity.
    */
-  export function signedUpTo(maximum: number, capacity: number): PackCircularBuffer<number> {
-    return new PackCircularBuffer<number>(Pack.signedUpTo(maximum, capacity))
+  export function signedUpTo(maximum: number, capacity: number): CircularPack<number> {
+    return new CircularPack<number>(Pack.signedUpTo(maximum, capacity))
   }
 }

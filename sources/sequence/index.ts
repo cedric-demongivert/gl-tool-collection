@@ -2,6 +2,7 @@
 
 export { ArrayPack } from './ArrayPack'
 export { BufferPack } from './BufferPack'
+export { CircularPack } from './CircularPack'
 export { EmptySequence } from './EmptySequence'
 export { InstancePack } from './InstancePack'
 export { List } from './List'
