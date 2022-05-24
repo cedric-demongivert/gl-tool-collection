@@ -18,6 +18,7 @@
 !tsconfig.json
 !webpack.mix.js
 !.eslintrc.js
+!typedoc.json
 
 # Except content.
 !LICENSE.md

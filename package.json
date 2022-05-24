@@ -7,11 +7,14 @@
   "browserslist": "> 0.25%, not dead",
   "scripts": {
     "test": "jest --coverage",
-    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-    "preversion": "npm install && npm test",
-    "version": "npm run build && git add --all",
+    "build": "typedoc && npx mix",
+    "preversion": "npm install",
+    "version": "npm run build && npm test && git add --all",
     "postversion": "git push && git push --tags",
-    "push": "npm publish ./dist --access public"
+    "push": "yarn run build && npm publish ./distribution --access public",
+    "patch": "yarn version --patch && npm run push",
+    "minor": "yarn version --minor && npm run push",
+    "major": "yarn version --major && npm run push"
   },
   "repository": "https://gitlab.cedric-demongivert.com/gl-tool/gl-tool-ecs.git",
   "author": "Cédric DEMONGIVERT <cedric.demongivert@gmail.com>",
@@ -28,8 +31,7 @@
     "laravel-mix": "^5.0.0",
     "ts-jest": "^24.0.2",
     "ts-loader": "^6.0.2",
-    "typedoc": "^0.14.2",
-    "typedoc-webpack-plugin": "^1.1.4",
+    "typedoc": "^0.22.15",
     "typescript": "^4.6.4",
     "webpack": "^4.33.0"
   },
