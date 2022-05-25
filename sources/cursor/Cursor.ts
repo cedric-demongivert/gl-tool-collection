@@ -3,6 +3,7 @@ import { Clonable, Comparable } from '@cedric-demongivert/gl-tool-utils'
 import { Mark, Markable } from '../mark'
 import { CursorView } from './CursorView'
 import { EmptyCursor } from './EmptyCursor'
+import { NativeCursor } from './NativeCursor'
 
 /**
  * A cursor over a collection.
@@ -68,4 +69,9 @@ export namespace Cursor {
    * @see CursorView.wrap
    */
   export const view = CursorView.wrap
+
+  /**
+   * @see NativeCursor.from
+   */
+  export const fromIterator = NativeCursor.from
 }

@@ -1,87 +1,112 @@
 import { ReallocableCollection } from '../ReallocableCollection'
-import { Sequence } from '../Sequence'
-import { BidirectionalIterator } from '../iterator/BidirectionalIterator'
-import { Pack } from '../pack/Pack'
-import { SequenceView } from '../view/SequenceView'
+import { Sequence, Pack } from '../sequence'
 
-import { MutableSet } from './MutableSet'
+import { OrderedSet } from './OrderedSet'
 import { Set } from './Set'
+import { Group } from './Group'
+import { protomark } from '../mark'
+import { StaticCollection } from '../StaticCollection'
+import { Collection } from '../Collection'
+import { OrderedGroup } from './OrderedGroup'
+import { ForwardCursor } from '../cursor'
 
-export class PackSet<Element>
-  implements ReallocableCollection, MutableSet<Element>, Sequence<Element>
+/**
+ * 
+ */
+@protomark(ReallocableCollection)
+@protomark(StaticCollection)
+@protomark(Set)
+@protomark(Group)
+@protomark(Sequence)
+@protomark(Collection)
+export class PackSet<Element> implements ReallocableCollection, OrderedSet<Element>
 {
+  /**
+   * 
+   */
   private _elements: Pack<Element>
 
   /**
-  * Create a new set collection based upon a pack instance.
-  *
-  * @param pack - An empty pack instance to wrap as a set.
-  */
+   * 
+   */
+  private _view: OrderedGroup<Element>
+
+  /**
+   * Create a new set collection based upon a pack instance.
+   *
+   * @param pack - An empty pack instance to wrap as a set.
+   */
   public constructor(elements: Pack<Element>) {
     this._elements = elements
+    this._view = OrderedGroup.view(this)
   }
 
   /**
-  * @returns Elementhis set underlying pack instance.
-  */
+   * @see Markable.prototype.is
+   */
+  public is = protomark.is
+
+  /**
+   * @returns This set underlying pack instance.
+   */
   public get elements(): Pack<Element> {
     return this._elements
   }
 
   /**
-  * Change the wrapped pack instance.
-  *
-  * @param elements - Elementhe new pack instance to wrap.
-  */
+   * Change the wrapped pack instance.
+   *
+   * @param elements - The new pack instance to wrap.
+   */
   public set elements(elements: Pack<Element>) {
     this._elements = elements
   }
 
   /**
-  * @see Collection.size
-  */
+   * @see Collection.prototype.size
+   */
   public get size(): number {
     return this._elements.size
   }
 
   /**
-  * @see StaticCollection.capacity
-  */
+   * @see StaticCollection.prototype.capacity
+   */
   public get capacity(): number {
     return this._elements.capacity
   }
 
   /**
-  * @see Collection.has
-  */
+   * @see Collection.prototype.has
+   */
   public has(element: Element): boolean {
     return this._elements.has(element)
   }
 
   /**
-  * @see Sequence.indexOf
-  */
+   * @see Sequence.prototype.indexOf
+   */
   public indexOf(element: Element): number {
     return this._elements.indexOf(element)
   }
 
   /**
-  * @see Sequence.hasInSubsequence
-  */
+   * @see Sequence.prototype.hasInSubsequence
+   */
   public hasInSubsequence(element: Element, offset: number, size: number): boolean {
     return this._elements.hasInSubsequence(element, offset, size)
   }
 
   /**
-  * @see Sequence.indexOfInSubsequence
-  */
+   * @see Sequence.prototype.indexOfInSubsequence
+   */
   public indexOfInSubsequence(element: Element, offset: number, size: number): number {
     return this._elements.indexOfInSubsequence(element, offset, size)
   }
 
   /**
-  * @see Set.add
-  */
+   * @see Set.prototype.add
+   */
   public add(element: Element): void {
     if (this._elements.indexOf(element) === -1) {
       this._elements.push(element)
@@ -89,8 +114,8 @@ export class PackSet<Element>
   }
 
   /**
-  * @see Set.delete
-  */
+   * @see Set.prototype.delete
+   */
   public delete(element: Element): void {
     const index: number = this._elements.indexOf(element)
 
@@ -100,30 +125,30 @@ export class PackSet<Element>
   }
 
   /**
-  * @see Collection.get
-  */
+   * @see Sequence.prototype.get
+   */
   public get(index: number): Element {
     return this._elements.get(index)
   }
 
   /**
-  * @see ReallocableCollection.reallocate
-  */
+   * @see ReallocableCollection.prototype.reallocate
+   */
   public reallocate(capacity: number): void {
     this._elements.reallocate(capacity)
   }
 
   /**
-  * @see ReallocableCollection.fit
-  */
+   * @see ReallocableCollection.prototype.fit
+   */
   public fit(): void {
     this._elements.fit()
   }
 
   /**
-  * @see Set.copy
-  */
-  public copy(toCopy: Set<Element>): void {
+   * @see Set.prototype.copy
+   */
+  public copy(toCopy: Group<Element>): void {
     this.clear()
 
     for (const element of toCopy) {
@@ -132,70 +157,78 @@ export class PackSet<Element>
   }
 
   /**
-  * @see Collection.clone
-  */
+   * @see Clonable.prototype.clone
+   */
   public clone(): PackSet<Element> {
     return new PackSet<Element>(this._elements.clone())
   }
 
   /**
-  * @see Set.clear
-  */
+   * @see Group.prototype.clear
+   */
   public clear(): void {
     this._elements.clear()
   }
 
   /**
-  * @see Sequence.first
-  */
+   * @see Sequence.prototype.first
+   */
   public get first(): Element {
     return this._elements.first
   }
 
   /**
-  * @see Sequence.firstIndex
-  */
+   * @see Sequence.prototype.firstIndex
+   */
   public get firstIndex(): number {
     return this._elements.firstIndex
   }
 
   /**
-  * @see Sequence.last
-  */
+   * @see Sequence.prototype.last
+   */
   public get last(): Element {
     return this._elements.last
   }
 
   /**
-  * @see Sequence.lastIndex
-  */
+   * @see Sequence.prototype.lastIndex
+   */
   public get lastIndex(): number {
     return this._elements.lastIndex
   }
 
   /**
-  * @see Collection.view
-  */
-  public view(): Sequence<Element> {
-    return SequenceView.wrap(this)
+   * @see Collection.prototype.view
+   */
+  public view(): OrderedGroup<Element> {
+    return this._view
   }
 
   /**
-  * @see Collection.iterator
+  * @see Collection.prototype.forward
   */
-  public iterator(): BidirectionalIterator<Element> {
-    return this._elements.iterator()
+  public forward(): ForwardCursor<Element> {
+    return this._elements.forward()
   }
 
   /**
-  * @see Set.iterator
+  * @see Collection.prototype.values
   */
-  public *[Symbol.iterator](): Iterator<Element> {
-    yield* this._elements
+  public values(): IterableIterator<Element> {
+    return this._elements.values()
+  }
+
+
+  /**
+  * @see Collection.prototype[Symbol.iterator]
+  */
+  public [Symbol.iterator](): IterableIterator<Element> {
+    return this._elements.values()
   }
 
   /**
-  * @see Collection.equals
+  * @see Comparable.prototype.equals
   */
   public equals(other: any): boolean {
     if (other == null) return false
@@ -222,7 +255,7 @@ export namespace PackSet {
   * @param toCopy - A pack set to copy.
   */
   export function copy<Element>(toCopy: PackSet<Element>): PackSet<Element> {
-    return new PackSet<Element>(Pack.copy(toCopy.elements))
+    return new PackSet<Element>(toCopy.elements.clone())
   }
 
   /**

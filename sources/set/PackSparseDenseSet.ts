@@ -1,52 +1,75 @@
-import { Sequence } from '../Sequence'
-
-import { Pack } from '../pack/Pack'
-import { BidirectionalIterator } from '../iterator/BidirectionalIterator'
-import { SequenceView } from '../view/SequenceView'
+import { Collection } from '../Collection'
+import { ForwardCursor, RandomAccessCursor } from '../cursor'
+import { protomark } from '../mark'
+import { ReallocableCollection } from '../ReallocableCollection'
+import { Sequence, Pack } from '../sequence'
+import { StaticCollection } from '../StaticCollection'
+import { Group } from './Group'
+import { OrderedGroup } from './OrderedGroup'
 
 import { SparseDenseSet } from './SparseDenseSet'
-import { Set } from './Set'
 
-export class PackSparseDenseSet implements SparseDenseSet, Sequence<number>
-{
+/**
+ * 
+ */
+@protomark(ReallocableCollection)
+@protomark(StaticCollection)
+@protomark(Group)
+@protomark(Set)
+@protomark(Sequence)
+@protomark(Collection)
+export class PackSparseDenseSet implements SparseDenseSet {
+  /**
+   * 
+   */
   private _sparse: Pack<number>
+
+  /**
+   * 
+   */
   private _dense: Pack<number>
 
   /**
-  * Create a new empty sparse set based uppon the given pack.
-  *
-  * @param dense - An empty dense number pack.
-  */
+   * 
+   */
+  private _view: OrderedGroup<number>
+
+  /**
+   * Create a new empty sparse set based uppon the given pack.
+   *
+   * @param dense - An empty dense number pack.
+   */
   public constructor(dense: Pack<number>) {
     this._sparse = dense.clone()
     this._dense = dense
+    this._view = OrderedGroup.view(this)
   }
 
   /**
-  * @see Collection.size
-  */
+   * @see Collection.prototype.size
+   */
   public get size(): number {
     return this._dense.size
   }
 
   /**
-  * @see StaticCollection.capacity
-  */
+   * @see StaticCollection.prototype.capacity
+   */
   public get capacity(): number {
     return this._dense.capacity
   }
 
   /**
-  * @see Collection.has
-  */
+   * @see Collection.prototype.has
+   */
   public has(element: number): boolean {
     const index: number = this._sparse.get(element)
     return index < this._dense.size && this._dense.get(index) === element
   }
 
   /**
-  * @see Sequence.indexOf
-  */
+   * @see Sequence.prototype.indexOf
+   */
   public indexOf(element: number): number {
     const index: number = this._sparse.get(element)
 
@@ -58,24 +81,24 @@ export class PackSparseDenseSet implements SparseDenseSet, Sequence<number>
   }
 
   /**
-  * @see Sequence.hasInSubsequence
-  */
+   * @see Sequence.prototype.hasInSubsequence
+   */
   public hasInSubsequence(element: number, offset: number, size: number): boolean {
     const index: number = this.indexOf(element)
     return index >= offset && index < offset + size
   }
 
   /**
-  * @see Sequence.indexOfInSubsequence
-  */
+   * @see Sequence.prototype.indexOfInSubsequence
+   */
   public indexOfInSubsequence(element: number, offset: number, size: number): number {
     const index: number = this.indexOf(element)
     return index >= offset && index < offset + size ? index : -1
   }
 
   /**
-  * @see MutableSet.add
-  */
+   * @see Set.prototype.add
+   */
   public add(element: number): void {
     const index: number = this._sparse.get(element)
 
@@ -86,8 +109,8 @@ export class PackSparseDenseSet implements SparseDenseSet, Sequence<number>
   }
 
   /**
-  * @see MutableSet.delete
-  */
+   * @see Set.prototype.delete
+   */
   public delete(element: number): void {
     const index: number = this._sparse.get(element)
 
@@ -99,16 +122,16 @@ export class PackSparseDenseSet implements SparseDenseSet, Sequence<number>
   }
 
   /**
-  * @see Sequence.get
-  */
+   * @see Sequence.prototype.get
+   */
   public get(index: number): number {
     return this._dense.get(index)
   }
 
   /**
-  * @see MutableSet.copy
-  */
-  public copy(toCopy: Set<number>): void {
+   * @see Set.prototype.copy
+   */
+  public copy(toCopy: Group<number>): void {
     let max: number = 0
 
     for (let value of toCopy) {
@@ -127,8 +150,8 @@ export class PackSparseDenseSet implements SparseDenseSet, Sequence<number>
   }
 
   /**
-  * @see Collection.clone
-  */
+   * @see Clonable.prototype.clone
+   */
   public clone(): PackSparseDenseSet {
     const copy: PackSparseDenseSet = new PackSparseDenseSet(
       this._dense.clone()
@@ -141,8 +164,8 @@ export class PackSparseDenseSet implements SparseDenseSet, Sequence<number>
   }
 
   /**
-  * @see ReallocableCollection.reallocate
-  */
+   * @see ReallocableCollection.prototype.reallocate
+   */
   public reallocate(capacity: number): void {
     const oldDense: Pack<number> = this._dense
 
@@ -158,8 +181,8 @@ export class PackSparseDenseSet implements SparseDenseSet, Sequence<number>
   }
 
   /**
-  * @see ReallocableCollection.fit
-  */
+   * @see ReallocableCollection.prototype.fit
+   */
   public fit(): void {
     const max: number = this.max()
     this._dense.reallocate(max + 1)
@@ -167,10 +190,10 @@ export class PackSparseDenseSet implements SparseDenseSet, Sequence<number>
   }
 
   /**
-  * Return the maximum element of this set.
-  *
-  * @returns The maximum element of this set.
-  */
+   * Return the maximum element of this set.
+   *
+   * @returns The maximum element of this set.
+   */
   public max(): number {
     if (this._dense.size <= 0) return undefined
 
@@ -185,10 +208,10 @@ export class PackSparseDenseSet implements SparseDenseSet, Sequence<number>
   }
 
   /**
-  * Return the minimum element of this set.
-  *
-  * @returns The minimum element of this set.
-  */
+   * Return the minimum element of this set.
+   *
+   * @returns The minimum element of this set.
+   */
   public min(): number {
     if (this._dense.size <= 0) return undefined
 
@@ -203,66 +226,76 @@ export class PackSparseDenseSet implements SparseDenseSet, Sequence<number>
   }
 
   /**
-  * @see MutableSet.clear
-  */
+   * @see Clearable.prototype.clear
+   */
   public clear(): void {
     this._dense.clear()
   }
 
   /**
-  * @see Sequence.first
-  */
+   * @see Sequence.prototype.first
+   */
   public get first(): number {
     return this._dense.first
   }
 
   /**
-  * @see Sequence.firstIndex
-  */
+   * @see Sequence.prototype.firstIndex
+   */
   public get firstIndex(): number {
     return this._dense.firstIndex
   }
 
   /**
-  * @see Sequence.last
-  */
+   * @see Sequence.prototype.last
+   */
   public get last(): number {
     return this._dense.last
   }
 
   /**
-  * @see Sequence.first
-  */
+   * @see Sequence.prototype.first
+   */
   public get lastIndex(): number {
     return this._dense.lastIndex
   }
 
   /**
-  * @see Collection.view
-  */
-  public view(): Sequence<number> {
-    return SequenceView.wrap(this)
+   * @see Collection.prototype.view
+   */
+  public view(): OrderedGroup<number> {
+    return this._view
   }
 
   /**
-  * @see Collection.iterator
-  */
-  public iterator(): BidirectionalIterator<number> {
-    return this._dense.iterator()
+   * @see Collection.prototype.forward
+   */
+  public forward(): ForwardCursor<number> {
+    return this._dense.forward()
   }
 
   /**
-  * @see Collection.iterator
-  */
-  public *[Symbol.iterator](): Iterator<number> {
-    for (let index = 0, length = this._dense.size; index < length; ++index) {
-      yield this._dense.get(index)
-    }
+   * @see Collection.prototype.values
+   */
+  public values(): IterableIterator<number> {
+    return this._dense.values()
   }
 
   /**
-  * @see Collection.equals
-  */
+   * @see Collection.prototype[Symbol.iterator]
+   */
+  public [Symbol.iterator](): IterableIterator<number> {
+    return this._dense.values()
+  }
+
+  /**
+   * @see Markable.prototype.is
+   */
+  public is = protomark.is
+
+  /**
+   * @see Comparable.prototype.equals
+   */
   public equals(other: any): boolean {
     if (other == null) return false
     if (other === this) return true
@@ -281,67 +314,61 @@ export class PackSparseDenseSet implements SparseDenseSet, Sequence<number>
   }
 }
 
+/**
+ * 
+ */
 export namespace PackSparseDenseSet {
   /**
-  * Return a copy of a given sparse set.
-  *
-  * @param toCopy - A sparse set to copy.
-  */
-  export function copy(toCopy: PackSparseDenseSet): PackSparseDenseSet {
-    return toCopy == null ? null : toCopy.clone()
-  }
-
-  /**
-  * Instantiate a uint32 sparse-dense set.
-  *
-  * @param capacity - Capacity of the sparse-dense set to instantiate.
-  *
-  * @returns A new sparse-dense set of the given capacity.
-  */
+   * Instantiate a uint32 sparse-dense set.
+   *
+   * @param capacity - Capacity of the sparse-dense set to instantiate.
+   *
+   * @returns A new sparse-dense set of the given capacity.
+   */
   export function uint32(capacity: number): PackSparseDenseSet {
     return new PackSparseDenseSet(Pack.uint32(capacity))
   }
 
   /**
-  * Instantiate a uint16 sparse-dense set.
-  *
-  * @param capacity - Capacity of the sparse-dense set to instantiate.
-  *
-  * @returns A new sparse-dense set of the given capacity.
-  */
+   * Instantiate a uint16 sparse-dense set.
+   *
+   * @param capacity - Capacity of the sparse-dense set to instantiate.
+   *
+   * @returns A new sparse-dense set of the given capacity.
+   */
   export function uint16(capacity: number): PackSparseDenseSet {
     return new PackSparseDenseSet(Pack.uint16(capacity))
   }
 
   /**
-  * Instantiate a uint8 sparse-dense set.
-  *
-  * @param capacity - Capacity of the sparse-dense set to instantiate.
-  *
-  * @returns A new sparse-dense set of the given capacity.
-  */
+   * Instantiate a uint8 sparse-dense set.
+   *
+   * @param capacity - Capacity of the sparse-dense set to instantiate.
+   *
+   * @returns A new sparse-dense set of the given capacity.
+   */
   export function uint8(capacity: number): PackSparseDenseSet {
     return new PackSparseDenseSet(Pack.uint8(capacity))
   }
 
   /**
-  * Instantiate an array sparse-dense set.
-  *
-  * @param capacity - Capacity of the sparse-dense set to instantiate.
-  *
-  * @returns A new sparse-dense set of the given capacity.
-  */
+   * Instantiate an array sparse-dense set.
+   *
+   * @param capacity - Capacity of the sparse-dense set to instantiate.
+   *
+   * @returns A new sparse-dense set of the given capacity.
+   */
   export function any(capacity: number): PackSparseDenseSet {
     return new PackSparseDenseSet(Pack.any(capacity))
   }
 
   /**
-  * Instantiate a sparse-dense set that can store numbers up to the given value.
-  *
-  * @param capacity - Maximum number to be able to store into the resulting sparse-dense set.
-  *
-  * @returns A new sparse-dense set that can store numbers up to the given value.
-  */
+   * Instantiate a sparse-dense set that can store numbers up to the given value.
+   *
+   * @param capacity - Maximum number to be able to store into the resulting sparse-dense set.
+   *
+   * @returns A new sparse-dense set that can store numbers up to the given value.
+   */
   export function upTo(capacity: number): PackSparseDenseSet {
     if (capacity <= 0xff) {
       return new PackSparseDenseSet(Pack.uint8(capacity))

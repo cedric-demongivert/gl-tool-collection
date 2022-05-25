@@ -1,4 +1,4 @@
-import { EmptyForwardCursor, ForwardCursor } from '../cursor'
+import { ForwardCursor } from '../cursor'
 import { Readonly, Empty, protomark } from '../mark'
 
 import { Collection } from '../Collection'
@@ -13,7 +13,7 @@ import { Sequence } from './Sequence'
 @protomark(Sequence)
 export class EmptySequence<Element> implements Sequence<Element> {
   /**
-   * @see Sequence.prototype.size
+   * @see Collection.prototype.size
    */
   public get size(): number {
     return 0

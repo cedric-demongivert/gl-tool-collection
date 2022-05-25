@@ -1,5 +1,8 @@
 import { Collection } from '../Collection'
-import { Markable } from '../mark'
+import { Mark, Markable } from '../mark'
+
+import { EmptyGroup } from './EmptyGroup'
+import { GroupView } from './GroupView'
 
 /**
  * A group is a read-only, unordered collection that does not accept duplicates.
@@ -9,11 +12,6 @@ export interface Group<Element> extends Collection<Element>, Markable {
    * @see Clonable.prototype.clone
    */
   clone(): Group<Element>
-
-  /**
-   * @see Markable.prototype.is
-   */
-  is(marker: Group.MARK): true
 }
 
 /**
@@ -23,26 +21,38 @@ export namespace Group {
   /**
    * 
    */
-  export const MARK: unique symbol = Symbol('gl-tool-collection/group-mark')
+  export const MARK: Mark = Symbol('gl-tool-collection/mark/collection/group')
 
   /**
-   * 
+   * @see Mark.Container
    */
-  export type MARK = typeof MARK
+  export function mark(): Mark {
+    return MARK
+  }
 
   /**
-   * @see Markable.protomark
-   */
-  export const protomark = Markable.protomark(MARK)
-
-  /**
-   * Return true if the given collection is a pack.
+   * Return true if the given collection is a group.
    *
    * @param collection - A collection to assert.
    *
-   * @returns True if the given collection is a pack.
+   * @returns True if the given collection is a group.
    */
-  export function is<Element>(collection: Collection<Element>): collection is Group<Element> {
+  export function is<Element>(collection: Markable): collection is Group<Element> {
     return collection.is(MARK)
   }
+
+  /**
+   * @see EmptyGroup.INSTANCE
+   */
+  export const EMPTY = EmptyGroup.INSTANCE
+
+  /**
+   * @see EmptyGroup.get
+   */
+  export const empty = EmptyGroup.get
+
+  /**
+   * @see GroupView.wrap
+   */
+  export const view = GroupView.wrap
 }

@@ -1,11 +1,13 @@
 import { Sequence } from '../Sequence'
 import { ReallocableCollection } from '../ReallocableCollection'
 
-import { MutableSet } from './MutableSet'
+import { OrderedSet } from './OrderedSet'
 import { PackSparseDenseSet } from './PackSparseDenseSet'
 
-export interface SparseDenseSet
-  extends Sequence<number>, MutableSet<number>, ReallocableCollection {
+/**
+ * 
+ */
+export interface SparseDenseSet extends OrderedSet<number>, ReallocableCollection {
   /**
   * @see Collection.view
   */
@@ -17,6 +19,9 @@ export interface SparseDenseSet
   clone(): SparseDenseSet
 }
 
+/**
+ * 
+ */
 export namespace SparseDenseSet {
   /**
   * Copy an existing sparse-dense set instance.

@@ -1,17 +1,17 @@
-import { ReallocableCollection } from '../ReallocableCollection'
-import { Sequence } from '../Sequence'
-import { BidirectionalIterator } from '../iterator/BidirectionalIterator'
-import { Pack } from '../pack/Pack'
-import { SequenceView } from '../view/SequenceView'
+import { Pack, Sequence } from '../sequence'
+import { Mark, protomark } from '../mark'
 
-import { MutableSet } from './MutableSet'
+import { ReallocableCollection } from '../ReallocableCollection'
+import { StaticCollection } from '../StaticCollection'
+
 import { Set } from './Set'
+import { Group } from './Group'
 
 // SWAR Algorithm [SIMD Within A Register]
 function countBits(bits: number): number {
-  bits = (bits | 0) - ((bits >> 1) & 0x55555555);
-  bits = (bits & 0x33333333) + ((bits >> 2) & 0x33333333);
-  return (((bits + (bits >> 4)) & 0x0F0F0F0F) * 0x01010101) >> 24;
+  bits = (bits | 0) - ((bits >> 1) & 0x55555555)
+  bits = (bits & 0x33333333) + ((bits >> 2) & 0x33333333)
+  return (((bits + (bits >> 4)) & 0x0F0F0F0F) * 0x01010101) >> 24
 }
 
 /**
@@ -23,8 +23,15 @@ for (let index = 0; index < 32; ++index) {
   BITSUMS.set(index, ~(0xFFFFFFFF << index))
 }
 
-export class BitSet
-  implements ReallocableCollection, MutableSet<number>, Sequence<number>
+/**
+ * 
+ */
+@protomark(StaticCollection)
+@protomark(ReallocableCollection)
+@protomark(Set)
+@protomark(Sequence)
+@protomark(Group)
+export class BitSet implements ReallocableCollection, Set<number>, Sequence<number>
 {
   /**
   *
@@ -43,23 +50,26 @@ export class BitSet
     this._elements = Pack.uint32(capacity >> 5 + (capacity % 32 === 0 ? 0 : 1))
     this._size = 0
   }
+  is(mark: Mark.Alike): boolean {
+    throw new Error('Method not implemented.')
+  }
 
   /**
-  * @see Collection.size
+  * @see Collection.prototype.size
   */
   public get size(): number {
     return this._size
   }
 
   /**
-  * @see StaticCollection.capacity
+  * @see StaticCollection.prototype.capacity
   */
   public get capacity(): number {
     return this._elements.capacity * 32
   }
 
   /**
-  * @see Collection.has
+  * @see Collection.prototype.has
   */
   public has(element: number): boolean {
     const elements: Pack<number> = this._elements
@@ -70,7 +80,7 @@ export class BitSet
   }
 
   /**
-  * @see Sequence.indexOf
+  * @see Sequence.prototype.indexOf
   */
   public indexOf(element: number): number {
     const elements: Pack<number> = this._elements
@@ -91,7 +101,7 @@ export class BitSet
   }
 
   /**
-  * @see Sequence.hasInSubsequence
+  * @see Sequence.prototype.hasInSubsequence
   */
   public hasInSubsequence(element: number, offset: number, size: number): boolean {
     const index: number = this.indexOf(element)
@@ -99,7 +109,7 @@ export class BitSet
   }
 
   /**
-  * @see Sequence.indexOfInSubsequence
+  * @see Sequence.prototype.indexOfInSubsequence
   */
   public indexOfInSubsequence(element: number, offset: number, size: number): number {
     const index: number = this.indexOf(element)
@@ -112,7 +122,7 @@ export class BitSet
   }
 
   /**
-  * @see Set.add
+  * @see Set.prototype.add
   */
   public add(element: number): void {
     const elements: Pack<number> = this._elements
@@ -135,7 +145,7 @@ export class BitSet
   }
 
   /**
-  * @see Set.delete
+  * @see Set.prototype.delete
   */
   public delete(element: number): void {
     const elements: Pack<number> = this._elements
@@ -157,7 +167,7 @@ export class BitSet
   }
 
   /**
-  * @see Collection.get
+  * @see Sequence.prototype.get
   */
   public get(index: number): number {
     if (index > this._size) return 0
@@ -241,23 +251,23 @@ export class BitSet
   }
 
   /**
-  * @see ReallocableCollection.reallocate
+  * @see ReallocableCollection.prototype.reallocate
   */
   public reallocate(capacity: number): void {
     this._elements.reallocate(capacity)
   }
 
   /**
-  * @see ReallocableCollection.fit
+  * @see ReallocableCollection.prototype.fit
   */
   public fit(): void {
     this._elements.fit()
   }
 
   /**
-  * @see Set.copy
+  * @see Set.prototype.copy
   */
-  public copy(toCopy: Set<number>): void {
+  public copy(toCopy: Group<number>): void {
     this.clear()
 
     for (const element of toCopy) {
@@ -266,7 +276,7 @@ export class BitSet
   }
 
   /**
-  * @see Collection.clone
+  * @see Collection.prototype.clone
   */
   public clone(): BitSet {
     const result: BitSet = new BitSet(this.capacity)
@@ -275,7 +285,7 @@ export class BitSet
   }
 
   /**
-  * @see Set.clear
+  * @see Clearable.prototype.clear
   */
   public clear(): void {
     this._elements.clear()
@@ -283,21 +293,21 @@ export class BitSet
   }
 
   /**
-  * @see Sequence.first
+  * @see Sequence.prototype.first
   */
   public get first(): number {
     return this.get(0)
   }
 
   /**
-  * @see Sequence.firstIndex
+  * @see Sequence.prototype.firstIndex
   */
   public get firstIndex(): number {
     return 0
   }
 
   /**
-  * @see Sequence.last
+  * @see Sequence.prototype.last
   */
   public get last(): number {
     // optimizable
@@ -305,30 +315,23 @@ export class BitSet
   }
 
   /**
-  * @see Sequence.lastIndex
+  * @see Sequence.prototype.lastIndex
   */
   public get lastIndex(): number {
     return this._size - 1
   }
 
   /**
-  * @see Collection.view
+  * @see Collection.prototype.view
   */
   public view(): Sequence<number> {
     return SequenceView.wrap(this)
   }
 
   /**
-  * @see Collection.iterator
+  * @see Collection.prototype.forward
   */
-  public iterator(): BidirectionalIterator<number> {
-    throw new Error('Not implemented yet.')
-  }
-
-  /**
-  * @see Set.iterator
-  */
-  public *[Symbol.iterator](): Iterator<number> {
+  public forward(): Bidi<number> {
     const elements: Pack<number> = this._elements
 
     for (let cell = 0; cell < elements.size; ++cell) {
@@ -340,6 +343,30 @@ export class BitSet
         }
       }
     }
+  }
+
+  /**
+  * @see Collection.prototype.values
+  */
+  public * values(): IterableIterator<number> {
+    const elements: Pack<number> = this._elements
+
+    for (let cell = 0; cell < elements.size; ++cell) {
+      const base: number = cell * 32
+
+      for (let index = 0; index < 32; ++index) {
+        if ((elements.get(cell) & (0b1 << index)) > 0) {
+          yield base + index
+        }
+      }
+    }
+  }
+
+  /**
+  * @see Collection.prototype[Symbol.iterator]
+  */
+  public [Symbol.iterator](): IterableIterator<number> {
+    return this.values()
   }
 
   /**

@@ -1,4 +1,5 @@
 import { Clearable, Clonable } from '@cedric-demongivert/gl-tool-utils'
+import { Mark, Markable } from '../mark'
 import { Group } from './Group'
 
 /**
@@ -27,7 +28,40 @@ export interface Set<Element> extends Group<Element>, Clearable, Clonable {
   copy(toCopy: Group<Element>): void
 
   /**
+   * @see Collection.prototype.view
+   */
+  view(): Group<Element>
+
+  /**
    * @see Clonable.prototype.clone
    */
   clone(): Set<Element>
+}
+
+/**
+ * 
+ */
+export namespace Set {
+  /**
+   * 
+   */
+  export const MARK: Mark = Symbol('gl-tool-collection/mark/collection/set')
+
+  /**
+   * @see Mark.Container
+   */
+  export function mark(): Mark {
+    return MARK
+  }
+
+  /**
+   * Return true if the given collection is a set.
+   *
+   * @param collection - A collection to assert.
+   *
+   * @returns True if the given collection is a set.
+   */
+  export function is<Element>(collection: Markable): collection is Set<Element> {
+    return collection.is(MARK)
+  }
 }

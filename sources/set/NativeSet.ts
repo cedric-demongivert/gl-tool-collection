@@ -1,70 +1,86 @@
 import { Collection } from '../Collection'
-import { CollectionIterator } from '../iterator/CollectionIterator'
-import { View } from '../view/View'
 
-import { MutableSet } from './MutableSet'
 import { Set as GLToolSet } from './Set'
+import { Group } from './Group'
+import { protomark } from '../mark'
+import { Cursor, ForwardCursor, NativeCursor } from '../cursor'
 
-export class NativeSet<Element> implements MutableSet<Element>
+/**
+ * 
+ */
+@protomark(Set)
+@protomark(Group)
+@protomark(Collection)
+export class NativeSet<Element> implements GLToolSet<Element>
 {
+  /**
+   * 
+   */
   private _elements: Set<Element>
 
   /**
-  * Create a new native set collection based upon the given set instance.
-  *
-  * @param elements - A set instance to wrap.
-  */
+   * 
+   */
+  private readonly _view: Group<Element>
+
+  /**
+   * Create a new native set collection based upon the given set instance.
+   *
+   * @param elements - A set instance to wrap.
+   */
   public constructor(elements: Set<Element>) {
     this._elements = elements
+    this._view = Group.view(this)
+    this.values = this.values.bind(this)
   }
 
   /**
-  * @returns This set underlying native instance.
-  */
+   * @returns This set underlying native instance.
+   */
   public get elements(): Set<Element> {
     return this._elements
   }
 
   /**
-  * Change the wrapped set instance.
-  *
-  * @param elements - The new set instance to wrap.
-  */
+   * Change the wrapped set instance.
+   *
+   * @param elements - The new set instance to wrap.
+   */
   public set elements(elements: Set<Element>) {
     this._elements = elements
   }
 
   /**
-  * @see Collection.size
-  */
+   * @see Collection.prototype.size
+   */
   public get size(): number {
     return this._elements.size
   }
 
   /**
-  * @see Collection.has
-  */
+   * @see Collection.prototype.has
+   */
   public has(element: Element): boolean {
     return this._elements.has(element)
   }
 
   /**
-  * @see Set.add
-  */
+   * @see GLToolSet.prototype.add
+   */
   public add(element: Element): void {
     this._elements.add(element)
   }
 
   /**
-  * @see Set.delete
-  */
+   * @see GLToolSet.prototype.delete
+   */
   public delete(element: Element): void {
     this._elements.delete(element)
   }
 
   /**
-  * @see Collection.get
-  */
+   * @see Sequence.prototype.get
+   */
   public get(index: number): Element {
     if (index < 0) {
       return undefined
@@ -84,9 +100,9 @@ export class NativeSet<Element> implements MutableSet<Element>
   }
 
   /**
-  * @see Set.copy
-  */
-  public copy(toCopy: GLToolSet<Element>): void {
+   * @see GLToolSet.prototype.copy
+   */
+  public copy(toCopy: Group<Element>): void {
     this._elements.clear()
 
     for (const element of toCopy) {
@@ -95,44 +111,56 @@ export class NativeSet<Element> implements MutableSet<Element>
   }
 
   /**
-  * @see Collection.clone
-  */
+   * @see Clonable.prototype.clone
+   */
   public clone(): NativeSet<Element> {
     return new NativeSet<Element>(new Set<Element>(this._elements))
   }
 
   /**
-  * @see Set.clear
-  */
+   * @see Clearable.prototype.clear
+   */
   public clear(): void {
     this._elements.clear()
   }
 
   /**
-  * @see Collection.view
-  */
-  public view(): Collection<Element> {
-    return View.wrap(this)
+   * @see Collection.prototype.view
+   */
+  public view(): Group<Element> {
+    return this._view
   }
 
   /**
-  * @see Collection.iterator
+  * @see Collection.prototype.forward
   */
-  public iterator(): CollectionIterator<Element> {
-    throw new Error('Native iterators are not supported yet.')
+  public forward(): ForwardCursor<Element> {
+    return NativeCursor.from(this.values)
   }
 
   /**
-  * @see Set.iterator
-  */
-  public *[Symbol.iterator](): Iterator<Element> {
-    yield* this._elements
+   * @see Collection.prototype.values
+   */
+  public values(): IterableIterator<Element> {
+    return this._elements.values()
   }
 
   /**
-  * @see Collection.equals
-  */
-  public equals(other: any): boolean {
+   * @see Collection.prototype[Symbol.iterator]
+   */
+  public [Symbol.iterator](): IterableIterator<Element> {
+    return this._elements.values()
+  }
+
+  /**
+   * @see Markable.prototype.is
+   */
+  public is = protomark.is
+
+  /**
+   * @see Comparable.prototype.equals
+   */
+  public equals(other: unknown): boolean {
     if (other == null) return false
     if (other === this) return true
 
