@@ -8,7 +8,7 @@ import { Cursor, ForwardCursor, NativeCursor } from '../cursor'
 /**
  * 
  */
-@protomark(Set)
+@protomark(GLToolSet)
 @protomark(Group)
 @protomark(Collection)
 export class NativeSet<Element> implements GLToolSet<Element>

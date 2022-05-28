@@ -11,6 +11,7 @@ import { StaticCollection } from '../StaticCollection'
 import { Collection } from '../Collection'
 import { OrderedGroupView } from './OrderedGroupView'
 import { OrderedGroup } from './OrderedGroup'
+import { Set } from './Set'
 
 /**
  * 

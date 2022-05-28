@@ -6,7 +6,7 @@ import { Sequence, Pack } from '../sequence'
 import { StaticCollection } from '../StaticCollection'
 import { Group } from './Group'
 import { OrderedGroup } from './OrderedGroup'
-
+import { Set } from './Set'
 import { SparseDenseSet } from './SparseDenseSet'
 
 /**
