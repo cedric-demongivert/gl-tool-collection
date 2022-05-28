@@ -1,6 +1,6 @@
 {
   "name": "@cedric-demongivert/gl-tool-collection",
-  "version": "0.25.2",
+  "version": "0.26.0",
   "description": "A collection library for the gl-tool suit.",
   "main": "./index.js",
   "types": "./types/index.d.ts",
@@ -8,13 +8,13 @@
   "scripts": {
     "test": "jest --coverage",
     "build": "typedoc && npx mix",
-    "preversion": "npm install",
-    "version": "npm run build && npm test && git add --all",
+    "preversion": "yarn install",
+    "version": "yarn build && yarn test && git add --all",
     "postversion": "git push && git push --tags",
-    "push": "yarn run build && npm publish ./distribution --access public",
-    "patch": "yarn version --patch && npm run push",
-    "minor": "yarn version --minor && npm run push",
-    "major": "yarn version --major && npm run push"
+    "push": "yarn build && yarn publish ./distribution --access public",
+    "patch": "yarn version --patch && yarn run push",
+    "minor": "yarn version --minor && yarn run push",
+    "major": "yarn version --major && yarn run push"
   },
   "repository": "https://gitlab.cedric-demongivert.com/gl-tool/gl-tool-ecs.git",
   "author": "Cédric DEMONGIVERT <cedric.demongivert@gmail.com>",
