@@ -1,5 +1,5 @@
 import { ForwardCursor } from '../cursor'
-import { Readonly, protomark } from '../mark'
+import { Readonly, protomark, Markable } from '../mark'
 
 import { Collection } from '../Collection'
 
@@ -133,11 +133,6 @@ export class OrderedGroupView<Element> implements OrderedGroup<Element> {
   }
 
   /**
-   * @see Markable.prototype.is
-   */
-  public is = protomark.is
-
-  /**
    * @see Comparable.prototype.equals
    */
   public equals(other: any): boolean {
@@ -150,7 +145,24 @@ export class OrderedGroupView<Element> implements OrderedGroup<Element> {
 
     return false
   }
+
+  /**
+   * @see Markable.prototype.is
+   */
+  public is: Markable.Predicate
+
+  /**
+   * @see Object.prototype.toString
+   */
+  public toString(): string {
+    return this.constructor.name + ' (' + this._group.constructor.name + ') ' + Group.stringify(this)
+  }
 }
+
+/**
+ * 
+ */
+OrderedGroupView.prototype.is = protomark.is
 
 /**
  * 

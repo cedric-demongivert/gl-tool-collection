@@ -1,4 +1,4 @@
-import { protomark } from "../mark"
+import { Markable, protomark } from "../mark"
 import { ForwardCursor } from "./ForwardCursor"
 import { EmptyCursor } from "./EmptyCursor"
 
@@ -52,11 +52,6 @@ export class EmptyForwardCursor<Element> extends EmptyCursor<Element> implements
 
     return other instanceof EmptyForwardCursor
   }
-
-  /**
-   * @see protomark.is
-   */
-  public is = protomark.is
 
   /**
    * @see Cursor.prototype.view

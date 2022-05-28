@@ -1,5 +1,5 @@
 import { ForwardCursor } from '../cursor'
-import { Readonly, Empty, protomark } from '../mark'
+import { Readonly, Empty, protomark, Markable } from '../mark'
 
 import { Collection } from '../Collection'
 import { Sequence } from './Sequence'
@@ -118,11 +118,6 @@ export class EmptySequence<Element> implements Sequence<Element> {
   }
 
   /**
-   * @see Markable.prototype.is
-   */
-  public is = protomark.is
-
-  /**
    * @see Comparable.prototype.equals
    */
   public equals(other: any): boolean {
@@ -131,7 +126,24 @@ export class EmptySequence<Element> implements Sequence<Element> {
 
     return other instanceof EmptySequence
   }
+
+  /**
+   * @see Object.prototype.toString
+   */
+  public toString(): string {
+    return this.constructor.name + ' ' + Sequence.stringify(this)
+  }
+
+  /**
+   * @see Markable.prototype.is
+   */
+  public is: Markable.Predicate
 }
+
+/**
+ * 
+ */
+EmptySequence.prototype.is = protomark.is
 
 /**
  * 

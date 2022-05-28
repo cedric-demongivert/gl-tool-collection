@@ -1,4 +1,4 @@
-import { protomark, Readonly } from '../mark'
+import { Markable, protomark, Readonly } from '../mark'
 
 import { Collection } from '../Collection'
 
@@ -104,11 +104,6 @@ export class SequenceView<Element> implements Sequence<Element> {
   }
 
   /**
-   * @see Markable.prototype.is
-   */
-  public is = protomark.is
-
-  /**
    * @see Collection.prototype.view
    */
   public view(): SequenceView<Element> {
@@ -149,7 +144,24 @@ export class SequenceView<Element> implements Sequence<Element> {
   public [Symbol.iterator](): IterableIterator<Element> {
     return this._sequence.values()
   }
+
+  /**
+   * @see Object.prototype.toString
+   */
+  public toString(): string {
+    return this.constructor.name + ' (' + this._sequence.constructor.name + ') ' + Sequence.stringify(this)
+  }
+
+  /**
+   * @see Markable.prototype.is
+   */
+  public is: Markable.Predicate
 }
+
+/**
+ * 
+ */
+SequenceView.prototype.is = protomark.is
 
 /**
  * 

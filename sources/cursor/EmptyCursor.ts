@@ -1,4 +1,4 @@
-import { Empty, Readonly, protomark } from "../mark"
+import { Empty, Readonly, protomark, Markable } from "../mark"
 import { Cursor } from "./Cursor"
 
 /**
@@ -40,10 +40,15 @@ export class EmptyCursor<Element> implements Cursor<Element> {
   }
 
   /**
-   * @see protomark.is
+   * @see Markable.prototype.is
    */
-  public is = protomark.is
+  public is: Markable.Predicate
 }
+
+/**
+ * 
+ */
+EmptyCursor.prototype.is = protomark.is
 
 /**
  * 

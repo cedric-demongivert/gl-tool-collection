@@ -5,7 +5,7 @@ import { Duplicator } from '../allocator/Duplicator'
 import { Sequence } from '../sequence/Sequence'
 
 import { Pack } from './Pack'
-import { protomark } from '../mark'
+import { Markable, protomark } from '../mark'
 import { Collection } from '../Collection'
 import { List } from './List'
 import { StaticCollection } from '../StaticCollection'
@@ -403,11 +403,6 @@ export class InstancePack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see Markable.prototype.is
-   */
-  public is = protomark.is
-
-  /**
    * @see Pack.prototype.allocate
    */
   public allocate(capacity: number): InstancePack<Element> {
@@ -474,7 +469,24 @@ export class InstancePack<Element> implements Pack<Element> {
 
     return false
   }
+
+  /**
+   * @see Object.prototype.toString
+   */
+  public toString(): string {
+    return this.constructor.name + ' ' + Sequence.stringify(this)
+  }
+
+  /**
+   * @see Markable.prototype.is
+   */
+  public is: Markable.Predicate
 }
+
+/**
+ * 
+ */
+InstancePack.prototype.is = protomark.is
 
 export namespace InstancePack {
   /**

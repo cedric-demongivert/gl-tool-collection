@@ -1,4 +1,4 @@
-import { protomark } from '../mark'
+import { Markable, protomark } from '../mark'
 import { Sequence } from '../Sequence'
 
 import { SequenceCursor } from './SequenceCursor'
@@ -108,11 +108,6 @@ export class SubSequence<Output> implements Sequence<Output> {
   }
 
   /**
-   * @see Markable.prototype.is
-   */
-  public is = protomark.is
-
-  /**
    * @see Clonable.prototype.clone
    */
   public clone(): SubSequence<Output> {
@@ -168,7 +163,17 @@ export class SubSequence<Output> implements Sequence<Output> {
 
     return false
   }
+
+  /**
+   * @see Markable.prototype.is
+   */
+  public is: Markable.Predicate
 }
+
+/**
+ * 
+ */
+SubSequence.prototype.is = protomark.is
 
 /**
  * 

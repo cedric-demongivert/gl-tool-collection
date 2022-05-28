@@ -5,7 +5,6 @@ import { Markable } from "./Markable"
  * 
  */
 export namespace Empty {
-
   /**
    * 
    */

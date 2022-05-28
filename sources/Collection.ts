@@ -1,8 +1,6 @@
 import { Comparable, Clonable } from '@cedric-demongivert/gl-tool-utils'
-import { CollectionView } from './CollectionView'
 
 import { ForwardCursor } from './cursor'
-import { EmptyCollection } from './EmptyCollection'
 import { Mark, Markable } from './mark'
 
 /**
@@ -95,21 +93,6 @@ export namespace Collection {
   }
 
   /**
-   * @see EmptyCollection.INSTANCE
-   */
-  export const EMPTY = EmptyCollection.INSTANCE
-
-  /**
-   * @see EmptyCollection.get
-   */
-  export const empty = EmptyCollection.get
-
-  /**
-   * @see CollectionView.wrap
-   */
-  export const view = CollectionView.wrap
-
-  /**
    * Return true if the given collection contains a non-finite number of elements.
    *
    * @param collection - A collection to assert.
@@ -132,3 +115,26 @@ export namespace Collection {
   }
 }
 
+import { CollectionView } from './CollectionView'
+import { EmptyCollection } from './EmptyCollection'
+
+
+/**
+ * 
+ */
+export namespace Collection {
+  /**
+   * @see EmptyCollection.INSTANCE
+   */
+  export const EMPTY = EmptyCollection.INSTANCE
+
+  /**
+   * @see EmptyCollection.get
+   */
+  export const empty = EmptyCollection.get
+
+  /**
+   * @see CollectionView.wrap
+   */
+  export const view = CollectionView.wrap
+}

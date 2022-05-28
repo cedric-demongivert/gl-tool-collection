@@ -1,8 +1,6 @@
 import { Collection } from '../Collection'
 import { Mark, Markable } from '../mark'
-
-import { EmptySequence } from './EmptySequence'
-import { SequenceView } from './SequenceView'
+import { toString } from '../algorithm'
 
 /**
  * A sequence is an ordered collection of elements in which repetitions are allowed; 
@@ -159,6 +157,36 @@ export namespace Sequence {
     return collection.is(MARK)
   }
 
+  /**
+   * 
+   */
+  export function stringify(sequence: Sequence<unknown>): string {
+    let result: string = '['
+    let iterator: IterableIterator<unknown> = sequence.values()
+    let iteratorResult: IteratorResult<unknown> = iterator.next()
+
+    if (!iteratorResult.done) {
+      result += toString(iteratorResult.value)
+      iteratorResult = iterator.next()
+    }
+
+    while (!iteratorResult.done) {
+      result += ', '
+      result += toString(iteratorResult.value)
+      iteratorResult = iterator.next()
+    }
+
+    return result + ']'
+  }
+}
+
+import { EmptySequence } from './EmptySequence'
+import { SequenceView } from './SequenceView'
+
+/**
+ * 
+ */
+export namespace Sequence {
   /**
    * @see EmptySequence.INSTANCE
    */

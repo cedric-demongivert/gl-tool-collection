@@ -1,6 +1,4 @@
 import { Markable, Mark } from '../mark'
-import { BidirectionalCursorView } from './BidirectionalCursorView'
-import { EmptyBidirectionalCursor } from './EmptyBidirectionalCursor'
 import { ForwardCursor } from './ForwardCursor'
 
 /**
@@ -72,7 +70,15 @@ export namespace BidirectionalCursor {
   export function is<Element>(instance: Markable): instance is BidirectionalCursor<Element> {
     return instance.is(MARK)
   }
+}
 
+import { BidirectionalCursorView } from './BidirectionalCursorView'
+import { EmptyBidirectionalCursor } from './EmptyBidirectionalCursor'
+
+/**
+ * 
+ */
+export namespace BidirectionalCursor {
   /**
    * @see EmptyBidirectionalCursor.INSTANCE
    */

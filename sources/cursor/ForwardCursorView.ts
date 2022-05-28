@@ -1,4 +1,4 @@
-import { protomark, Readonly } from "../mark"
+import { Markable, protomark, Readonly } from "../mark"
 import { Cursor } from "./Cursor"
 import { ForwardCursor } from "./ForwardCursor"
 
@@ -66,11 +66,6 @@ export class ForwardCursorView<Element> implements ForwardCursor<Element> {
   }
 
   /**
-   * @see Cursor.prototype.is
-   */
-  public is = protomark.is
-
-  /**
    * @see ForwardCursor.prototype.isEnd
    */
   public isEnd(): boolean {
@@ -104,7 +99,17 @@ export class ForwardCursorView<Element> implements ForwardCursor<Element> {
   public view(): this {
     return this
   }
+
+  /**
+   * @see Cursor.prototype.is
+   */
+  public is: Markable.Predicate
 }
+
+/**
+ * 
+ */
+ForwardCursorView.prototype.is = protomark.is
 
 /**
  * 

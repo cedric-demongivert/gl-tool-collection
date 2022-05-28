@@ -2,14 +2,7 @@ import { Duplicator } from '../allocator/Duplicator'
 import { Sequence } from '../sequence/Sequence'
 import { List } from '../sequence/List'
 
-import { UnsignedIntegerBuffer } from '../native/UnsignedIntegerBuffer'
-import { IntegerBuffer } from '../native/IntegerBuffer'
-
 import { ReallocableCollection } from '../ReallocableCollection'
-
-import { BufferPack } from './BufferPack'
-import { ArrayPack } from './ArrayPack'
-import { InstancePack } from './InstancePack'
 import { Mark, Markable } from '../mark'
 
 /**
@@ -56,6 +49,19 @@ export namespace Pack {
   export function mark(): Mark {
     return MARK
   }
+}
+
+import { UnsignedIntegerBuffer } from '../native/UnsignedIntegerBuffer'
+import { IntegerBuffer } from '../native/IntegerBuffer'
+import { BufferPack } from './BufferPack'
+import { ArrayPack } from './ArrayPack'
+import { InstancePack } from './InstancePack'
+
+/**
+ * 
+ */
+export namespace Pack {
+
 
   /**
    * Return true if the given collection is a pack.

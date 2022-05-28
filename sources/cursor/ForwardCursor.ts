@@ -1,8 +1,5 @@
 import { Markable, Mark } from '../mark'
-
 import { Cursor } from './Cursor'
-import { EmptyForwardCursor } from './EmptyForwardCursor'
-import { ForwardCursorView } from './ForwardCursorView'
 
 /**
  * A cursor over a sequence of values that can only move from an element to its consecutive one.
@@ -74,7 +71,15 @@ export namespace ForwardCursor {
   export function is<Element>(instance: Markable): instance is ForwardCursor<Element> {
     return instance.is(MARK)
   }
+}
 
+import { EmptyForwardCursor } from './EmptyForwardCursor'
+import { ForwardCursorView } from './ForwardCursorView'
+
+/**
+ * 
+ */
+export namespace ForwardCursor {
   /**
    * @see EmptyForwardCursor.INSTANCE
    */

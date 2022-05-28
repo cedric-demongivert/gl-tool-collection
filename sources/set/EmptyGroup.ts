@@ -31,6 +31,13 @@ export class EmptyGroup<Element> extends EmptyCollection<Element> {
 
     return other instanceof EmptyGroup
   }
+
+  /**
+   * @see Object.prototype.toString
+   */
+  public toString(): string {
+    return this.constructor.name + ' ' + Group.stringify(this)
+  }
 }
 
 /**

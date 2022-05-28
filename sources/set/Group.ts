@@ -42,6 +42,28 @@ export namespace Group {
   }
 
   /**
+   * 
+   */
+  export function stringify(group: Group<unknown>): string {
+    let result: string = '{'
+    let iterator: IterableIterator<unknown> = group.values()
+    let iteratorResult: IteratorResult<unknown> = iterator.next()
+
+    if (!iteratorResult.done) {
+      result += iteratorResult.value.toString()
+      iteratorResult = iterator.next()
+    }
+
+    while (!iteratorResult.done) {
+      result += ', '
+      result += iteratorResult.value.toString()
+      iteratorResult = iterator.next()
+    }
+
+    return result + '}'
+  }
+
+  /**
    * @see EmptyGroup.INSTANCE
    */
   export const EMPTY = EmptyGroup.INSTANCE

@@ -1,6 +1,6 @@
 import { ReallocableCollection } from '../ReallocableCollection'
 import { Sequence, SequenceCursor } from '../sequence'
-import { Mark, protomark } from '../mark'
+import { Mark, Markable, protomark } from '../mark'
 
 import { UnsignedIntegerBuffer } from '../native/UnsignedIntegerBuffer'
 
@@ -323,11 +323,6 @@ export class IdentifierSet implements OrderedSet<number>, ReallocableCollection 
   }
 
   /**
-   * @see Markable.prototype.is
-   */
-  public is = protomark.is
-
-  /**
    * @see Comparable.prototype.equals
    */
   public equals(other: any): boolean {
@@ -346,7 +341,24 @@ export class IdentifierSet implements OrderedSet<number>, ReallocableCollection 
 
     return false
   }
+
+  /**
+   * @see Markable.prototype.is
+   */
+  public is: Markable.Predicate
+
+  /**
+   * @see Object.prototype.toString
+   */
+  public toString(): string {
+    return this.constructor.name + ' ' + Group.stringify(this)
+  }
 }
+
+/**
+ * 
+ */
+IdentifierSet.prototype.is = protomark.is
 
 /**
  * 

@@ -15,3 +15,39 @@ export interface Markable {
    */
   is(mark: Mark.Alike): boolean
 }
+
+/**
+ * 
+ */
+export namespace Markable {
+  /**
+   * 
+   */
+  export type Predicate = (mark: Mark.Alike) => boolean
+
+  /**
+   * 
+   */
+  export const MARK: Mark = Symbol('gl-tool-collection/mark')
+
+  /**
+   * @see Mark.Container
+   */
+  export function mark(): Mark {
+    return MARK
+  }
+
+  /**
+   * 
+   */
+  export function isAlike(instance: unknown): instance is { is: unknown } {
+    return typeof instance === 'object' && 'is' in instance
+  }
+
+  /**
+   * 
+   */
+  export function is(instance: unknown): instance is Markable {
+    return isAlike(instance) && typeof instance.is === 'function' && instance.is(Markable)
+  }
+}

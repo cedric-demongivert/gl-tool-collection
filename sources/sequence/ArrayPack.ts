@@ -7,7 +7,7 @@ import { quicksort } from '../algorithm/quicksort'
 
 import { Pack } from './Pack'
 import { SequenceCursor } from './SequenceCursor'
-import { protomark } from '../mark'
+import { Markable, protomark } from '../mark'
 import { Collection } from '../Collection'
 import { List } from './List'
 import { StaticCollection } from '../StaticCollection'
@@ -28,17 +28,17 @@ export class ArrayPack<Element> implements Pack<Element> {
   /**
    * Wrapped javascript array.
    */
-  private _elements: Array<Element>
+  #elements: Array<Element>
 
   /**
    * Number of elements stored.
    */
-  private _size: number
+  #size: number
 
   /**
    * 
    */
-  private _view: Sequence<Element>
+  #view: Sequence<Element>
 
   /**
    * Wrap the given array as a pack.
@@ -47,16 +47,16 @@ export class ArrayPack<Element> implements Pack<Element> {
    * @param [size = elements.length] - Initial number of elements in the array to wrap.
    */
   public constructor(elements: Element[], size: number = elements.length) {
-    this._elements = elements
-    this._size = size
-    this._view = Sequence.view(this)
+    this.#elements = elements
+    this.#size = size
+    this.#view = Sequence.view(this)
   }
 
   /**
    * @see Collection.prototype.size
    */
   public get size(): number {
-    return this._size
+    return this.#size
   }
 
   /**
@@ -66,22 +66,22 @@ export class ArrayPack<Element> implements Pack<Element> {
     /**
      * @see https://v8.dev/blog/elements-kinds?fbclid=IwAR337wb3oxEpjz_5xVHL-Y14gUpVElementOztLSIikVVQLGN6qcKidEjMLJ4vO3M
      */
-    while (value > this._elements.length) {
-      this._elements.push(null)
+    while (value > this.#elements.length) {
+      this.#elements.push(null)
     }
 
-    for (let index = this._size; index < value; ++index) {
-      this._elements[index] = null
+    for (let index = this.#size; index < value; ++index) {
+      this.#elements[index] = null
     }
 
-    this._size = value
+    this.#size = value
   }
 
   /**
    * @see StaticCollection.prototype.capacity
    */
   public get capacity(): number {
-    return this._elements.length
+    return this.#elements.length
   }
 
   /**
@@ -95,15 +95,15 @@ export class ArrayPack<Element> implements Pack<Element> {
    * @see ReallocableCollection.prototype.reallocate
    */
   public reallocate(capacity: number): void {
-    if (capacity < this._elements.length) {
-      this._elements.length = capacity
-      this._size = Math.min(this._size, capacity)
+    if (capacity < this.#elements.length) {
+      this.#elements.length = capacity
+      this.#size = Math.min(this.#size, capacity)
     } else {
       /**
        * @see https://v8.dev/blog/elements-kinds?fbclid=IwAR337wb3oxEpjz_5xVHL-Y14gUpVElementOztLSIikVVQLGN6qcKidEjMLJ4vO3M
        */
-      while (this._elements.length != capacity) {
-        this._elements.push(null)
+      while (this.#elements.length != capacity) {
+        this.#elements.push(null)
       }
     }
   }
@@ -112,22 +112,22 @@ export class ArrayPack<Element> implements Pack<Element> {
    * @see ReallocableCollection.prototype.fit
    */
   public fit(): void {
-    this._elements.length = this._size
+    this.#elements.length = this.#size
   }
 
   /**
    * @see Sequence.prototype.get
    */
   public get(index: number): Element {
-    return this._elements[index]
+    return this.#elements[index]
   }
 
   /**
    * @see List.prototype.pop
    */
   public pop(): Element {
-    const last: number = this._size - 1
-    const value: Element = this._elements[last]
+    const last: number = this.#size - 1
+    const value: Element = this.#elements[last]
     this.delete(last)
     return value
   }
@@ -136,21 +136,21 @@ export class ArrayPack<Element> implements Pack<Element> {
    * @see Sequence.prototype.last
    */
   public get last(): Element {
-    return this._elements[this._size - 1]
+    return this.#elements[this.#size - 1]
   }
 
   /**
    * @see Sequence.prototype.lastIndex
    */
   public get lastIndex(): number {
-    return Math.max(this._size - 1, 0)
+    return Math.max(this.#size - 1, 0)
   }
 
   /**
    * @see Sequence.prototype.first
    */
   public get first(): Element {
-    return this._elements[0]
+    return this.#elements[0]
   }
 
   /**
@@ -164,9 +164,9 @@ export class ArrayPack<Element> implements Pack<Element> {
    * @see List.prototype.fill
    */
   public fill(element: Element): void {
-    const elements: Array<Element> = this._elements
+    const elements: Array<Element> = this.#elements
 
-    for (let index = 0, size = this._size; index < size; ++index) {
+    for (let index = 0, size = this.#size; index < size; ++index) {
       elements[index] = element
     }
   }
@@ -175,7 +175,7 @@ export class ArrayPack<Element> implements Pack<Element> {
    * @see List.prototype.shift
    */
   public shift(): Element {
-    const value: Element = this._elements[0]
+    const value: Element = this.#elements[0]
     this.delete(0)
     return value
   }
@@ -184,7 +184,7 @@ export class ArrayPack<Element> implements Pack<Element> {
    * @see List.prototype.sort
    */
   public sort(comparator: Comparator<Element, Element>): void {
-    quicksort(this, comparator, 0, this._size)
+    quicksort(this, comparator, 0, this.#size)
   }
 
   /**
@@ -198,17 +198,17 @@ export class ArrayPack<Element> implements Pack<Element> {
    * @see List.prototype.swap
    */
   public swap(first: number, second: number): void {
-    const tmp: Element = this._elements[first]
-    this._elements[first] = this._elements[second]
-    this._elements[second] = tmp
+    const tmp: Element = this.#elements[first]
+    this.#elements[first] = this.#elements[second]
+    this.#elements[second] = tmp
   }
 
   /**
    * @see List.prototype.set
    */
   public set(index: number, value: Element): void {
-    if (index >= this._size) this.size = index + 1
-    this._elements[index] = value
+    if (index >= this.#size) this.size = index + 1
+    this.#elements[index] = value
   }
 
   /**
@@ -217,11 +217,11 @@ export class ArrayPack<Element> implements Pack<Element> {
   public setMany(from: number, count: number, value: Element): void {
     const to: number = from + count
 
-    if (to > this._size) {
+    if (to > this.#size) {
       this.size = to
     }
 
-    const elements: Array<Element> = this._elements
+    const elements: Array<Element> = this.#elements
 
     for (let cursor = from; cursor < to; ++cursor) {
       elements[cursor] = value
@@ -232,16 +232,16 @@ export class ArrayPack<Element> implements Pack<Element> {
    * @see List.prototype.insert
    */
   public insert(index: number, value: Element): void {
-    if (index >= this._size) {
+    if (index >= this.#size) {
       this.set(index, value)
     } else {
       this.size += 1
 
-      for (let cursor = this._size - 1; cursor > index; --cursor) {
-        this._elements[cursor] = this._elements[cursor - 1]
+      for (let cursor = this.#size - 1; cursor > index; --cursor) {
+        this.#elements[cursor] = this.#elements[cursor - 1]
       }
 
-      this._elements[index] = value
+      this.#elements[index] = value
     }
   }
 
@@ -249,10 +249,10 @@ export class ArrayPack<Element> implements Pack<Element> {
    * @see List.prototype.push
    */
   public push(value: Element): void {
-    const index: number = this._size
+    const index: number = this.#size
 
     this.size += 1
-    this._elements[index] = value
+    this.#elements[index] = value
   }
 
   /**
@@ -261,19 +261,19 @@ export class ArrayPack<Element> implements Pack<Element> {
   public unshift(value: Element): void {
     this.size += 1
 
-    for (let index = this._size - 1; index > 0; --index) {
-      this._elements[index] = this._elements[index - 1]
+    for (let index = this.#size - 1; index > 0; --index) {
+      this.#elements[index] = this.#elements[index - 1]
     }
 
-    this._elements[0] = value
+    this.#elements[0] = value
   }
 
   /**
    * @see List.prototype.delete
    */
   public delete(index: number): void {
-    for (let cursor = index, size = this._size - 1; cursor < size; ++cursor) {
-      this._elements[cursor] = this._elements[cursor + 1]
+    for (let cursor = index, size = this.#size - 1; cursor < size; ++cursor) {
+      this.#elements[cursor] = this.#elements[cursor + 1]
     }
 
     this.size -= 1
@@ -283,11 +283,11 @@ export class ArrayPack<Element> implements Pack<Element> {
    * @see List.prototype.deleteMany
    */
   public deleteMany(from: number, size: number): void {
-    const toMove: number = this._size - from - size
+    const toMove: number = this.#size - from - size
     const offset: number = from + size
 
     for (let cursor = 0; cursor < toMove; ++cursor) {
-      this._elements[from + cursor] = this._elements[offset + cursor]
+      this.#elements[from + cursor] = this.#elements[offset + cursor]
     }
 
     this.size -= size
@@ -297,7 +297,7 @@ export class ArrayPack<Element> implements Pack<Element> {
    * @see List.prototype.warp
    */
   public warp(index: number): void {
-    this._elements[index] = this._elements[this._size - 1]
+    this.#elements[index] = this.#elements[this.#size - 1]
     this.size -= 1
   }
 
@@ -305,11 +305,11 @@ export class ArrayPack<Element> implements Pack<Element> {
    * @see List.prototype.warpMany
    */
   public warpMany(from: number, count: number): void {
-    const size: number = this._size
+    const size: number = this.#size
     const rest: number = size - from - count
 
     if (rest > 0) {
-      const elements: Array<Element> = this._elements
+      const elements: Array<Element> = this.#elements
       const toWarp: number = rest > count ? count : rest
 
       for (let index = 0; index < toWarp; ++index) {
@@ -317,7 +317,7 @@ export class ArrayPack<Element> implements Pack<Element> {
       }
     }
 
-    this._size -= count
+    this.#size -= count
   }
 
   /**
@@ -331,8 +331,8 @@ export class ArrayPack<Element> implements Pack<Element> {
    * @see Sequence.prototype.indexOf
    */
   public indexOf(element: Element): number {
-    for (let index = 0, length = this._size; index < length; ++index) {
-      if (equals(element, this._elements[index])) {
+    for (let index = 0, length = this.#size; index < length; ++index) {
+      if (equals(element, this.#elements[index])) {
         return index
       }
     }
@@ -352,7 +352,7 @@ export class ArrayPack<Element> implements Pack<Element> {
    */
   public indexOfInSubsequence(element: Element, offset: number, size: number): number {
     for (let index = offset, length = offset + size; index < length; ++index) {
-      if (equals(element, this._elements[index])) {
+      if (equals(element, this.#elements[index])) {
         return index
       }
     }
@@ -418,13 +418,8 @@ export class ArrayPack<Element> implements Pack<Element> {
    * @see Collection.prototype.view
    */
   public view(): Sequence<Element> {
-    return this._view
+    return this.#view
   }
-
-  /**
-   * @see Markable.prototype.is
-   */
-  public is = protomark.is
 
   /**
    * @see Collection.prototype.forward
@@ -437,15 +432,15 @@ export class ArrayPack<Element> implements Pack<Element> {
    * @see Clearable.prototype.clear
    */
   public clear(): void {
-    this._size = 0
+    this.#size = 0
   }
 
   /**
    * @see Collection.prototype.values
    */
   public * values(): IterableIterator<Element> {
-    for (let index = 0; index < this._size; ++index) {
-      yield this._elements[index]
+    for (let index = 0; index < this.#size; ++index) {
+      yield this.#elements[index]
     }
   }
 
@@ -464,10 +459,10 @@ export class ArrayPack<Element> implements Pack<Element> {
     if (other === this) return true
 
     if (other instanceof ArrayPack) {
-      if (other.size !== this._size) return false
+      if (other.size !== this.#size) return false
 
-      for (let index = 0, size = this._size; index < size; ++index) {
-        if (!equals(other.get(index), this._elements[index])) return false
+      for (let index = 0, size = this.#size; index < size; ++index) {
+        if (!equals(other.get(index), this.#elements[index])) return false
       }
 
       return true
@@ -475,7 +470,24 @@ export class ArrayPack<Element> implements Pack<Element> {
 
     return false
   }
+
+  /**
+   * @see Object.prototype.toString
+   */
+  public toString(): string {
+    return this.constructor.name + ' ' + Sequence.stringify(this)
+  }
+
+  /**
+   * @see Markable.prototype.is
+   */
+  public is: Markable.Predicate
 }
+
+/**
+ * 
+ */
+ArrayPack.prototype.is = protomark.is
 
 /**
  * 
@@ -508,8 +520,8 @@ export namespace ArrayPack {
     /**
      * @see ArrayPack.allocate
      */
-    export function withDefaultCapacity(capacity: number = 32): ArrayPack<Element> {
-      return allocate(capacity)
+    export function withDefaultCapacity(): ArrayPack<Element> {
+      return allocate(32)
     }
   }
 
@@ -517,23 +529,50 @@ export namespace ArrayPack {
    * Wrap an existing array as a pack.
    *
    * @param elements - Array to wrap.
+   * @param [size = elements.length] - Number of elements in the array to wrap.
    *
    * @returns The given array wrapped as a pack.
    */
-  export function wrap<Element>(elements: Element[]): ArrayPack<Element> {
-    return new ArrayPack<Element>(elements)
+  export function wrap<Element>(elements: Element[], size: number = elements.length): ArrayPack<Element> {
+    return new ArrayPack<Element>(elements, size)
   }
 
   /**
-   * Return a shallow copy of another pack as an array pack.
+   * Return a copy of another sequence.
    *
-   * @param toCopy - A pack to copy.
+   * @param toCopy - A sequence to copy.
+   * @param [capacity=toCopy.size] - Capacity of the copy.
    *
-   * @returns An array pack that is a shallow copy of the given pack.
+   * @returns A copy of the given sequence with the requested capacity.
    */
-  export function copy<Element>(toCopy: Pack<Element>): ArrayPack<Element> {
-    const result: ArrayPack<Element> = allocate(toCopy.capacity)
+  export function copy<Element>(toCopy: Sequence<Element>, capacity: number = toCopy.size): ArrayPack<Element> {
+    const result: ArrayPack<Element> = ArrayPack.allocate(capacity)
     result.copy(toCopy)
+    return result
+  }
+
+  /**
+   * 
+   */
+  export function of<Element>(...elements: Element[]): ArrayPack<Element> {
+    const result: ArrayPack<Element> = ArrayPack.allocate(elements.length)
+    result.concatArray(elements)
+    return result
+  }
+
+  /**
+   * 
+   */
+  export function ofIterator<Element>(elements: Iterator<Element>, capacity: number = 16): ArrayPack<Element> {
+    const result: ArrayPack<Element> = ArrayPack.allocate(capacity)
+
+    let iteratorResult = elements.next()
+
+    while (!iteratorResult.done) {
+      result.push(iteratorResult.value)
+      iteratorResult = elements.next()
+    }
+
     return result
   }
 }

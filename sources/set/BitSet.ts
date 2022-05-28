@@ -1,11 +1,14 @@
-import { Pack, Sequence } from '../sequence'
-import { Mark, protomark } from '../mark'
+import { Pack, Sequence, SequenceCursor } from '../sequence'
+import { Mark, Markable, protomark } from '../mark'
 
 import { ReallocableCollection } from '../ReallocableCollection'
 import { StaticCollection } from '../StaticCollection'
 
 import { Set } from './Set'
 import { Group } from './Group'
+import { OrderedSet } from './OrderedSet'
+import { OrderedGroup } from './OrderedGroup'
+import { RandomAccessCursor } from '../cursor'
 
 // SWAR Algorithm [SIMD Within A Register]
 function countBits(bits: number): number {
@@ -31,7 +34,7 @@ for (let index = 0; index < 32; ++index) {
 @protomark(Set)
 @protomark(Sequence)
 @protomark(Group)
-export class BitSet implements ReallocableCollection, Set<number>, Sequence<number>
+export class BitSet implements ReallocableCollection, OrderedSet<number>
 {
   /**
   *
@@ -44,14 +47,17 @@ export class BitSet implements ReallocableCollection, Set<number>, Sequence<numb
   private _elements: Pack<number>
 
   /**
+   * 
+   */
+  private _view: OrderedGroup<number>
+
+  /**
   *
   */
   public constructor(capacity: number = 32) {
     this._elements = Pack.uint32(capacity >> 5 + (capacity % 32 === 0 ? 0 : 1))
     this._size = 0
-  }
-  is(mark: Mark.Alike): boolean {
-    throw new Error('Method not implemented.')
+    this._view = OrderedGroup.view(this)
   }
 
   /**
@@ -324,25 +330,15 @@ export class BitSet implements ReallocableCollection, Set<number>, Sequence<numb
   /**
   * @see Collection.prototype.view
   */
-  public view(): Sequence<number> {
-    return SequenceView.wrap(this)
+  public view(): OrderedGroup<number> {
+    return this._view
   }
 
   /**
   * @see Collection.prototype.forward
   */
-  public forward(): Bidi<number> {
-    const elements: Pack<number> = this._elements
-
-    for (let cell = 0; cell < elements.size; ++cell) {
-      const base: number = cell * 32
-
-      for (let index = 0; index < 32; ++index) {
-        if ((elements.get(cell) & (0b1 << index)) > 0) {
-          yield base + index
-        }
-      }
-    }
+  public forward(): RandomAccessCursor<number> {
+    return new SequenceCursor(this, 0)
   }
 
   /**
@@ -388,7 +384,24 @@ export class BitSet implements ReallocableCollection, Set<number>, Sequence<numb
 
     return false
   }
+
+  /**
+   * @see Object.prototype.toString
+   */
+  public toString(): string {
+    return this.constructor.name + ' ' + Group.stringify(this)
+  }
+
+  /**
+   * @see Markable.prototype.is
+   */
+  public is: Markable.Predicate
 }
+
+/**
+ * 
+ */
+BitSet.prototype.is = protomark.is
 
 export namespace BitSet {
   /**

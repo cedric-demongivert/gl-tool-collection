@@ -32,6 +32,13 @@ export class EmptyOrderedGroup<Element> extends EmptySequence<Element> implement
 
     return other instanceof EmptyOrderedGroup
   }
+
+  /**
+   * @see Object.prototype.toString
+   */
+  public toString(): string {
+    return this.constructor.name + ' ' + Group.stringify(this)
+  }
 }
 
 /**

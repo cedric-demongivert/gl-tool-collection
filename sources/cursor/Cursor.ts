@@ -1,9 +1,6 @@
 import { Clonable, Comparable } from '@cedric-demongivert/gl-tool-utils'
 
 import { Mark, Markable } from '../mark'
-import { CursorView } from './CursorView'
-import { EmptyCursor } from './EmptyCursor'
-import { NativeCursor } from './NativeCursor'
 
 /**
  * A cursor over a collection.
@@ -31,7 +28,6 @@ export interface Cursor<Element> extends Comparable, Clonable, Markable {
   view(): Cursor<Element>
 }
 
-
 /**
  * 
  */
@@ -54,7 +50,16 @@ export namespace Cursor {
   export function is<Element>(instance: Markable): instance is Cursor<Element> {
     return instance.is(MARK)
   }
+}
 
+import { EmptyCursor } from './EmptyCursor'
+import { CursorView } from './CursorView'
+import { NativeCursor } from './NativeCursor'
+
+/**
+ * 
+ */
+export namespace Cursor {
   /**
    * @see EmptyForwardCursor.INSTANCE
    */

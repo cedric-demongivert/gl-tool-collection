@@ -1,5 +1,5 @@
 import { Factory } from "@cedric-demongivert/gl-tool-utils";
-import { protomark } from "../mark";
+import { Markable, protomark } from "../mark";
 import { Cursor } from "./Cursor";
 import { ForwardCursor } from "./ForwardCursor"
 
@@ -141,10 +141,15 @@ export class NativeCursor<Element> implements ForwardCursor<Element> {
   }
 
   /**
-   * @see Markable.prototype.is
+   * @see Cursor.prototype.is
    */
-  public is = protomark.is
+  public is: Markable.Predicate
 }
+
+/**
+ * 
+ */
+NativeCursor.prototype.is = protomark.is
 
 /**
  * 

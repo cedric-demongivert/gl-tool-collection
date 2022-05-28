@@ -1,4 +1,4 @@
-import { protomark, Readonly } from "../mark"
+import { Markable, protomark, Readonly } from "../mark"
 import { BidirectionalCursor } from "./BidirectionalCursor"
 import { Cursor } from "./Cursor"
 import { ForwardCursor } from "./ForwardCursor"
@@ -89,11 +89,6 @@ export class BidirectionalCursorView<Element> implements BidirectionalCursor<Ele
   }
 
   /**
-   * @see Cursor.prototype.is
-   */
-  public is = protomark.is
-
-  /**
    * @see ForwardCursor.prototype.isEnd
    */
   public isEnd(): boolean {
@@ -134,7 +129,17 @@ export class BidirectionalCursorView<Element> implements BidirectionalCursor<Ele
   public view(): this {
     return this
   }
+
+  /**
+   * @see Markable.prototype.is
+   */
+  public is: Markable.Predicate
 }
+
+/**
+ * 
+ */
+BidirectionalCursorView.prototype.is = protomark.is
 
 /**
  * 

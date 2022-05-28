@@ -5,7 +5,7 @@ import { ReallocableCollection } from '../ReallocableCollection'
 
 import { Heap } from './Heap'
 import { ForwardCursor } from '../cursor'
-import { protomark } from '../mark'
+import { Markable, protomark } from '../mark'
 
 /**
  * An object that uses a Pack instance as a Heap.
@@ -243,11 +243,6 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   }
 
   /**
-   * @see Markable.prototype.is
-   */
-  public is = protomark.is
-
-  /**
    * @see Clearable.prototype.clear
    */
   public clear(): void {
@@ -303,7 +298,17 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   public [Symbol.iterator](): IterableIterator<Element> {
     return this._elements.values()
   }
+
+  /**
+   * @see Markable.prototype.is
+   */
+  public is: Markable.Predicate
 }
+
+/**
+ * 
+ */
+PackHeap.prototype.is = protomark.is
 
 /**
  * 

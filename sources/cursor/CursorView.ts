@@ -1,4 +1,4 @@
-import { protomark, Readonly } from "../mark"
+import { Markable, protomark, Readonly } from "../mark"
 import { Cursor } from "./Cursor"
 
 /**
@@ -49,11 +49,6 @@ export class CursorView<Element> implements Cursor<Element> {
   }
 
   /**
-   * @see Cursor.prototype.is
-   */
-  public is = protomark.is
-
-  /**
    * @see Cursor.prototype.view
    */
   public view(): this {
@@ -66,7 +61,17 @@ export class CursorView<Element> implements Cursor<Element> {
   public wrap(cursor: Cursor<Element>): void {
     this._cursor = cursor
   }
+
+  /**
+   * @see Markable.prototype.is
+   */
+  public is: Markable.Predicate
 }
+
+/**
+ * 
+ */
+CursorView.prototype.is = protomark.is
 
 /**
  * 

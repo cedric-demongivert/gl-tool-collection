@@ -1,7 +1,5 @@
 import { Mark, Markable } from '../mark'
 import { BidirectionalCursor } from './BidirectionalCursor'
-import { EmptyRandomAccessCursor } from './EmptyRandomAccessCursor'
-import { RandomAccessCursorView } from './RandomAccessCursorView'
 
 /**
 * 
@@ -40,16 +38,24 @@ export namespace RandomAccessCursor {
   export function is<Element>(instance: Markable): instance is RandomAccessCursor<Element> {
     return instance.is(MARK)
   }
+}
 
+//import { EmptyRandomAccessCursor } from './EmptyRandomAccessCursor'
+import { RandomAccessCursorView } from './RandomAccessCursorView'
+
+/**
+ * 
+ */
+export namespace RandomAccessCursor {
   /**
    * @see EmptyRandomAccessCursor.INSTANCE
    */
-  export const EMPTY = EmptyRandomAccessCursor.INSTANCE
+  //export const EMPTY = EmptyRandomAccessCursor.INSTANCE
 
   /**
    * @see EmptyRandomAccessCursor.get
    */
-  export const empty = EmptyRandomAccessCursor.get
+  //export const empty = EmptyRandomAccessCursor.get
 
   /**
    * @see RandomAccessCursorView.wrap

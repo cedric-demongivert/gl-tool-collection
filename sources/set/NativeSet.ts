@@ -2,7 +2,7 @@ import { Collection } from '../Collection'
 
 import { Set as GLToolSet } from './Set'
 import { Group } from './Group'
-import { protomark } from '../mark'
+import { Markable, protomark } from '../mark'
 import { Cursor, ForwardCursor, NativeCursor } from '../cursor'
 
 /**
@@ -153,11 +153,6 @@ export class NativeSet<Element> implements GLToolSet<Element>
   }
 
   /**
-   * @see Markable.prototype.is
-   */
-  public is = protomark.is
-
-  /**
    * @see Comparable.prototype.equals
    */
   public equals(other: unknown): boolean {
@@ -176,7 +171,24 @@ export class NativeSet<Element> implements GLToolSet<Element>
 
     return false
   }
+
+  /**
+   * @see Markable.prototype.is
+   */
+  public is: Markable.Predicate
+
+  /**
+   * @see Object.prototype.toString
+   */
+  public toString(): string {
+    return this.constructor.name + ' ' + Group.stringify(this)
+  }
 }
+
+/**
+ * 
+ */
+NativeSet.prototype.is = protomark.is
 
 export namespace NativeSet {
   /**

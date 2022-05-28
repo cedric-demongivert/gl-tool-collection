@@ -1,5 +1,5 @@
 import { Cursor, ForwardCursor, BidirectionalCursor, RandomAccessCursor } from '../cursor'
-import { protomark } from '../mark'
+import { Markable, protomark } from '../mark'
 
 import { Sequence } from './Sequence'
 
@@ -123,11 +123,6 @@ export class SequenceCursor<Element> implements RandomAccessCursor<Element>
   }
 
   /**
-   * @see Markable.prototype.is
-   */
-  public is = protomark.is
-
-  /**
    * 
    */
   public wrap(sequence: Sequence<Element>, index: number): void {
@@ -151,7 +146,17 @@ export class SequenceCursor<Element> implements RandomAccessCursor<Element>
 
     return false
   }
+
+  /**
+   * @see Markable.prototype.is
+   */
+  public is: Markable.Predicate
 }
+
+/**
+ * 
+ */
+SequenceCursor.prototype.is = protomark.is
 
 /**
  * 

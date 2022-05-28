@@ -18,11 +18,6 @@ mix.ts('./sources/index.ts', 'distribution')
      'optimization': {
     		'minimize': false
      },
-     'resolve': {
-       'alias': {
-         '@library': path.join(__dirname, 'sources')
-       }
-     },
      'output': {
        'library': pckg.name,
        'libraryTarget': 'umd',

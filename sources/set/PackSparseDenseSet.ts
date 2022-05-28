@@ -1,6 +1,6 @@
 import { Collection } from '../Collection'
 import { ForwardCursor, RandomAccessCursor } from '../cursor'
-import { protomark } from '../mark'
+import { Markable, protomark } from '../mark'
 import { ReallocableCollection } from '../ReallocableCollection'
 import { Sequence, Pack } from '../sequence'
 import { StaticCollection } from '../StaticCollection'
@@ -289,11 +289,6 @@ export class PackSparseDenseSet implements SparseDenseSet {
   }
 
   /**
-   * @see Markable.prototype.is
-   */
-  public is = protomark.is
-
-  /**
    * @see Comparable.prototype.equals
    */
   public equals(other: any): boolean {
@@ -312,7 +307,24 @@ export class PackSparseDenseSet implements SparseDenseSet {
 
     return false
   }
+
+  /**
+   * @see Markable.prototype.is
+   */
+  public is: Markable.Predicate
+
+  /**
+   * @see Object.prototype.toString
+   */
+  public toString(): string {
+    return this.constructor.name + ' (' + this._dense.constructor.name + ') ' + Group.stringify(this)
+  }
 }
+
+/**
+ * 
+ */
+PackSparseDenseSet.prototype.is = protomark.is
 
 /**
  * 

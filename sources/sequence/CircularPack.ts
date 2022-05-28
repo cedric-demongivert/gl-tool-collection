@@ -1,7 +1,7 @@
 import { Comparator } from '@cedric-demongivert/gl-tool-utils'
 
 import { List, Pack, Sequence } from '../sequence'
-import { protomark } from '../mark'
+import { Markable, protomark } from '../mark'
 import { Duplicator } from '../allocator'
 import { quicksort, equals } from '../algorithm'
 
@@ -462,11 +462,6 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see Markable.prototype.is
-   */
-  public is = protomark.is
-
-  /**
    * @see Clonable.prototype.clone
    */
   public clone(): CircularPack<Element> {
@@ -527,7 +522,24 @@ export class CircularPack<Element> implements Pack<Element> {
 
     return false
   }
+
+  /**
+   * @see Object.prototype.toString
+   */
+  public toString(): string {
+    return this.constructor.name + ' (' + this._elements.constructor.name + ') ' + Sequence.stringify(this)
+  }
+
+  /**
+   * @see Markable.prototype.is
+   */
+  public is: Markable.Predicate
 }
+
+/**
+ * 
+ */
+CircularPack.prototype.is = protomark.is
 
 /**
  * 

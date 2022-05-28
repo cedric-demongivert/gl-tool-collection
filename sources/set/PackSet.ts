@@ -4,7 +4,7 @@ import { Sequence, Pack } from '../sequence'
 import { OrderedSet } from './OrderedSet'
 import { Set } from './Set'
 import { Group } from './Group'
-import { protomark } from '../mark'
+import { Markable, protomark } from '../mark'
 import { StaticCollection } from '../StaticCollection'
 import { Collection } from '../Collection'
 import { OrderedGroup } from './OrderedGroup'
@@ -40,11 +40,6 @@ export class PackSet<Element> implements ReallocableCollection, OrderedSet<Eleme
     this._elements = elements
     this._view = OrderedGroup.view(this)
   }
-
-  /**
-   * @see Markable.prototype.is
-   */
-  public is = protomark.is
 
   /**
    * @returns This set underlying pack instance.
@@ -246,7 +241,24 @@ export class PackSet<Element> implements ReallocableCollection, OrderedSet<Eleme
 
     return false
   }
+
+  /**
+   * @see Markable.prototype.is
+   */
+  public is: Markable.Predicate
+
+  /**
+   * @see Object.prototype.toString
+   */
+  public toString(): string {
+    return this.constructor.name + ' (' + this._elements.constructor.name + ') ' + Group.stringify(this)
+  }
 }
+
+/**
+ * 
+ */
+PackSet.prototype.is = protomark.is
 
 export namespace PackSet {
   /**

@@ -1,5 +1,5 @@
 import { Comparator } from '@cedric-demongivert/gl-tool-utils'
-import { protomark } from '../mark'
+import { Markable, protomark } from '../mark'
 
 import { equals } from '../algorithm/equals'
 import { quicksort } from '../algorithm/quicksort'
@@ -428,11 +428,6 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see Markable.is
-   */
-  public is = protomark.is
-
-  /**
    * @see Pack.prototype.allocate
    */
   public allocate(capacity: number): BufferPack<Wrapped> {
@@ -506,16 +501,31 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
 
     return false
   }
+
+  /**
+   * @see Object.prototype.toString
+   */
+  public toString(): string {
+    return this.constructor.name + ' (' + this._elements.constructor.name + ') ' + Sequence.stringify(this)
+  }
+
+  /**
+   * @see Markable.prototype.is
+   */
+  public is: Markable.Predicate
 }
+
+/**
+ * 
+ */
+BufferPack.prototype.is = protomark.is
 
 export namespace BufferPack {
   /**
-   * Return a copy of another pack.
-   *
-   * @param toCopy - A pack to copy.
+   * 
    */
-  export function copy<Wrapped extends Buffer>(toCopy: BufferPack<Wrapped>): BufferPack<Wrapped> {
-    return toCopy == null ? null : toCopy.clone()
+  export function wrap<Wrapped extends Buffer>(toWrap: Wrapped, size: number = toWrap.length): BufferPack<Wrapped> {
+    return new BufferPack(toWrap, size)
   }
 
   /**
@@ -632,5 +642,61 @@ export namespace BufferPack {
    */
   export function signedUpTo(maximum: number, capacity: number): BufferPack<IntegerBuffer> {
     return new BufferPack(IntegerBuffer.upTo(maximum, capacity))
+  }
+
+  /**
+   * 
+   */
+  export function ofUint8(...values: number[]): BufferPack<Uint8Array> {
+    return new BufferPack<Uint8Array>(new Uint8Array(values), values.length)
+  }
+
+  /**
+   * 
+   */
+  export function ofUint16(...values: number[]): BufferPack<Uint16Array> {
+    return new BufferPack<Uint16Array>(new Uint16Array(values), values.length)
+  }
+
+  /**
+   * 
+   */
+  export function ofUint32(...values: number[]): BufferPack<Uint32Array> {
+    return new BufferPack<Uint32Array>(new Uint32Array(values), values.length)
+  }
+
+  /**
+   * 
+   */
+  export function ofInt8(...values: number[]): BufferPack<Int8Array> {
+    return new BufferPack<Int8Array>(new Int8Array(values), values.length)
+  }
+
+  /**
+   * 
+   */
+  export function ofInt16(...values: number[]): BufferPack<Int16Array> {
+    return new BufferPack<Int16Array>(new Int16Array(values), values.length)
+  }
+
+  /**
+   *
+   */
+  export function ofInt32(...values: number[]): BufferPack<Int32Array> {
+    return new BufferPack<Int32Array>(new Int32Array(values), values.length)
+  }
+
+  /**
+   * 
+   */
+  export function ofFloat32(...values: number[]): BufferPack<Float32Array> {
+    return new BufferPack<Float32Array>(new Float32Array(values), values.length)
+  }
+
+  /**
+   * 
+   */
+  export function ofFloat64(...values: number[]): BufferPack<Float64Array> {
+    return new BufferPack<Float64Array>(new Float64Array(values), values.length)
   }
 }

@@ -26,32 +26,26 @@ export interface ReallocableCollection extends StaticCollection {
  * 
  */
 export namespace ReallocableCollection {
-
   /**
    * 
    */
-  export namespace StaticCollection {
-    /**
-     * 
-     */
-    export const MARK: Mark = Symbol('gl-tool-collection/mark/reallocable-collection')
+  export const MARK: Mark = Symbol('gl-tool-collection/mark/reallocable-collection')
 
-    /**
-     * @see Mark.Container
-     */
-    export function mark(): Mark {
-      return MARK
-    }
+  /**
+   * @see Mark.Container
+   */
+  export function mark(): Mark {
+    return MARK
+  }
 
-    /**
-     * Return true if the given collection is a sequence.
-     *
-     * @param collection - A collection to assert.
-     *
-     * @returns True if the given collection is a sequence.
-     */
-    export function is(collection: Markable): collection is ReallocableCollection {
-      return collection.is(MARK)
-    }
+  /**
+   * Return true if the given collection is a sequence.
+   *
+   * @param collection - A collection to assert.
+   *
+   * @returns True if the given collection is a sequence.
+   */
+  export function is(collection: Markable): collection is ReallocableCollection {
+    return collection.is(MARK)
   }
 }
