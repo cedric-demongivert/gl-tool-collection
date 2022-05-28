@@ -1,6 +1,6 @@
 {
   "name": "@cedric-demongivert/gl-tool-collection",
-  "version": "0.26.0",
+  "version": "0.27.0",
   "description": "A collection library for the gl-tool suit.",
   "main": "./index.js",
   "types": "./types/index.d.ts",
@@ -37,7 +37,7 @@
     "webpack-cli": "^4.9.2"
   },
   "dependencies": {
-    "@cedric-demongivert/gl-tool-utils": "^0.0.7",
+    "@cedric-demongivert/gl-tool-utils": "^0.0.9",
     "chalk": "^4.1.2"
   }
 }
