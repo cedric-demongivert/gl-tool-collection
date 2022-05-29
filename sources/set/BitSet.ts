@@ -165,7 +165,7 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
       if (nextBits === 0) {
         do {
           elements.size -= 1
-        } while (elements.getLast() === 0)
+        } while (elements.last === 0)
       } else {
         elements.set(cell, nextBits)
       }
