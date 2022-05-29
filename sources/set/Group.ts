@@ -1,3 +1,5 @@
+import { toString } from '@cedric-demongivert/gl-tool-utils'
+
 import { Collection } from '../Collection'
 import { Mark, Markable } from '../mark'
 
@@ -50,13 +52,13 @@ export namespace Group {
     let iteratorResult: IteratorResult<unknown> = iterator.next()
 
     if (!iteratorResult.done) {
-      result += iteratorResult.value.toString()
+      result += toString(iteratorResult.value)
       iteratorResult = iterator.next()
     }
 
     while (!iteratorResult.done) {
       result += ', '
-      result += iteratorResult.value.toString()
+      result += toString(iteratorResult.value)
       iteratorResult = iterator.next()
     }
 

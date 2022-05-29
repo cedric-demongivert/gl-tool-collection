@@ -23,7 +23,7 @@ export class FactoryDuplicator<Product extends Clearable & Assignable<Product>> 
    */
   public constructor(factory: Factory<Product>, capacity: number = 16) {
     this._factory = factory
-    this._instances = Pack.any(capacity)
+    this._instances = Pack.any<Product>(capacity)
 
     while (this._instances.size < this._instances.capacity) {
       this._instances.push(this._factory())
