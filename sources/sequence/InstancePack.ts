@@ -140,34 +140,7 @@ export class InstancePack<Element> implements Pack<Element> {
    * @see Sequence.prototype.get
    */
   public get(index: number): Element | undefined {
-    const result: Element | undefined = this._elements[index]
-
-    if (result == null) {
-      return result
-    }
-
-    return this.duplicator.copy(result)
-  }
-
-  /**
-   * 
-   */
-  public see(index: number): Element | undefined {
     return this._elements[index]
-  }
-
-  /**
-   * 
-   */
-  public read<Output extends Assignable<Element>>(index: number, output: Output): Output | undefined {
-    const result: Element | undefined = this._elements[index]
-
-    if (result == null) {
-      return undefined
-    }
-
-    output.copy(result)
-    return output
   }
 
   /**
@@ -191,69 +164,14 @@ export class InstancePack<Element> implements Pack<Element> {
    * @see Sequence.prototype.getLast
    */
   public getLast(): Element | undefined {
-    const result: Element | undefined = this._elements[this._size - 1]
-
-    if (result == null) {
-      return result
-    }
-
-    return this.duplicator.copy(result)
-  }
-
-  /**
-   * 
-   */
-  public seeLast(): Element | undefined {
     return this._elements[this._size - 1]
-  }
-
-  /**
-   * 
-   */
-  public readLast<Output extends Assignable<Element>>(output: Output): Output | undefined {
-    const result: Element | undefined = this._elements[this._size - 1]
-
-    if (result == null) {
-      return undefined
-    }
-
-    output.copy(result)
-    return output
   }
 
   /**
    * @see Sequence.prototype.getFirst
    */
   public getFirst(): Element | undefined {
-    const result: Element | undefined = this._elements[0]
-
-    if (result == null) {
-      return result
-    }
-
-    return this.duplicator.copy(result)
-  }
-
-  /**
-   * 
-   */
-  public seeFirst(): Element | undefined {
     return this._elements[0]
-  }
-
-
-  /**
-   * 
-   */
-  public readFirst<Output extends Assignable<Element>>(output: Output): Output | undefined {
-    const result: Element | undefined = this._elements[0]
-
-    if (result == null) {
-      return undefined
-    }
-
-    output.copy(result)
-    return output
   }
 
   /**
