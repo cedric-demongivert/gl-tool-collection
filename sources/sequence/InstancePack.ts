@@ -152,6 +152,13 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
    * 
    */
+  public see(index: number): Element | undefined {
+    return this._elements[index]
+  }
+
+  /**
+   * 
+   */
   public read<Output extends Assignable<Element>>(index: number, output: Output): Output | undefined {
     const result: Element | undefined = this._elements[index]
 
@@ -196,6 +203,13 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
    * 
    */
+  public seeLast(index: number): Element | undefined {
+    return this._elements[this._size - 1]
+  }
+
+  /**
+   * 
+   */
   public readLast<Output extends Assignable<Element>>(output: Output): Output | undefined {
     const result: Element | undefined = this._elements[this._size - 1]
 
@@ -219,6 +233,14 @@ export class InstancePack<Element> implements Pack<Element> {
 
     return this.duplicator.copy(result)
   }
+
+  /**
+   * 
+   */
+  public seeFirst(index: number): Element | undefined {
+    return this._elements[0]
+  }
+
 
   /**
    * 
