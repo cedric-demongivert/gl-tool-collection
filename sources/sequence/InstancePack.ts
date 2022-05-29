@@ -161,16 +161,16 @@ export class InstancePack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see Sequence.prototype.getLast
+   * @see Sequence.prototype.last
    */
-  public getLast(): Element | undefined {
+  public get last(): Element | undefined {
     return this._elements[this._size - 1]
   }
 
   /**
-   * @see Sequence.prototype.getFirst
+   * @see Sequence.prototype.first
    */
-  public getFirst(): Element | undefined {
+  public get first(): Element | undefined {
     return this._elements[0]
   }
 

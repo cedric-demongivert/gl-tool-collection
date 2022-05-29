@@ -41,17 +41,17 @@ export class SequenceView<Element> implements Sequence<Element> {
   }
 
   /**
-   * @see Sequence.prototype.getFirst
+   * @see Sequence.prototype.first
    */
-  public getFirst(): Element | undefined {
-    return this._sequence.getFirst()
+  public get first(): Element | undefined {
+    return this._sequence.first
   }
 
   /**
-   * @see Sequence.prototype.getLast
+   * @see Sequence.prototype.last
    */
-  public getLast(): Element | undefined {
-    return this._sequence.getLast()
+  public get last(): Element | undefined {
+    return this._sequence.last
   }
 
   /**

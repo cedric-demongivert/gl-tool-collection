@@ -33,7 +33,7 @@ export interface Sequence<Element> extends Collection<Element> {
    *
    * @returns The last element of this sequence of elements if any.
    */
-  getLast(): Element | undefined
+  last: Element | undefined
 
   /**
    * Return the first element of this sequence of elements.
@@ -46,12 +46,7 @@ export interface Sequence<Element> extends Collection<Element> {
    *
    * @returns The first element of this sequence of elements.
    */
-  getFirst(): Element | undefined
-
-  /**
-   * 
-   */
-  getFirst<Output extends Assignable<Element>>(output: Output): Output | undefined
+  first: Element | undefined
 
   /**
    * Return the index of the first element equal to the given one in this sequence or a negative 

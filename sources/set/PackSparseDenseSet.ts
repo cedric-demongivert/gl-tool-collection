@@ -233,17 +233,17 @@ export class PackSparseDenseSet implements SparseDenseSet {
   }
 
   /**
-   * @see Sequence.prototype.getFirst
+   * @see Sequence.prototype.first
    */
-  public getFirst(): number | undefined {
-    return this._dense.getFirst()
+  public get first(): number | undefined {
+    return this._dense.first
   }
 
   /**
-   * @see Sequence.prototype.getLast
+   * @see Sequence.prototype.last
    */
-  public getLast(): number | undefined {
-    return this._dense.getLast()
+  public get last(): number | undefined {
+    return this._dense.last
   }
 
   /**

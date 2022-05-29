@@ -299,16 +299,16 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
   }
 
   /**
-  * @see Sequence.prototype.getFirst
+  * @see Sequence.prototype.first
   */
-  public getFirst(): number {
+  public get first(): number {
     return this.get(0)
   }
 
   /**
-  * @see Sequence.prototype.getLast
+  * @see Sequence.prototype.last
   */
-  public getLast(): number | undefined {
+  public get last(): number | undefined {
     // optimizable
     return this.get(this._size - 1)
   }

@@ -52,16 +52,16 @@ export class SubSequence<Output> implements Sequence<Output> {
   }
 
   /**
-   * @see Sequence.prototype.getLast
+   * @see Sequence.prototype.last
    */
-  public getLast(): Output | undefined {
+  public get last(): Output | undefined {
     return this.to === this.from ? undefined : this.parent.get(this.to - 1)
   }
 
   /**
    * @see Sequence.prototype.first
    */
-  public getFirst(): Output | undefined {
+  public get first(): Output | undefined {
     return this.to === this.from ? undefined : this.parent.get(this.from)
   }
 

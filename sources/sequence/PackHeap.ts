@@ -173,17 +173,17 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   }
 
   /**
-   * @see Sequence.prototype.getFirst
+   * @see Sequence.prototype.first
    */
-  public getFirst(): Element | undefined {
-    return this._elements.getFirst()
+  public get first(): Element | undefined {
+    return this._elements.first
   }
 
   /**
-   * @see Sequence.prototype.getLast
+   * @see Sequence.prototype.last
    */
-  public getLast(): Element | undefined {
-    return this._elements.getLast()
+  public get last(): Element | undefined {
+    return this._elements.last
   }
 
   /**

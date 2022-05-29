@@ -5,17 +5,14 @@ import { FactoryAllocator } from './FactoryAllocator'
  */
 export interface Allocator<Product> {
   /**
-   * Allocate and return a new Product of the managed type of object.
+   * Allocate and return a new instance of the managed type of object.
    *
    * @returns A new Product of the managed type of object.
    */
   allocate(): Product
 
   /**
-   * Free the given Product and return it to the allocator.
-   *
-   * Once freed, an object returned to an allocator must not be referenced by
-   * any other object than the allocator itself.
+   * Return the given instance to the allocator.
    *
    * @param Product - An Product to free.
    */

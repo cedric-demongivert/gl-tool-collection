@@ -27,16 +27,16 @@ export class EmptySequence<Element> implements Sequence<Element> {
   }
 
   /**
-   * @see Sequence.prototype.getLast
+   * @see Sequence.prototype.last
    */
-  public getLast(): undefined {
+  public get last(): undefined {
     return undefined
   }
 
   /**
-   * @see Sequence.prototype.getFirst
+   * @see Sequence.prototype.first
    */
-  public getFirst(): undefined {
+  public get first(): undefined {
     return undefined
   }
 

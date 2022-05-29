@@ -130,16 +130,16 @@ export class ArrayPack<Element> implements Pack<Element | null> {
   }
 
   /**
-   * @see Sequence.prototype.getLast
+   * @see Sequence.prototype.last
    */
-  public getLast(): Element | null | undefined {
+  public get last(): Element | null | undefined {
     return this._elements[this._size - 1]
   }
 
   /**
-   * @see Sequence.prototype.getFirst
+   * @see Sequence.prototype.first
    */
-  public getFirst(): Element | null | undefined {
+  public get first(): Element | null | undefined {
     return this._elements[0]
   }
 

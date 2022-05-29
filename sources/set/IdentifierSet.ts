@@ -244,16 +244,16 @@ export class IdentifierSet implements OrderedSet<number>, ReallocableCollection 
   }
 
   /**
-   * @see Sequence.prototype.getFirst
+   * @see Sequence.prototype.first
    */
-  public getFirst(): number | undefined {
+  public get first(): number | undefined {
     return this._dense[0]
   }
 
   /**
-   * @see Sequence.prototype.getLast
+   * @see Sequence.prototype.last
    */
-  public getLast(): number | undefined {
+  public get last(): number | undefined {
     return this._dense[this._size - 1]
   }
 

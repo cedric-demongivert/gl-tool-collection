@@ -142,16 +142,16 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see Sequence.prototype.getLast
+   * @see Sequence.prototype.last
    */
-  public getLast(): number | undefined {
+  public get last(): number | undefined {
     return this._elements[Math.max(this._size - 1, 0)]
   }
 
   /**
-   * @see Sequence.prototype.getFirst
+   * @see Sequence.prototype.first
    */
-  public getFirst(): number | undefined {
+  public get first(): number | undefined {
     return this._elements[0]
   }
 
