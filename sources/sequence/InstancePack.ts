@@ -203,7 +203,7 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
    * 
    */
-  public seeLast(index: number): Element | undefined {
+  public seeLast(): Element | undefined {
     return this._elements[this._size - 1]
   }
 
@@ -237,7 +237,7 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
    * 
    */
-  public seeFirst(index: number): Element | undefined {
+  public seeFirst(): Element | undefined {
     return this._elements[0]
   }
 
