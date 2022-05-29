@@ -28,17 +28,17 @@ export class OrderedGroupView<Element> implements OrderedGroup<Element> {
   }
 
   /**
-   * @see Sequence.prototype.getFirst
+   * @see Sequence.prototype.first
    */
-  public getFirst(): Element | undefined {
-    return this._group.getFirst()
+  public get first(): Element | undefined {
+    return this._group.first
   }
 
   /**
-   * @see Sequence.prototype.getLast
+   * @see Sequence.prototype.last
    */
-  public getLast(): Element | undefined {
-    return this._group.getLast()
+  public get last(): Element | undefined {
+    return this._group.last
   }
 
   /**
