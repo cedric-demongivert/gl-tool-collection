@@ -1,14 +1,24 @@
-import { Comparator } from '@cedric-demongivert/gl-tool-utils'
+import { Comparator, equals } from '@cedric-demongivert/gl-tool-utils'
 
 import { List, Pack, Sequence } from '../sequence'
-import { Markable, protomark } from '../mark'
+import { Mark, Markable, protomark } from '../mark'
 import { Duplicator } from '../allocator'
-import { quicksort, equals } from '../algorithm'
+import { quicksort } from '../algorithm'
 
 import { Collection } from '../Collection'
 import { StaticCollection } from '../StaticCollection'
 import { ReallocableCollection } from '../ReallocableCollection'
 import { SequenceCursor } from './SequenceCursor'
+
+function gcd(left: number, right: number): number {
+  while (right != 0) {
+    const nextRight: number = left % right
+    left = right
+    right = nextRight
+  }
+
+  return left
+}
 
 /**
  * A sequence that drops the first inserted element when it has to add a new item beyond its capacity.
@@ -110,18 +120,37 @@ export class CircularPack<Element> implements Pack<Element> {
    * @see ReallocableCollection.prototype.reallocate
    */
   public reallocate(capacity: number): void {
-    const next: Pack<Element> = this._elements.clone()
-    next.reallocate(capacity)
+    this.rotate(-this._start)
+    this._elements.reallocate(capacity)
+    this._size = Math.min(capacity, this._size)
+  }
 
-    const nextSize: number = Math.min(capacity, this._size)
+  /**
+   * 
+   */
+  public rotate(offset: number): void {
+    const elements: Pack<Element> = this._elements
 
-    for (let index = 0; index < capacity && index < this._size; ++index) {
-      next.set(nextSize - index - 1, this.get(this._size - index - 1))
+    let safeOffset: number = offset % elements.capacity
+    if (safeOffset < 0) safeOffset += elements.capacity
+
+    const roots: number = gcd(elements.capacity, safeOffset)
+
+    for (let start = 0; start < roots; ++start) {
+      let temporary: Element = elements.get(start)!
+      let index = (start + safeOffset) % elements.capacity
+
+      while (index != start) {
+        const swap: Element = elements.get(index)!
+        elements.set(index, temporary)
+        temporary = swap
+        index = (start + safeOffset) % elements.capacity
+      }
+
+      elements.set(start, temporary)
     }
 
-    this._elements = next
-    this._size = nextSize
-    this._start = 0
+    this._start = (this._start + offset) % elements.capacity
   }
 
   /**
@@ -132,31 +161,17 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see Sequence.prototype.first
+   * @see Sequence.prototype.getFirst
    */
-  public get first(): Element {
+  public getFirst(): Element | undefined {
     return this._size > 0 ? this._elements.get(this._start) : undefined
   }
 
   /**
-   * @see Sequence.prototype.firstIndex
+   * @see Sequence.prototype.getLast
    */
-  public get firstIndex(): number {
-    return 0
-  }
-
-  /**
-   * @see Sequence.prototype.last
-   */
-  public get last(): Element {
+  public getLast(): Element | undefined {
     return this._size > 0 ? this._elements.get((this._start + this._size) % this._elements.capacity) : undefined
-  }
-
-  /**
-   * @see Sequence.prototype.lastIndex
-   */
-  public get lastIndex(): number {
-    return Math.max(this._size - 1, 0)
   }
 
   /**
@@ -169,7 +184,7 @@ export class CircularPack<Element> implements Pack<Element> {
   /**
    * @see Sequence.prototype.get
    */
-  public get(index: number): Element {
+  public get(index: number): Element | undefined {
     return this._elements.get((this._start + index) % this._elements.capacity)
   }
 
@@ -185,10 +200,10 @@ export class CircularPack<Element> implements Pack<Element> {
   /**
    * @see List.prototype.pop
    */
-  public pop(): Element {
+  public pop(): Element | undefined {
     const last: number = this._size - 1
-    const result: Element = this.get(last)
 
+    const result: Element | undefined = this.get(last)
     this.delete(last)
 
     return result
@@ -197,9 +212,8 @@ export class CircularPack<Element> implements Pack<Element> {
   /**
    * @see List.prototype.shift
    */
-  public shift(): Element {
-    const result: Element = this.get(0)
-
+  public shift(): Element | undefined {
+    const result: Element | undefined = this.get(0)
     this.delete(0)
 
     return result
@@ -289,7 +303,7 @@ export class CircularPack<Element> implements Pack<Element> {
       }
 
       for (let cursor = this._size - 1; cursor > index; --cursor) {
-        this.set(cursor, this.get(cursor - 1))
+        this.set(cursor, this.get(cursor - 1)!)
       }
 
       this.set(index, value)
@@ -334,7 +348,7 @@ export class CircularPack<Element> implements Pack<Element> {
    */
   public delete(index: number): void {
     for (let toMove = index; toMove > 0; --toMove) {
-      this.set(toMove, this.get(toMove - 1))
+      this.set(toMove, this.get(toMove - 1)!)
     }
 
     this._start = (this._start + 1) % this._elements.capacity
@@ -348,7 +362,7 @@ export class CircularPack<Element> implements Pack<Element> {
     const end: number = from + size
 
     for (let cursor = 0; cursor < from; ++cursor) {
-      this.set(end - cursor - 1, this.get(from - cursor - 1))
+      this.set(end - cursor - 1, this.get(from - cursor - 1)!)
     }
 
     this._start = (this._start + size) % this._elements.capacity
@@ -359,7 +373,7 @@ export class CircularPack<Element> implements Pack<Element> {
    * @see List.prototype.warp
    */
   public warp(index: number): void {
-    this.set(index, this.get(0))
+    this.set(index, this.get(0)!)
 
     this._start = (this._start + 1) % this._elements.capacity
     this._size -= 1
@@ -372,7 +386,7 @@ export class CircularPack<Element> implements Pack<Element> {
     count = Math.min(this._size - start, count)
 
     for (let index = 0; index < count; ++index) {
-      this.set(index + start, this.get(index))
+      this.set(index + start, this.get(index)!)
     }
 
     this._start = (this._start + count) % this._elements.capacity
@@ -429,11 +443,8 @@ export class CircularPack<Element> implements Pack<Element> {
    * @see List.prototype.concat
    */
   public concat(toConcat: Sequence<Element>): void {
-    const firstIndex: number = toConcat.firstIndex
-    const lastIndex: number = toConcat.lastIndex + 1
-
-    for (let index = firstIndex; index < lastIndex; ++index) {
-      this.push(toConcat.get(index))
+    for (let index = 0, size = toConcat.size; index < size; ++index) {
+      this.push(toConcat.get(index)!)
     }
   }
 
@@ -441,8 +452,8 @@ export class CircularPack<Element> implements Pack<Element> {
    * @see List.prototype.concatArray
    */
   public concatArray(toConcat: Element[]): void {
-    for (const element of toConcat) {
-      this.push(element)
+    for (let index = 0, size = toConcat.length; index < size; ++index) {
+      this.push(toConcat[index])
     }
   }
 
@@ -457,7 +468,7 @@ export class CircularPack<Element> implements Pack<Element> {
     this.clear()
 
     for (let index = 0, length = toCopy.size; index < length; ++index) {
-      this.push(toCopy.get(index))
+      this.push(toCopy.get(index)!)
     }
   }
 
@@ -492,7 +503,7 @@ export class CircularPack<Element> implements Pack<Element> {
    */
   public * values(): IterableIterator<Element> {
     for (let index = 0, length = this._size; index < length; ++index) {
-      yield this._elements.get((this._start + index) % this._elements.capacity)
+      yield this._elements.get((this._start + index) % this._elements.capacity)!
     }
   }
 
@@ -533,13 +544,10 @@ export class CircularPack<Element> implements Pack<Element> {
   /**
    * @see Markable.prototype.is
    */
-  public is: Markable.Predicate
+  public is(markLike: Mark.Alike): boolean {
+    return protomark.is(this.constructor, markLike)
+  }
 }
-
-/**
- * 
- */
-CircularPack.prototype.is = protomark.is
 
 /**
  * 
@@ -552,8 +560,8 @@ export namespace CircularPack {
    *
    * @returns A circular buffer that wraps the given pack.
    */
-  export function fromPack<T>(pack: Pack<T>): CircularPack<T> {
-    return new CircularPack<T>(pack)
+  export function fromPack<Element>(pack: Pack<Element>): CircularPack<Element> {
+    return new CircularPack<Element>(pack)
   }
 
   /**
@@ -563,8 +571,8 @@ export namespace CircularPack {
    *
    * @returns A new buffer that wrap a pack of the given type of instance.
    */
-  export function any<T>(capacity: number): CircularPack<T> {
-    return new CircularPack<T>(Pack.any(capacity))
+  export function any<Element>(capacity: number): CircularPack<Element | null> {
+    return new CircularPack(Pack.any<Element>(capacity))
   }
 
   /**
@@ -663,8 +671,8 @@ export namespace CircularPack {
    *
    * @returns A new circular buffer that wrap an instance pack of the given capacity.
    */
-  export function instance<T>(allocator: Duplicator<T>, capacity: number): CircularPack<T> {
-    return new CircularPack<T>(Pack.instance(allocator, capacity))
+  export function instance<Element>(allocator: Duplicator<Element>, capacity: number): CircularPack<Element> {
+    return new CircularPack<Element>(Pack.instance(allocator, capacity))
   }
 
   /**

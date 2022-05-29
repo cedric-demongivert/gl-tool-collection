@@ -82,7 +82,7 @@ export namespace Pack {
    *
    * @returns A new pack that wrap an array of the given type of instance.
    */
-  export function like<T>(pack: Pack<T>, capacity: number): Pack<T> {
+  export function like<Element>(pack: Pack<Element>, capacity: number): Pack<Element> {
     return pack.allocate(capacity)
   }
 
@@ -93,7 +93,7 @@ export namespace Pack {
    *
    * @returns A new pack that wrap an array of the given type of instance.
    */
-  export function any<T>(capacity: number): ArrayPack<T> {
+  export function any<Element>(capacity: number): ArrayPack<Element> {
     return ArrayPack.allocate(capacity)
   }
 

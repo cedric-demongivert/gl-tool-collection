@@ -1,4 +1,4 @@
-import { Markable, protomark } from "../mark"
+import { protomark } from "../mark"
 import { ForwardCursor } from "./ForwardCursor"
 import { EmptyCursor } from "./EmptyCursor"
 

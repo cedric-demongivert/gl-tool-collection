@@ -49,7 +49,7 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
   /**
    * 
    */
-  private _view: OrderedGroup<number>
+  private readonly _view: OrderedGroup<number>
 
   /**
   *
@@ -82,7 +82,7 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
     const cell: number = element >> 5
     const mask: number = 0b1 << (element % 32)
 
-    return cell < elements.size && (elements.get(cell) & mask) > 0
+    return cell < elements.size && (elements.get(cell)! & mask) > 0
   }
 
   /**
@@ -93,14 +93,14 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
     const cell: number = element >> 5
     const mask: number = 0b1 << (element % 32)
 
-    if (cell < elements.size && (elements.get(cell) & mask) > 0) {
+    if (cell < elements.size && (elements.get(cell)! & mask) > 0) {
       let offset: number = 0
 
       for (let index = 0; index < cell; ++index) {
-        offset += countBits(elements.get(index))
+        offset += countBits(elements.get(index)!)
       }
 
-      return offset + countBits(elements.get(cell) & ~(0xFFFFFFFF << element % 32)) - 1
+      return offset + countBits(elements.get(cell)! & ~(0xFFFFFFFF << element % 32)) - 1
     } else {
       return -1
     }
@@ -135,7 +135,7 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
     const cell: number = element >> 5
     const mask: number = 0b1 << (element % 32)
 
-    if (cell >= elements.size || (elements.get(cell) & mask) === 0) {
+    if (cell >= elements.size || (elements.get(cell)! & mask) === 0) {
       this._size += 1
 
       if (elements.capacity < cell) {
@@ -145,7 +145,7 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
       if (elements.size < cell) {
         elements.set(cell, mask)
       } else {
-        elements.set(cell, elements.get(cell) | mask)
+        elements.set(cell, elements.get(cell)! | mask)
       }
     }
   }
@@ -158,14 +158,14 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
     const cell: number = element >> 5
     const mask: number = 0b1 << (element % 32)
 
-    if (cell < elements.size && (elements.get(cell) & mask) > 0) {
+    if (cell < elements.size && (elements.get(cell)! & mask) > 0) {
       this._size -= 1
-      const nextBits: number = elements.get(cell) & ~mask
+      const nextBits: number = elements.get(cell)! & ~mask
 
       if (nextBits === 0) {
         do {
           elements.size -= 1
-        } while (elements.last === 0)
+        } while (elements.getLast() === 0)
       } else {
         elements.set(cell, nextBits)
       }
@@ -181,15 +181,15 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
     const elements: Pack<number> = this._elements
     let skipped: number = 0
     let cell: number = 0
-    let cellElements: number = countBits(elements.get(cell))
+    let cellElements: number = countBits(elements.get(cell)!)
 
     while (skipped + cellElements < index) {
       cell += 1
       skipped += cellElements
-      cellElements = countBits(elements.get(cell))
+      cellElements = countBits(elements.get(cell)!)
     }
 
-    const bits: number = elements.get(cell)
+    const bits: number = elements.get(cell)!
     const rest: number = index - skipped // + 1?
 
     /** generated **/
@@ -299,32 +299,18 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
   }
 
   /**
-  * @see Sequence.prototype.first
+  * @see Sequence.prototype.getFirst
   */
-  public get first(): number {
+  public getFirst(): number {
     return this.get(0)
   }
 
   /**
-  * @see Sequence.prototype.firstIndex
+  * @see Sequence.prototype.getLast
   */
-  public get firstIndex(): number {
-    return 0
-  }
-
-  /**
-  * @see Sequence.prototype.last
-  */
-  public get last(): number {
+  public getLast(): number | undefined {
     // optimizable
     return this.get(this._size - 1)
-  }
-
-  /**
-  * @see Sequence.prototype.lastIndex
-  */
-  public get lastIndex(): number {
-    return this._size - 1
   }
 
   /**
@@ -351,7 +337,7 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
       const base: number = cell * 32
 
       for (let index = 0; index < 32; ++index) {
-        if ((elements.get(cell) & (0b1 << index)) > 0) {
+        if ((elements.get(cell)! & (0b1 << index)) > 0) {
           yield base + index
         }
       }
@@ -395,13 +381,10 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
   /**
    * @see Markable.prototype.is
    */
-  public is: Markable.Predicate
+  public is(markLike: Mark.Alike): boolean {
+    return protomark.is(this.constructor, markLike)
+  }
 }
-
-/**
- * 
- */
-BitSet.prototype.is = protomark.is
 
 export namespace BitSet {
   /**

@@ -1,23 +1,20 @@
-import { Comparator, Copiable } from '@cedric-demongivert/gl-tool-utils'
-
+import { Assignable, Comparator, equals } from '@cedric-demongivert/gl-tool-utils'
 import { Duplicator } from '../allocator/Duplicator'
+import { quicksort } from '../algorithm/quicksort'
+import { Mark, protomark } from '../mark'
 
-import { Sequence } from '../sequence/Sequence'
+import { Sequence } from './Sequence'
 
-import { Pack } from './Pack'
-import { Markable, protomark } from '../mark'
-import { Collection } from '../Collection'
-import { List } from './List'
 import { StaticCollection } from '../StaticCollection'
 import { ReallocableCollection } from '../ReallocableCollection'
+import { Collection } from '../Collection'
+
+import { Pack } from './Pack'
 import { SequenceCursor } from './SequenceCursor'
+import { List } from './List'
 
 /**
- * @todo Copiable<Element> instead of Copiable
- */
-
-/**
- * A javascript array of pre-allocated instances.
+ * An optimized javascript array.
  *
  * @see https://v8.dev/blog/elements-kinds?fbclid=IwAR337wb3oxEpjz_5xVHL-Y14gUpVElementOztLSIikVVQLGN6qcKidEjMLJ4vO3M
  */
@@ -31,12 +28,12 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
    * Wrapped javascript array.
    */
-  private _elements: Pack<Element>
+  private _elements: Array<Element>
 
   /**
-   * Duplicator for manipulating object instances.
+   * Number of elements stored.
    */
-  public readonly duplicator: Duplicator<Element>
+  private _size: number
 
   /**
    * 
@@ -44,45 +41,54 @@ export class InstancePack<Element> implements Pack<Element> {
   private readonly _view: Sequence<Element>
 
   /**
-   * Makes an empty instance pack of the given capacity.
-   *
-   * @param duplicator - A duplicator that allows to manipulate the given instance type.
-   * @param [capacity = 32] - Initial capacity of the pack.
+   * 
    */
-  public constructor(duplicator: Duplicator<Element>, capacity: number = 32) {
-    this.duplicator = duplicator
-    this._elements = Pack.any(capacity)
+  public readonly duplicator: Duplicator<Element>
+
+  /**
+   * 
+   */
+  public constructor(duplicator: Duplicator<Element>, capacity: number = 0) {
+    this._elements = []
+    this._size = 0
     this._view = Sequence.view(this)
+    this.duplicator = duplicator
   }
 
   /**
    * @see Collection.prototype.size
    */
   public get size(): number {
-    return this._elements.size
+    return this._size
   }
 
   /**
    * @see List.prototype.size
    */
   public set size(value: number) {
+    const duplicator: Duplicator<Element> = this.duplicator
+    const elements: Element[] = this._elements
+
     /**
-    * @see https://v8.dev/blog/elements-kinds?fbclid=IwAR337wb3oxEpjz_5xVHL-Y14gUpVElementOztLSIikVVQLGN6qcKidEjMLJ4vO3M
-    */
-    while (this._elements.size < value) {
-      this._elements.push(this.duplicator.allocate())
+     * @see https://v8.dev/blog/elements-kinds?fbclid=IwAR337wb3oxEpjz_5xVHL-Y14gUpVElementOztLSIikVVQLGN6qcKidEjMLJ4vO3M
+     */
+    while (value > this._elements.length) {
+      elements.push(duplicator.allocate())
     }
 
-    while (this._elements.size > value) {
-      this.duplicator.free(this._elements.pop())
+    for (let index = this._size; index < value; ++index) {
+      duplicator.free(elements[index])
+      elements[index] = duplicator.allocate()
     }
+
+    this._size = value
   }
 
   /**
    * @see StaticCollection.prototype.capacity
    */
   public get capacity(): number {
-    return this._elements.capacity
+    return this._elements.length
   }
 
   /**
@@ -96,159 +102,218 @@ export class InstancePack<Element> implements Pack<Element> {
    * @see ReallocableCollection.prototype.reallocate
    */
   public reallocate(capacity: number): void {
-    while (this._elements.size > capacity) {
-      this.duplicator.free(this._elements.pop())
-    }
+    const duplicator: Duplicator<Element> = this.duplicator
+    const elements: Element[] = this._elements
 
-    this._elements.reallocate(capacity)
+    if (capacity < this._elements.length) {
+      for (let index = capacity; index < elements.length; ++index) {
+        duplicator.free(elements[index])
+      }
+
+      elements.length = capacity
+      this._size = Math.min(this._size, capacity)
+    } else {
+      /**
+       * @see https://v8.dev/blog/elements-kinds?fbclid=IwAR337wb3oxEpjz_5xVHL-Y14gUpVElementOztLSIikVVQLGN6qcKidEjMLJ4vO3M
+       */
+      while (elements.length != capacity) {
+        elements.push(duplicator.allocate())
+      }
+    }
   }
 
   /**
    * @see ReallocableCollection.prototype.fit
    */
   public fit(): void {
-    this.reallocate(this._elements.size)
+    const duplicator: Duplicator<Element> = this.duplicator
+    const elements: Element[] = this._elements
+
+    for (let index = this._size; index < elements.length; ++index) {
+      duplicator.free(elements[index])
+    }
+
+    elements.length = this._size
   }
 
   /**
    * @see Sequence.prototype.get
    */
-  public get(index: number): Element {
-    return this._elements.get(index)
+  public get(index: number): Element | undefined {
+    const result: Element | undefined = this._elements[index]
+
+    if (result == null) {
+      return result
+    }
+
+    return this.duplicator.copy(result)
+  }
+
+  /**
+   * 
+   */
+  public read<Output extends Assignable<Element>>(index: number, output: Output): Output | undefined {
+    const result: Element | undefined = this._elements[index]
+
+    if (result == null) {
+      return undefined
+    }
+
+    output.copy(result)
+    return output
   }
 
   /**
    * @see List.prototype.pop
    */
-  public pop(): Element
+  public pop(): Element | undefined {
+    if (this._size < 1) return undefined
+
+    const last: number = this._size - 1
+    const elements: Element[] = this._elements
+
+    const result: Element | undefined = elements[last]
+    elements[last] = this.duplicator.allocate()
+
+    this._size -= 1
+
+    return result
+  }
+
   /**
-   * 
+   * @see Sequence.prototype.getLast
    */
-  public pop<T extends Copiable>(output: T): T
-  /**
-   * 
-   */
-  public pop<T extends Copiable>(output?: T): Element | T {
-    if (output == undefined) {
-      return this._elements.pop()
-    } else {
-      const result: Element = this._elements.pop()
-      output.copy(result)
-      this.duplicator.free(result)
-      return output
+  public getLast(): Element | undefined {
+    const result: Element | undefined = this._elements[this._size - 1]
+
+    if (result == null) {
+      return result
     }
+
+    return this.duplicator.copy(result)
   }
 
   /**
-   * @see Sequence.prototype.last
+   * 
    */
-  public get last(): Element {
-    return this._elements.last
+  public readLast<Output extends Assignable<Element>>(output: Output): Output | undefined {
+    const result: Element | undefined = this._elements[this._size - 1]
+
+    if (result == null) {
+      return undefined
+    }
+
+    output.copy(result)
+    return output
   }
 
   /**
-   * @see Sequence.prototype.lastIndex
+   * @see Sequence.prototype.getFirst
    */
-  public get lastIndex(): number {
-    return this._elements.lastIndex
+  public getFirst(): Element | undefined {
+    const result: Element | undefined = this._elements[0]
+
+    if (result == null) {
+      return result
+    }
+
+    return this.duplicator.copy(result)
   }
 
   /**
-   * @see Sequence.prototype.first
+   * 
    */
-  public get first(): Element {
-    return this._elements.first
-  }
+  public readFirst<Output extends Assignable<Element>>(output: Output): Output | undefined {
+    const result: Element | undefined = this._elements[0]
 
-  /**
-   * @see Sequence.prototype.firstIndex
-   */
-  public get firstIndex(): number {
-    return 0
+    if (result == null) {
+      return undefined
+    }
+
+    output.copy(result)
+    return output
   }
 
   /**
    * @see List.prototype.fill
    */
   public fill(element: Element): void {
-    const elements: Pack<Element> = this._elements
     const duplicator: Duplicator<Element> = this.duplicator
+    const elements: Array<Element> = this._elements
 
-    for (let index = 0, size = elements.size; index < size; ++index) {
-      duplicator.free(elements.get(index))
-      elements.set(index, duplicator.copy(element))
+    for (let index = 0, size = this._size; index < size; ++index) {
+      duplicator.free(elements[index])
+      elements[index] = duplicator.copy(element)
     }
   }
 
   /**
    * @see List.prototype.shift
-  */
-  public shift(): Element
-  /**
-   * 
    */
-  public shift<T extends Copiable>(output: T): T
-  /**
-   * 
-   */
-  public shift<T extends Copiable>(output?: T): Element | T {
-    if (output == undefined) {
-      return this._elements.shift()
-    } else {
-      const result: Element = this._elements.shift()
-      output.copy(result)
-      this.duplicator.free(result)
-      return output
-    }
+  public shift(): Element | undefined {
+    const elements: Array<Element> = this._elements
+
+    const value: Element = elements[0]
+    elements[0] = this.duplicator.allocate()
+    this.delete(0)
+
+    return value
   }
 
   /**
    * @see List.prototype.sort
    */
   public sort(comparator: Comparator<Element, Element>): void {
-    this._elements.sort(comparator)
+    quicksort(this, comparator, 0, this._size)
   }
 
   /**
    * @see List.prototype.subsort
    */
   public subsort(offset: number, size: number, comparator: Comparator<Element, Element>): void {
-    this._elements.subsort(offset, size, comparator)
+    quicksort(this, comparator, offset, size)
   }
 
   /**
    * @see List.prototype.swap
    */
   public swap(first: number, second: number): void {
-    this._elements.swap(first, second)
+    const elements: Array<Element> = this._elements
+
+    const tmp: Element | null = elements[first]
+    elements[first] = elements[second]
+    elements[second] = tmp
   }
 
   /**
    * @see List.prototype.set
    */
   public set(index: number, value: Element): void {
-    if (index >= this._elements.size) {
-      this.size = index + 1
-    }
+    const duplicator: Duplicator<Element> = this.duplicator
+    const elements: Array<Element> = this._elements
 
-    this.duplicator.free(this._elements.get(index))
-    this._elements.set(index, this.duplicator.copy(value))
+    if (index >= this._size) this.size = index + 1
+
+    duplicator.free(elements[index])
+    elements[index] = duplicator.copy(value)
   }
 
   /**
    * @see List.prototype.setMany
    */
   public setMany(from: number, count: number, value: Element): void {
-    const elements: Pack<Element> = this._elements
     const duplicator: Duplicator<Element> = this.duplicator
+    const elements: Array<Element> = this._elements
 
-    if (from + count > elements.size) {
-      this.size = from + count
+    const to: number = from + count
+
+    if (to > this._size) {
+      this.size = to
     }
 
-    for (let index = from, until = from + count; index < until; ++index) {
-      duplicator.free(elements.get(index))
-      elements.set(index, duplicator.copy(value))
+    for (let cursor = from; cursor < to; ++cursor) {
+      duplicator.free(elements[cursor])
+      elements[cursor] = duplicator.copy(value)
     }
   }
 
@@ -256,14 +321,21 @@ export class InstancePack<Element> implements Pack<Element> {
    * @see List.prototype.insert
    */
   public insert(index: number, value: Element): void {
-    if (index >= this._elements.size) {
+    const duplicator: Duplicator<Element> = this.duplicator
+    const elements: Array<Element> = this._elements
+
+    if (index >= this._size) {
       this.set(index, value)
     } else {
-      if (this._elements.size === this._elements.capacity) {
-        this.reallocate(this.capacity * 2)
+      this.size += 1
+
+      duplicator.free(elements[this._size - 1])
+
+      for (let cursor = this._size - 1; cursor > index; --cursor) {
+        elements[cursor] = elements[cursor - 1]
       }
 
-      this._elements.insert(index, this.duplicator.copy(value))
+      elements[index] = duplicator.copy(value)
     }
   }
 
@@ -271,67 +343,112 @@ export class InstancePack<Element> implements Pack<Element> {
    * @see List.prototype.push
    */
   public push(value: Element): void {
-    if (this._elements.size === this._elements.capacity) {
-      this.reallocate(this.capacity * 2)
-    }
+    const duplicator: Duplicator<Element> = this.duplicator
+    const elements: Array<Element> = this._elements
 
-    this._elements.push(this.duplicator.copy(value))
+    const index: number = this._size
+
+    this.size += 1
+
+    duplicator.free(elements[index])
+    elements[index] = duplicator.copy(value)
   }
 
   /**
    * @see List.prototype.unshift
    */
   public unshift(value: Element): void {
-    if (this._elements.size === this._elements.capacity) {
-      this.reallocate(this.capacity * 2)
+    const duplicator: Duplicator<Element> = this.duplicator
+    const elements: Array<Element> = this._elements
+
+    this.size += 1
+
+    duplicator.free(elements[this._size - 1])
+
+    for (let index = this._size - 1; index > 0; --index) {
+      elements[index] = elements[index - 1]
     }
 
-    this._elements.unshift(this.duplicator.copy(value))
+    elements[0] = duplicator.copy(value)
   }
 
   /**
    * @see List.prototype.delete
    */
   public delete(index: number): void {
-    this.duplicator.free(this._elements.get(index))
-    this._elements.delete(index)
+    const duplicator: Duplicator<Element> = this.duplicator
+    const elements: Array<Element> = this._elements
+
+    duplicator.free(elements[index])
+
+    for (let cursor = index, size = this._size - 1; cursor < size; ++cursor) {
+      elements[cursor] = elements[cursor + 1]
+    }
+
+    elements[this._size - 1] = duplicator.allocate()
+
+    this.size -= 1
   }
 
   /**
    * @see List.prototype.deleteMany
    */
   public deleteMany(from: number, size: number): void {
-    for (let index = 0; index < size; ++index) {
-      const element: Element = this._elements.get(from + index)
-      this.duplicator.free(element)
+    const duplicator: Duplicator<Element> = this.duplicator
+    const elements: Array<Element> = this._elements
+
+    const toMove: number = this._size - from - size
+    const offset: number = from + size
+
+    for (let cursor = 0; cursor < size; ++cursor) {
+      duplicator.free(elements[from + cursor])
     }
 
-    this._elements.deleteMany(from, size)
+    for (let cursor = 0; cursor < toMove; ++cursor) {
+      elements[from + cursor] = elements[offset + cursor]
+    }
+
+    for (let cursor = 0; cursor < size; ++cursor) {
+      elements[this.size - cursor - 1] = duplicator.allocate()
+    }
+
+    this.size -= size
   }
 
   /**
    * @see List.prototype.warp
    */
   public warp(index: number): void {
-    const element: Element = this._elements.get(index)
-    this.duplicator.free(element)
+    const duplicator: Duplicator<Element> = this.duplicator
+    const elements: Array<Element> = this._elements
 
-    this._elements.warp(index)
+    duplicator.free(elements[index])
+    elements[index] = elements[this._size - 1]
+    elements[this._size - 1] = duplicator.allocate()
+
+    this.size -= 1
   }
 
   /**
    * @see List.prototype.warpMany
    */
   public warpMany(from: number, count: number): void {
-    const elements: Pack<Element> = this._elements
-    const duplicator: Duplicator<Element> = this.duplicator
+    const size: number = this._size
+    const rest: number = size - from - count
 
-    for (let index = from, until = from + count; index < until; ++index) {
-      const element: Element = elements.get(index)
-      duplicator.free(element)
+    if (rest > 0) {
+      const duplicator: Duplicator<Element> = this.duplicator
+      const elements: Array<Element> = this._elements
+      const toWarp: number = rest > count ? count : rest
+
+      for (let index = 0; index < toWarp; ++index) {
+        duplicator.free(elements[from + index])
+        elements[from + index] = elements[size - index - 1]
+        elements[size - index - 1] = duplicator.allocate()
+      }
     }
 
-    elements.warpMany(from, count)
+    this._size -= count
   }
 
   /**
@@ -345,7 +462,13 @@ export class InstancePack<Element> implements Pack<Element> {
    * @see Sequence.prototype.indexOf
    */
   public indexOf(element: Element): number {
-    return this._elements.indexOf(element)
+    for (let index = 0, length = this._size; index < length; ++index) {
+      if (equals(element, this._elements[index])) {
+        return index
+      }
+    }
+
+    return -1
   }
 
   /**
@@ -359,7 +482,13 @@ export class InstancePack<Element> implements Pack<Element> {
    * @see Sequence.prototype.indexOfInSubsequence
    */
   public indexOfInSubsequence(element: Element, offset: number, size: number): number {
-    return this._elements.indexOfInSubsequence(element, offset, size)
+    for (let index = offset, length = offset + size; index < length; ++index) {
+      if (equals(element, this._elements[index])) {
+        return index
+      }
+    }
+
+    return -1
   }
 
   /**
@@ -369,7 +498,7 @@ export class InstancePack<Element> implements Pack<Element> {
     this.size = toCopy.size
 
     for (let index = 0, length = toCopy.size; index < length; ++index) {
-      this.set(index, toCopy.get(index))
+      this.set(index, toCopy.get(index)!)
     }
   }
 
@@ -377,15 +506,14 @@ export class InstancePack<Element> implements Pack<Element> {
    * @see List.prototype.concat
    */
   public concat(toConcat: Sequence<Element>): void {
-    const firstIndex: number = toConcat.firstIndex
-    const lastIndex: number = toConcat.lastIndex + 1
+    const toConcatSize: number = toConcat.size
 
-    if (this.capacity < this.size + toConcat.size) {
-      this.reallocate(this.size + toConcat.size)
+    if (this.capacity < this.size + toConcatSize) {
+      this.reallocate(this.size + toConcatSize)
     }
 
-    for (let index = firstIndex; index < lastIndex; ++index) {
-      this.push(toConcat.get(index))
+    for (let index = 0; index < toConcatSize; ++index) {
+      this.push(toConcat.get(index)!)
     }
   }
 
@@ -406,14 +534,21 @@ export class InstancePack<Element> implements Pack<Element> {
    * @see Pack.prototype.allocate
    */
   public allocate(capacity: number): InstancePack<Element> {
-    return new InstancePack(this.duplicator, capacity)
+    return InstancePack.allocate(this.duplicator, capacity)
   }
 
   /**
    * @see Clonable.prototype.clone
    */
   public clone(): InstancePack<Element> {
-    return InstancePack.copy(this)
+    const result: InstancePack<Element> = new InstancePack(this.duplicator, this.capacity)
+    const elements: Element[] = this._elements
+
+    for (let index = 0; index < elements.length; ++index) {
+      result.push(elements[index])
+    }
+
+    return result
   }
 
   /**
@@ -434,37 +569,40 @@ export class InstancePack<Element> implements Pack<Element> {
    * @see Clearable.prototype.clear
    */
   public clear(): void {
-    while (this._elements.size > 0) {
-      this.duplicator.free(this._elements.pop())
-    }
+    this._size = 0
   }
 
   /**
    * @see Collection.prototype.values
    */
-  public values(): IterableIterator<Element> {
-    return this._elements.values()
+  public * values(): IterableIterator<Element> {
+    for (let index = 0; index < this._size; ++index) {
+      yield this._elements[index]
+    }
   }
 
   /**
    * @see Collection.prototype[Symbol.iterator]
    */
   public [Symbol.iterator](): IterableIterator<Element> {
-    return this._elements.values()
+    return this.values()
   }
 
   /**
    * @see Comparable.prototype.equals
    */
-  public equals(other: any): boolean {
+  public equals(other: unknown): boolean {
     if (other == null) return false
     if (other === this) return true
 
     if (other instanceof InstancePack) {
-      return (
-        this.duplicator === other.duplicator &&
-        this._elements.equals(other._elements)
-      )
+      if (other.size !== this._size) return false
+
+      for (let index = 0, size = this._size; index < size; ++index) {
+        if (!equals(other.get(index), this._elements[index])) return false
+      }
+
+      return true
     }
 
     return false
@@ -480,14 +618,14 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
    * @see Markable.prototype.is
    */
-  public is: Markable.Predicate
+  public is(markLike: Mark.Alike): boolean {
+    return protomark.is(this.constructor, markLike)
+  }
 }
 
 /**
  * 
  */
-InstancePack.prototype.is = protomark.is
-
 export namespace InstancePack {
   /**
    * Return an empty array pack of the given capacity.
@@ -501,17 +639,28 @@ export namespace InstancePack {
   }
 
   /**
-   * Return a copy of another instance pack as an instance pack.
-   *
-   * @param toCopy - A pack to copy.
-   *
-   * @returns An array pack that is a shallow copy of the given pack.
+   * 
    */
-  export function copy<Element>(toCopy: InstancePack<Element>): InstancePack<Element> {
-    const result: InstancePack<Element> = toCopy.allocate(toCopy.capacity)
+  export namespace allocate {
+    /**
+     * @see InstancePack.allocate
+     */
+    export function withDefaultCapacity(duplicator: Duplicator<Element>): InstancePack<Element> {
+      return new InstancePack<Element>(duplicator, 32)
+    }
+  }
 
+  /**
+   * Return a copy of another sequence.
+   *
+   * @param toCopy - A sequence to copy.
+   * @param [capacity=toCopy.size] - Capacity of the copy.
+   *
+   * @returns A copy of the given sequence with the requested capacity.
+   */
+  export function copy<Element>(toCopy: InstancePack<Element>, capacity: number = toCopy.capacity): InstancePack<Element> {
+    const result: InstancePack<Element> = InstancePack.allocate(toCopy.duplicator, capacity)
     result.copy(toCopy)
-
     return result
   }
 }

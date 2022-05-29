@@ -3,23 +3,23 @@ import { FactoryAllocator } from './FactoryAllocator'
 /**
  * An object specialized in managing instances of a given type of object.
  */
-export interface Allocator<Instance> {
+export interface Allocator<Product> {
   /**
-   * Allocate and return a new instance of the managed type of object.
+   * Allocate and return a new Product of the managed type of object.
    *
-   * @returns A new instance of the managed type of object.
+   * @returns A new Product of the managed type of object.
    */
-  allocate(): Instance
+  allocate(): Product
 
   /**
-   * Free the given instance and return it to the allocator.
+   * Free the given Product and return it to the allocator.
    *
    * Once freed, an object returned to an allocator must not be referenced by
    * any other object than the allocator itself.
    *
-   * @param instance - An instance to free.
+   * @param Product - An Product to free.
    */
-  free(instance: Instance): void
+  free(Product: Product): void
 }
 
 /**

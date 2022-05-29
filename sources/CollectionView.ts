@@ -1,5 +1,5 @@
 import { ForwardCursor } from './cursor'
-import { Readonly, protomark } from './mark'
+import { Readonly, protomark, Mark } from './mark'
 
 import { Collection } from './Collection'
 
@@ -73,7 +73,9 @@ export class CollectionView<Element> implements Collection<Element> {
   /**
    * @see Markable.prototype.is
    */
-  public is = protomark.is
+  public is(markLike: Mark.Alike): boolean {
+    return protomark.is(this.constructor, markLike)
+  }
 
   /**
    * @see Comparable.prototype.equals

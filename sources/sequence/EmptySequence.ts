@@ -1,5 +1,5 @@
 import { ForwardCursor } from '../cursor'
-import { Readonly, Empty, protomark, Markable } from '../mark'
+import { Readonly, Empty, protomark, Markable, Mark } from '../mark'
 
 import { Collection } from '../Collection'
 import { Sequence } from './Sequence'
@@ -27,45 +27,31 @@ export class EmptySequence<Element> implements Sequence<Element> {
   }
 
   /**
-   * @see Sequence.prototype.last
+   * @see Sequence.prototype.getLast
    */
-  public get last(): undefined {
+  public getLast(): undefined {
     return undefined
   }
 
   /**
-   * @see Sequence.prototype.lastIndex
+   * @see Sequence.prototype.getFirst
    */
-  public get lastIndex(): number {
-    return 0
-  }
-
-  /**
-   * @see Sequence.prototype.first
-   */
-  public get first(): undefined {
+  public getFirst(): undefined {
     return undefined
-  }
-
-  /**
-   * @see Sequence.prototype.firstIndex
-   */
-  public get firstIndex(): number {
-    return 0
   }
 
   /**
    * @see Sequence.prototype.indexOf
    */
-  public indexOf(element: any): undefined {
-    return undefined
+  public indexOf(element: any): number {
+    return -1
   }
 
   /**
    * @see Sequence.prototype.indexOfInSubsequence
    */
-  public indexOfInSubsequence(element: Element, offset: number, size: number): undefined {
-    return undefined
+  public indexOfInSubsequence(element: Element, offset: number, size: number): number {
+    return -1
   }
 
   /**
@@ -137,13 +123,10 @@ export class EmptySequence<Element> implements Sequence<Element> {
   /**
    * @see Markable.prototype.is
    */
-  public is: Markable.Predicate
+  public is(markLike: Mark.Alike): boolean {
+    return protomark.is(this.constructor, markLike)
+  }
 }
-
-/**
- * 
- */
-EmptySequence.prototype.is = protomark.is
 
 /**
  * 

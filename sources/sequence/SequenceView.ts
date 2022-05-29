@@ -1,4 +1,4 @@
-import { Markable, protomark, Readonly } from '../mark'
+import { Mark, protomark, Readonly } from '../mark'
 
 import { Collection } from '../Collection'
 
@@ -36,36 +36,22 @@ export class SequenceView<Element> implements Sequence<Element> {
   /**
    * @see Sequence.prototype.get
    */
-  public get(index: number): Element {
+  public get(index: number): Element | undefined {
     return this._sequence.get(index)
   }
 
   /**
-   * @see Sequence.prototype.firstIndex
+   * @see Sequence.prototype.getFirst
    */
-  public get firstIndex(): number {
-    return this._sequence.firstIndex
+  public getFirst(): Element | undefined {
+    return this._sequence.getFirst()
   }
 
   /**
-   * @see Sequence.prototype.first
+   * @see Sequence.prototype.getLast
    */
-  public get first(): Element {
-    return this._sequence.first
-  }
-
-  /**
-   * @see Sequence.prototype.lastIndex
-   */
-  public get lastIndex(): number {
-    return this._sequence.lastIndex
-  }
-
-  /**
-   * @see Sequence.prototype.last
-   */
-  public get last(): Element {
-    return this._sequence.last
+  public getLast(): Element | undefined {
+    return this._sequence.getLast()
   }
 
   /**
@@ -85,14 +71,14 @@ export class SequenceView<Element> implements Sequence<Element> {
   /**
    * @see Sequence.prototype.indexOf
    */
-  public indexOf(element: Element): number | undefined {
+  public indexOf(element: Element): number {
     return this._sequence.indexOf(element)
   }
 
   /**
   * @see Sequence.prototype.indexOfInSubsequence
   */
-  public indexOfInSubsequence(element: Element, offset: number, size: number): number | undefined {
+  public indexOfInSubsequence(element: Element, offset: number, size: number): number {
     return this._sequence.indexOfInSubsequence(element, offset, size)
   }
 
@@ -155,13 +141,10 @@ export class SequenceView<Element> implements Sequence<Element> {
   /**
    * @see Markable.prototype.is
    */
-  public is: Markable.Predicate
+  public is(markLike: Mark.Alike): boolean {
+    return protomark.is(this.constructor, markLike)
+  }
 }
-
-/**
- * 
- */
-SequenceView.prototype.is = protomark.is
 
 /**
  * 

@@ -5,7 +5,7 @@ import { ReallocableCollection } from '../ReallocableCollection'
 
 import { Heap } from './Heap'
 import { ForwardCursor } from '../cursor'
-import { Markable, protomark } from '../mark'
+import { Mark, Markable, protomark } from '../mark'
 
 /**
  * An object that uses a Pack instance as a Heap.
@@ -25,7 +25,7 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   /**
    *  
    */
-  private _view: Sequence<Element>
+  private readonly _view: Sequence<Element>
 
   /**
    * Instantiate a new empty heap.
@@ -43,7 +43,7 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
    * @see Heap.prototype.next
    */
   public next(): Element {
-    const result: Element = this._elements.get(0)
+    const result: Element = this._elements.get(0)!
     this.delete(0)
     return result
   }
@@ -70,7 +70,7 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
     let cell: number = index
     let parent: number = (cell - 1) >> 1
 
-    while (cell > 0 && comparator(elements.get(cell), elements.get(parent)) > 0) {
+    while (cell > 0 && comparator(elements.get(cell)!, elements.get(parent)!) > 0) {
       elements.swap(cell, parent)
       cell = parent
       parent = (cell - 1) >> 1
@@ -95,15 +95,15 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
     let next: number = (cell << 1) + 1
 
     while (next < size) {
-      if (next + 1 < size && comparator(elements.get(cell), elements.get(next + 1)) < 0) {
-        if (comparator(elements.get(next), elements.get(next + 1)) < 0) {
+      if (next + 1 < size && comparator(elements.get(cell)!, elements.get(next + 1)!) < 0) {
+        if (comparator(elements.get(next)!, elements.get(next + 1)!) < 0) {
           elements.swap(cell, next + 1)
           cell = next + 1
         } else {
           elements.swap(cell, next)
           cell = next
         }
-      } else if (comparator(elements.get(cell), elements.get(next)) < 0) {
+      } else if (comparator(elements.get(cell)!, elements.get(next)!) < 0) {
         elements.swap(cell, next)
         cell = next
       } else {
@@ -134,13 +134,13 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
    */
   public compare(left: number, right: number): number {
     const elements: Pack<Element> = this._elements
-    return this._comparator(elements.get(left), elements.get(right))
+    return this._comparator(elements.get(left)!, elements.get(right)!)
   }
 
   /**
    * @see Sequence.prototype.get
    */
-  public get(index: number): Element {
+  public get(index: number): Element | undefined {
     return this._elements.get(index)
   }
 
@@ -173,31 +173,17 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   }
 
   /**
-   * @see Sequence.prototype.first
+   * @see Sequence.prototype.getFirst
    */
-  public get first(): Element {
-    return this._elements.first
+  public getFirst(): Element | undefined {
+    return this._elements.getFirst()
   }
 
   /**
-   * @see Sequence.prototype.firstIndex
+   * @see Sequence.prototype.getLast
    */
-  public get firstIndex(): number {
-    return this._elements.firstIndex
-  }
-
-  /**
-   * @see Sequence.prototype.last
-   */
-  public get last(): Element {
-    return this._elements.last
-  }
-
-  /**
-   * @see Sequence.prototype.lastIndex
-   */
-  public get lastIndex(): number {
-    return this._elements.lastIndex
+  public getLast(): Element | undefined {
+    return this._elements.getLast()
   }
 
   /**
@@ -302,13 +288,10 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   /**
    * @see Markable.prototype.is
    */
-  public is: Markable.Predicate
+  public is(markLike: Mark.Alike): boolean {
+    return protomark.is(this.constructor, markLike)
+  }
 }
-
-/**
- * 
- */
-PackHeap.prototype.is = protomark.is
 
 /**
  * 
@@ -317,8 +300,8 @@ export namespace PackHeap {
   /**
    * 
    */
-  export function any<T>(capacity: number, comparator: Comparator<T, T>): PackHeap<T> {
-    return new PackHeap<T>(Pack.any(capacity), comparator)
+  export function any<Element>(capacity: number, comparator: Comparator<Element | null, Element | null>): PackHeap<Element | null> {
+    return new PackHeap(Pack.any<Element>(capacity), comparator)
   }
 
   /**
@@ -380,7 +363,7 @@ export namespace PackHeap {
   /**
    * 
    */
-  export function fromPack<T>(pack: Pack<T>, comparator: Comparator<T, T>): PackHeap<T> {
-    return new PackHeap<T>(pack, comparator)
+  export function fromPack<Element>(pack: Pack<Element>, comparator: Comparator<Element, Element>): PackHeap<Element> {
+    return new PackHeap<Element>(pack, comparator)
   }
 }

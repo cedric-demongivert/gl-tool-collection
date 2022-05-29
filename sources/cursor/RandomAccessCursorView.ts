@@ -1,4 +1,4 @@
-import { Markable, protomark, Readonly } from "../mark"
+import { Mark, protomark, Readonly } from "../mark"
 import { BidirectionalCursor } from "./BidirectionalCursor"
 import { Cursor } from "./Cursor"
 import { ForwardCursor } from "./ForwardCursor"
@@ -133,15 +133,12 @@ export class RandomAccessCursorView<Element> implements RandomAccessCursor<Eleme
   }
 
   /**
-   * @see Cursor.prototype.is
+   * @see Markable.prototype.is
    */
-  public is: Markable.Predicate
+  public is(markLike: Mark.Alike): boolean {
+    return protomark.is(this.constructor, markLike)
+  }
 }
-
-/**
- * 
- */
-RandomAccessCursorView.prototype.is = protomark.is
 
 /**
  * 

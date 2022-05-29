@@ -22,7 +22,7 @@ export namespace protomark {
   /**
    * Implements the "is" method by using the prototype chain of the given instance to check if it contains a given mark.
    */
-  export function is(mark: Mark.Alike): boolean {
-    return this[Mark.resolve(mark)] === true || Mark.resolve(mark) === Markable.MARK
+  export function is(instance: Function, mark: Mark.Alike): boolean {
+    return instance.prototype[Mark.resolve(mark)] === true || Mark.resolve(mark) === Markable.MARK
   }
 }

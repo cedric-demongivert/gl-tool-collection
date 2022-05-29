@@ -1,5 +1,5 @@
 import { ForwardCursor } from '../cursor'
-import { Readonly, protomark, Markable } from '../mark'
+import { Readonly, protomark, Markable, Mark } from '../mark'
 
 import { Collection } from '../Collection'
 
@@ -97,13 +97,10 @@ export class GroupView<Element> implements Group<Element> {
   /**
    * @see Markable.prototype.is
    */
-  public is: Markable.Predicate
+  public is(markLike: Mark.Alike): boolean {
+    return protomark.is(this.constructor, markLike)
+  }
 }
-
-/**
- * 
- */
-GroupView.prototype.is = protomark.is
 
 /**
  * 

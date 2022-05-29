@@ -1,5 +1,5 @@
 import { ForwardCursor } from '../cursor'
-import { Readonly, protomark, Markable } from '../mark'
+import { Readonly, protomark, Markable, Mark } from '../mark'
 
 import { Collection } from '../Collection'
 
@@ -28,31 +28,17 @@ export class OrderedGroupView<Element> implements OrderedGroup<Element> {
   }
 
   /**
-   * @see Sequence.prototype.firstIndex
+   * @see Sequence.prototype.getFirst
    */
-  public get firstIndex(): number {
-    return this._group.firstIndex
+  public getFirst(): Element | undefined {
+    return this._group.getFirst()
   }
 
   /**
-   * @see Sequence.prototype.first
+   * @see Sequence.prototype.getLast
    */
-  public get first(): Element {
-    return this._group.first
-  }
-
-  /**
-   * @see Sequence.prototype.lastIndex
-   */
-  public get lastIndex(): number {
-    return this._group.lastIndex
-  }
-
-  /**
-   * @see Sequence.prototype.last
-   */
-  public get last(): Element {
-    return this._group.last
+  public getLast(): Element | undefined {
+    return this._group.getLast()
   }
 
   /**
@@ -72,21 +58,21 @@ export class OrderedGroupView<Element> implements OrderedGroup<Element> {
   /**
    * @see Sequence.prototype.get
    */
-  public get(index: number): Element {
+  public get(index: number): Element | undefined {
     return this._group.get(index)
   }
 
   /**
    * @see Sequence.prototype.indexOf
    */
-  public indexOf(element: Element): number | undefined {
+  public indexOf(element: Element): number {
     return this._group.indexOf(element)
   }
 
   /**
    * @see Sequence.prototype.indexOfInSubsequence
    */
-  public indexOfInSubsequence(element: Element, offset: number, size: number): number | undefined {
+  public indexOfInSubsequence(element: Element, offset: number, size: number): number {
     return this._group.indexOfInSubsequence(element, offset, size)
   }
 
@@ -147,22 +133,19 @@ export class OrderedGroupView<Element> implements OrderedGroup<Element> {
   }
 
   /**
-   * @see Markable.prototype.is
-   */
-  public is: Markable.Predicate
-
-  /**
    * @see Object.prototype.toString
    */
   public toString(): string {
     return this.constructor.name + ' (' + this._group.constructor.name + ') ' + Group.stringify(this)
   }
-}
 
-/**
- * 
- */
-OrderedGroupView.prototype.is = protomark.is
+  /**
+   * @see Markable.prototype.is
+   */
+  public is(markLike: Mark.Alike): boolean {
+    return protomark.is(this.constructor, markLike)
+  }
+}
 
 /**
  * 

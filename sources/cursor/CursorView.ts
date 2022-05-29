@@ -1,4 +1,4 @@
-import { Markable, protomark, Readonly } from "../mark"
+import { Mark, protomark, Readonly } from "../mark"
 import { Cursor } from "./Cursor"
 
 /**
@@ -65,13 +65,10 @@ export class CursorView<Element> implements Cursor<Element> {
   /**
    * @see Markable.prototype.is
    */
-  public is: Markable.Predicate
+  public is(markLike: Mark.Alike): boolean {
+    return protomark.is(this.constructor, markLike)
+  }
 }
-
-/**
- * 
- */
-CursorView.prototype.is = protomark.is
 
 /**
  * 

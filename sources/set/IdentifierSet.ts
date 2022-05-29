@@ -206,7 +206,7 @@ export class IdentifierSet implements OrderedSet<number>, ReallocableCollection 
    * @returns The maximum element of this set.
    */
   public max(): number {
-    if (this._size <= 0) return undefined
+    if (this._size <= 0) return 0
 
     let result: number = this._dense[0]
 
@@ -224,7 +224,7 @@ export class IdentifierSet implements OrderedSet<number>, ReallocableCollection 
    * @returns The minimum element of this set.
    */
   public min(): number {
-    if (this._size <= 0) return undefined
+    if (this._size <= 0) return 0
 
     let result: number = this._dense[0]
 
@@ -244,31 +244,17 @@ export class IdentifierSet implements OrderedSet<number>, ReallocableCollection 
   }
 
   /**
-   * @see Sequence.prototype.first
+   * @see Sequence.prototype.getFirst
    */
-  public get first(): number {
+  public getFirst(): number | undefined {
     return this._dense[0]
   }
 
   /**
-   * @see Sequence.prototype.firstIndex
+   * @see Sequence.prototype.getLast
    */
-  public get firstIndex(): number {
-    return 0
-  }
-
-  /**
-   * @see Sequence.prototype.last
-   */
-  public get last(): number {
+  public getLast(): number | undefined {
     return this._dense[this._size - 1]
-  }
-
-  /**
-   * @see Sequence.prototype.lastIndex
-   */
-  public get lastIndex(): number {
-    return this._size - 1
   }
 
   /**
@@ -346,7 +332,9 @@ export class IdentifierSet implements OrderedSet<number>, ReallocableCollection 
   /**
    * @see Markable.prototype.is
    */
-  public is: Markable.Predicate
+  public is(markLike: Mark.Alike): boolean {
+    return protomark.is(this.constructor, markLike)
+  }
 
   /**
    * @see Object.prototype.toString
@@ -355,11 +343,6 @@ export class IdentifierSet implements OrderedSet<number>, ReallocableCollection 
     return this.constructor.name + ' ' + Group.stringify(this)
   }
 }
-
-/**
- * 
- */
-IdentifierSet.prototype.is = protomark.is
 
 /**
  * 

@@ -1,5 +1,5 @@
 import { EmptyForwardCursor } from './cursor'
-import { Readonly, Empty, protomark } from './mark'
+import { Readonly, Empty, protomark, Mark } from './mark'
 
 import { Collection } from './Collection'
 
@@ -62,7 +62,9 @@ export class EmptyCollection<Element> implements Collection<Element> {
   /**
    * @see Markable.prototype.is
    */
-  public is = protomark.is
+  public is(markLike: Mark.Alike): boolean {
+    return protomark.is(this.constructor, markLike)
+  }
 
   /**
    * @see Comparable.prototype.equals

@@ -1,10 +1,9 @@
 import * as chalk from 'chalk'
+import { equals, toString } from '@cedric-demongivert/gl-tool-utils'
 
 import { Markable } from '../../sources/mark/Markable'
 import { Sequence } from '../../sources/sequence/Sequence'
 import { ArrayPack } from '../../sources/sequence/ArrayPack'
-import { toString } from '../../sources/algorithm/toString'
-import { equals } from '../../sources/algorithm/equals'
 
 import { toBeMarkable } from './toBeMarkable'
 import { UnicodeTablePrinter } from './UnicodeTablePrinter'
@@ -52,7 +51,7 @@ declare global {
 /**
  * 
  */
-function createNotASequenceMessage(this: jest.MatcherContext, received: Markable) {
+function createNotASequenceMessage(this: jest.MatcherContext, received: Markable): string {
   return (
     'Expected the "is" method of ' + received.toString() + ' to return ' + this.utils.printExpected('true') +
     ' for the Sequence container but received ' + this.utils.printReceived(received.is(Sequence)) + ' instead.'
@@ -62,7 +61,7 @@ function createNotASequenceMessage(this: jest.MatcherContext, received: Markable
 /**
  * 
  */
-function createNotEqualEntriesMessage(this: jest.MatcherContext, received: Sequence<unknown>, expected: Sequence<unknown>) {
+function createNotEqualEntriesMessage(this: jest.MatcherContext, received: Sequence<unknown>, expected: Sequence<unknown>): string {
   const table: UnicodeTablePrinter = new UnicodeTablePrinter(3)
 
   table.pushValues('#', 'received', 'expected')
@@ -101,7 +100,7 @@ function createNotEqualEntriesMessage(this: jest.MatcherContext, received: Seque
 /**
  * 
  */
-function createEqualSequenceMessage(this: jest.MatcherContext, received: Sequence<unknown>, expected: Sequence<unknown>) {
+function createEqualSequenceMessage(this: jest.MatcherContext, received: Sequence<unknown>, expected: Sequence<unknown>): string {
   return 'Expected ' + received.toString() + ' to not equal sequence ' + Sequence.stringify(expected) + '.'
 }
 
@@ -116,28 +115,28 @@ type Expectation = (
 /**
  * 
  */
-export function toEqualSequence(received: unknown, sequence: Sequence<unknown>)
+export function toEqualSequence(received: unknown, sequence: Sequence<unknown>): jest.CustomMatcherResult
 /**
  * 
  */
-export function toEqualSequence(received: unknown, values: unknown[])
+export function toEqualSequence(received: unknown, values: unknown[]): jest.CustomMatcherResult
 /**
  * 
  */
-export function toEqualSequence(received: unknown, ...values: unknown[])
+export function toEqualSequence(received: unknown, ...values: unknown[]): jest.CustomMatcherResult
 /**
  * 
  */
-export function toEqualSequence(received: unknown, values: Iterable<unknown>)
+export function toEqualSequence(received: unknown, values: Iterable<unknown>): jest.CustomMatcherResult
 /*
 * 
 */
-export function toEqualSequence(received: unknown, value: Iterator<unknown>)
-export function toEqualSequence(this: jest.MatcherContext, received: unknown, ...expected: Expectation) {
+export function toEqualSequence(received: unknown, value: Iterator<unknown>): jest.CustomMatcherResult
+export function toEqualSequence(this: jest.MatcherContext, received: unknown, ...expected: Expectation): jest.CustomMatcherResult {
   if (expected.length === 1) {
     const parameter: unknown = expected[0]
 
-    if (typeof parameter !== 'object') {
+    if (parameter == null || typeof parameter !== 'object') {
       return implementation.call(this, received, ArrayPack.of(parameter))
     }
 
@@ -145,9 +144,9 @@ export function toEqualSequence(this: jest.MatcherContext, received: unknown, ..
       return implementation.call(this, received, parameter)
     } else if (parameter instanceof Array) {
       return implementation.call(this, received, ArrayPack.wrap(parameter))
-    } else if (typeof parameter[Symbol.iterator] === 'function') {
-      return implementation.call(this, received, ArrayPack.ofIterator(parameter[Symbol.iterator]()))
-    } else if (typeof parameter['next'] === 'function') {
+    } else if (typeof (parameter as any)[Symbol.iterator] === 'function') {
+      return implementation.call(this, received, ArrayPack.ofIterator((parameter as any)[Symbol.iterator]()))
+    } else if (typeof (parameter as any).next === 'function') {
       return implementation.call(this, received, ArrayPack.ofIterator(parameter as Iterator<unknown>))
     } else {
       return implementation.call(this, received, ArrayPack.of(parameter))
@@ -160,7 +159,7 @@ export function toEqualSequence(this: jest.MatcherContext, received: unknown, ..
 /**
  * 
  */
-function implementation(this: jest.MatcherContext, received: unknown, expected: Sequence<unknown>) {
+function implementation(this: jest.MatcherContext, received: unknown, expected: Sequence<unknown>): jest.CustomMatcherResult {
   if (!Markable.is(received)) {
     return toBeMarkable.call(this, received)
   }

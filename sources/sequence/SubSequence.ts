@@ -1,4 +1,4 @@
-import { Markable, protomark } from '../mark'
+import { Mark, protomark } from '../mark'
 import { Sequence } from '../Sequence'
 
 import { SequenceCursor } from './SequenceCursor'
@@ -32,8 +32,8 @@ export class SubSequence<Output> implements Sequence<Output> {
    */
   public constructor(sequence: Sequence<Output>) {
     this.parent = sequence
-    this.from = sequence.firstIndex
-    this.to = sequence.lastIndex + 1
+    this.from = 0
+    this.to = sequence.size
     this._view = Sequence.view(this)
   }
 
@@ -47,36 +47,22 @@ export class SubSequence<Output> implements Sequence<Output> {
   /**
    * @see Sequence.prototype.get
    */
-  public get(index: number): Output {
+  public get(index: number): Output | undefined {
     return this.parent.get(index - this.from)
   }
 
   /**
-   * @see Sequence.prototype.last
+   * @see Sequence.prototype.getLast
    */
-  public get last(): Output {
+  public getLast(): Output | undefined {
     return this.to === this.from ? undefined : this.parent.get(this.to - 1)
-  }
-
-  /**
-   * @see Sequence.prototype.lastIndex
-   */
-  public get lastIndex(): number {
-    return this.to === this.from ? 0 : this.size - 1
   }
 
   /**
    * @see Sequence.prototype.first
    */
-  public get first(): Output {
+  public getFirst(): Output | undefined {
     return this.to === this.from ? undefined : this.parent.get(this.from)
-  }
-
-  /**
-   * @see Sequence.prototype.firstIndex
-   */
-  public get firstIndex(): number {
-    return 0
   }
 
   /**
@@ -137,7 +123,7 @@ export class SubSequence<Output> implements Sequence<Output> {
    */
   public * values(): IterableIterator<Output> {
     for (let index = this.from, length = this.to; index < length; ++index) {
-      yield this.parent.get(index)
+      yield this.parent.get(index)!
     }
   }
 
@@ -167,13 +153,10 @@ export class SubSequence<Output> implements Sequence<Output> {
   /**
    * @see Markable.prototype.is
    */
-  public is: Markable.Predicate
+  public is(markLike: Mark.Alike): boolean {
+    return protomark.is(this.constructor, markLike)
+  }
 }
-
-/**
- * 
- */
-SubSequence.prototype.is = protomark.is
 
 /**
  * 

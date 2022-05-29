@@ -6,6 +6,11 @@ import { ArrayPack } from '../../sources/sequence/ArrayPack'
 
 import '../matchers'
 
+const values: number[] = []
+
+values.length = 15
+
+
 /**
  * 
  */
@@ -514,7 +519,7 @@ describe('sequence/ArrayPack', function () {
 
       expect(pack).toEqualSequence(1, 3, 2, 0)
 
-      pack.sort(Comparator.compareNumbers)
+      pack.sort(Comparator.compareOptionalNumbers)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
     })
@@ -527,7 +532,7 @@ describe('sequence/ArrayPack', function () {
 
       expect(pack.capacity).toBe(4)
 
-      pack.sort(Comparator.compareNumbers)
+      pack.sort(Comparator.compareOptionalNumbers)
 
       expect(pack.capacity).toBe(4)
     })
@@ -545,7 +550,7 @@ describe('sequence/ArrayPack', function () {
 
       expect(pack).toEqualSequence(1, 3, 2, 0, 7, 4, 6, 8, 5)
 
-      pack.subsort(2, 5, Comparator.compareNumbers)
+      pack.subsort(2, 5, Comparator.compareOptionalNumbers)
 
       expect(pack).toEqualSequence(1, 3, 0, 2, 4, 6, 7, 8, 5)
     })
@@ -558,7 +563,7 @@ describe('sequence/ArrayPack', function () {
 
       expect(pack.capacity).toBe(9)
 
-      pack.subsort(2, 5, Comparator.compareNumbers)
+      pack.subsort(2, 5, Comparator.compareOptionalNumbers)
 
       expect(pack.capacity).toBe(9)
     })

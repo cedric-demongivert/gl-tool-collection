@@ -41,7 +41,7 @@ export namespace Markable {
    * 
    */
   export function isAlike(instance: unknown): instance is { is: unknown } {
-    return typeof instance === 'object' && 'is' in instance
+    return typeof instance === 'object' && instance != null && 'is' in instance
   }
 
   /**

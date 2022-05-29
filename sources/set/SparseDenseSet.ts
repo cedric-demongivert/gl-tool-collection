@@ -24,17 +24,6 @@ export interface SparseDenseSet extends OrderedSet<number>, ReallocableCollectio
  */
 export namespace SparseDenseSet {
   /**
-  * Copy an existing sparse-dense set instance.
-  *
-  * @param toCopy - An instance to copy.
-  *
-  * @returns A copy of the given instance.
-  */
-  export function copy(toCopy: SparseDenseSet): SparseDenseSet {
-    return toCopy == null ? null : toCopy.clone()
-  }
-
-  /**
   * Instantiate a uint32 sparse-dense set.
   *
   * @param capacity - Capacity of the sparse-dense set to instantiate.
@@ -74,9 +63,9 @@ export namespace SparseDenseSet {
   *
   * @returns A new sparse-dense set of the given capacity.
   */
-  export function any(capacity: number): SparseDenseSet {
-    return PackSparseDenseSet.any(capacity)
-  }
+  // export function any(capacity: number): SparseDenseSet {
+  //  return PackSparseDenseSet.any(capacity)
+  // }
 
   /**
   * Instantiate a sparse-dense set that can store numbers up to the given value.

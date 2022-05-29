@@ -1,5 +1,5 @@
 import { Cursor, ForwardCursor, BidirectionalCursor, RandomAccessCursor } from '../cursor'
-import { Markable, protomark } from '../mark'
+import { Mark, protomark } from '../mark'
 
 import { Sequence } from './Sequence'
 
@@ -150,13 +150,10 @@ export class SequenceCursor<Element> implements RandomAccessCursor<Element>
   /**
    * @see Markable.prototype.is
    */
-  public is: Markable.Predicate
+  public is(markLike: Mark.Alike): boolean {
+    return protomark.is(this.constructor, markLike)
+  }
 }
-
-/**
- * 
- */
-SequenceCursor.prototype.is = protomark.is
 
 /**
  * 

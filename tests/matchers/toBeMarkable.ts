@@ -1,3 +1,4 @@
+import { toString } from '@cedric-demongivert/gl-tool-utils'
 import { Markable } from '../../sources/mark/Markable'
 
 /**
@@ -25,7 +26,7 @@ declare global {
  */
 function createIsNotAnObjectMessage(this: jest.MatcherContext, received: unknown) {
   return (
-    'Expected typeof ' + received.toString() + ' to be ' + this.utils.printExpected('object') +
+    'Expected typeof ' + toString(received) + ' to be ' + this.utils.printExpected('object') +
     ' but received ' + this.utils.printReceived(typeof received) + ' instead.'
   )
 }
@@ -54,7 +55,7 @@ function createIllegalIsPropertyMessage(this: jest.MatcherContext, received: { i
  */
 function createDoesNotMatchMarkableMessage(this: jest.MatcherContext, received: unknown, result: unknown) {
   return (
-    'Expected the "is" method of ' + received.toString() + ' to return ' + this.utils.printExpected(true) +
+    'Expected the "is" method of ' + toString(received) + ' to return ' + this.utils.printExpected(true) +
     ' after a call with the Markable container but received ' + this.utils.printReceived(result) + ' instead.'
   )
 }
@@ -63,7 +64,7 @@ function createDoesNotMatchMarkableMessage(this: jest.MatcherContext, received: 
  * 
  */
 function createIsMarkableMessage(this: jest.MatcherContext, received: unknown) {
-  return 'Expected ' + received.toString() + ' to not implement the Markable interface.'
+  return 'Expected ' + toString(received) + ' to not implement the Markable interface.'
 }
 
 /**
@@ -76,8 +77,8 @@ function containsIsProperty(value: object): value is { is: unknown } {
 /**
  * 
  */
-export function toBeMarkable(this: jest.MatcherContext, received: unknown) {
-  if (typeof received !== 'object') {
+export function toBeMarkable(this: jest.MatcherContext, received: unknown): jest.CustomMatcherResult {
+  if (received == null || typeof received !== 'object') {
     return { pass: false, message: createIsNotAnObjectMessage.bind(this, received) }
   }
 

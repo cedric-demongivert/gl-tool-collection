@@ -4,7 +4,7 @@ import { Sequence, Pack } from '../sequence'
 import { OrderedSet } from './OrderedSet'
 import { Set } from './Set'
 import { Group } from './Group'
-import { Markable, protomark } from '../mark'
+import { Mark, Markable, protomark } from '../mark'
 import { StaticCollection } from '../StaticCollection'
 import { Collection } from '../Collection'
 import { OrderedGroup } from './OrderedGroup'
@@ -29,7 +29,7 @@ export class PackSet<Element> implements ReallocableCollection, OrderedSet<Eleme
   /**
    * 
    */
-  private _view: OrderedGroup<Element>
+  private readonly _view: OrderedGroup<Element>
 
   /**
    * Create a new set collection based upon a pack instance.
@@ -122,7 +122,7 @@ export class PackSet<Element> implements ReallocableCollection, OrderedSet<Eleme
   /**
    * @see Sequence.prototype.get
    */
-  public get(index: number): Element {
+  public get(index: number): Element | undefined {
     return this._elements.get(index)
   }
 
@@ -166,31 +166,17 @@ export class PackSet<Element> implements ReallocableCollection, OrderedSet<Eleme
   }
 
   /**
-   * @see Sequence.prototype.first
+   * @see Sequence.prototype.getFirst
    */
-  public get first(): Element {
-    return this._elements.first
-  }
-
-  /**
-   * @see Sequence.prototype.firstIndex
-   */
-  public get firstIndex(): number {
-    return this._elements.firstIndex
+  public getFirst(): Element | undefined {
+    return this._elements.getFirst()
   }
 
   /**
    * @see Sequence.prototype.last
    */
-  public get last(): Element {
-    return this._elements.last
-  }
-
-  /**
-   * @see Sequence.prototype.lastIndex
-   */
-  public get lastIndex(): number {
-    return this._elements.lastIndex
+  public getLast(): Element | undefined {
+    return this._elements.getLast()
   }
 
   /**
@@ -245,7 +231,9 @@ export class PackSet<Element> implements ReallocableCollection, OrderedSet<Eleme
   /**
    * @see Markable.prototype.is
    */
-  public is: Markable.Predicate
+  public is(markLike: Mark.Alike): boolean {
+    return protomark.is(this.constructor, markLike)
+  }
 
   /**
    * @see Object.prototype.toString
@@ -254,11 +242,6 @@ export class PackSet<Element> implements ReallocableCollection, OrderedSet<Eleme
     return this.constructor.name + ' (' + this._elements.constructor.name + ') ' + Group.stringify(this)
   }
 }
-
-/**
- * 
- */
-PackSet.prototype.is = protomark.is
 
 export namespace PackSet {
   /**
@@ -277,8 +260,8 @@ export namespace PackSet {
   *
   * @returns A new set that wrap a pack of the given type of instance.
   */
-  export function any<T>(capacity: number): PackSet<T> {
-    return new PackSet<T>(Pack.any(capacity))
+  export function any<Element>(capacity: number): PackSet<Element | null> {
+    return new PackSet(Pack.any<Element>(capacity))
   }
 
   /**

@@ -4,7 +4,7 @@ import { Allocator } from "./Allocator"
 /**
  * 
  */
-export class Allocated<Element = any> implements Clearable {
+export class Allocated<Element = unknown> implements Clearable {
   /**
    * 
    */

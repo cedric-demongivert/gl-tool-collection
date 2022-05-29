@@ -37,7 +37,7 @@
     "webpack-cli": "^4.9.2"
   },
   "dependencies": {
-    "@cedric-demongivert/gl-tool-utils": "^0.0.9",
+    "@cedric-demongivert/gl-tool-utils": "^0.2.1",
     "chalk": "^4.1.2"
   }
 }

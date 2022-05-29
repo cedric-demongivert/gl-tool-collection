@@ -1,7 +1,6 @@
-import { Comparator } from '@cedric-demongivert/gl-tool-utils'
-import { Markable, protomark } from '../mark'
+import { Comparator, equals } from '@cedric-demongivert/gl-tool-utils'
+import { Mark, protomark } from '../mark'
 
-import { equals } from '../algorithm/equals'
 import { quicksort } from '../algorithm/quicksort'
 
 import { Buffer } from '../native/Buffer'
@@ -143,31 +142,17 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see Sequence.prototype.last
+   * @see Sequence.prototype.getLast
    */
-  public get last(): number {
+  public getLast(): number | undefined {
     return this._elements[Math.max(this._size - 1, 0)]
   }
 
   /**
-   * @see Sequence.prototype.lastIndex
+   * @see Sequence.prototype.getFirst
    */
-  public get lastIndex(): number {
-    return Math.max(this._size - 1, 0)
-  }
-
-  /**
-   * @see Sequence.prototype.first
-   */
-  public get first(): number {
+  public getFirst(): number | undefined {
     return this._elements[0]
-  }
-
-  /**
-   * @see Sequence.prototype.firstIndex
-   */
-  public get firstIndex(): number {
-    return 0
   }
 
   /**
@@ -394,7 +379,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
     const elements: Wrapped = this._elements
 
     for (let index = 0, length = toCopy.size; index < length; ++index) {
-      elements[index] = toCopy.get(index)
+      elements[index] = toCopy.get(index)!
     }
   }
 
@@ -402,15 +387,14 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
    * @see Sequence.prototype.concat
    */
   public concat(toConcat: Sequence<number>): void {
-    const firstIndex: number = toConcat.firstIndex
-    const lastIndex: number = toConcat.lastIndex + 1
+    const toConcatSize: number = toConcat.size
 
-    if (this.capacity < this.size + toConcat.size) {
-      this.reallocate(this.size + toConcat.size)
+    if (this.capacity < this.size + toConcatSize) {
+      this.reallocate(this.size + toConcatSize)
     }
 
-    for (let index = firstIndex; index < lastIndex; ++index) {
-      this.push(toConcat.get(index))
+    for (let index = 0; index < toConcatSize; ++index) {
+      this.push(toConcat.get(index)!)
     }
   }
 
@@ -512,13 +496,10 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   /**
    * @see Markable.prototype.is
    */
-  public is: Markable.Predicate
+  public is(markLike: Mark.Alike): boolean {
+    return protomark.is(this.constructor, markLike)
+  }
 }
-
-/**
- * 
- */
-BufferPack.prototype.is = protomark.is
 
 export namespace BufferPack {
   /**

@@ -82,8 +82,8 @@ export namespace Heap {
   /**
    * 
    */
-  export function any<T>(capacity: number, comparator: Comparator<T, T>): PackHeap<T> {
-    return new PackHeap<T>(Pack.any(capacity), comparator)
+  export function any<Element>(capacity: number, comparator: Comparator<Element | null, Element | null>): PackHeap<Element | null> {
+    return new PackHeap(Pack.any<Element>(capacity), comparator)
   }
 
   /**
@@ -145,7 +145,7 @@ export namespace Heap {
   /**
    * 
    */
-  export function fromPack<T>(pack: Pack<T>, comparator: Comparator<T, T>): PackHeap<T> {
-    return new PackHeap<T>(pack, comparator)
+  export function fromPack<Element>(pack: Pack<Element>, comparator: Comparator<Element, Element>): PackHeap<Element> {
+    return new PackHeap<Element>(pack, comparator)
   }
 }

@@ -1,4 +1,4 @@
-import { Markable, protomark, Readonly } from "../mark"
+import { Mark, protomark, Readonly } from "../mark"
 import { Cursor } from "./Cursor"
 import { ForwardCursor } from "./ForwardCursor"
 
@@ -101,15 +101,12 @@ export class ForwardCursorView<Element> implements ForwardCursor<Element> {
   }
 
   /**
-   * @see Cursor.prototype.is
+   * @see Markable.prototype.is
    */
-  public is: Markable.Predicate
+  public is(markLike: Mark.Alike): boolean {
+    return protomark.is(this.constructor, markLike)
+  }
 }
-
-/**
- * 
- */
-ForwardCursorView.prototype.is = protomark.is
 
 /**
  * 

@@ -1,6 +1,7 @@
+import { Assignable, toString } from '@cedric-demongivert/gl-tool-utils'
+
 import { Collection } from '../Collection'
 import { Mark, Markable } from '../mark'
-import { toString } from '../algorithm'
 
 /**
  * A sequence is an ordered collection of elements in which repetitions are allowed; 
@@ -32,17 +33,7 @@ export interface Sequence<Element> extends Collection<Element> {
    *
    * @returns The last element of this sequence of elements if any.
    */
-  readonly last: Element | undefined
-
-  /**
-   * Return the index of the last element of this sequence of elements.
-   *
-   * If this sequence does not have an ending element because it describes a 
-   * semi-finite or an infinite series, this method MUST return undefined.
-   *
-   * @returns The index of the last element of this sequence of elements, if any.
-   */
-  readonly lastIndex: number | undefined
+  getLast(): Element | undefined
 
   /**
    * Return the first element of this sequence of elements.
@@ -55,25 +46,16 @@ export interface Sequence<Element> extends Collection<Element> {
    *
    * @returns The first element of this sequence of elements.
    */
-  readonly first: Element | undefined
+  getFirst(): Element | undefined
 
   /**
-   * Return the index of the first element of this sequence of elements.
-   *
-   * If this sequence does not have an starting element because it describes a 
-   * semi-finite or an infinite series, this method MUST return undefined.
-   *
-   * @returns The index of the first element of this sequence of elements, if any.
+   * 
    */
-  readonly firstIndex: number | undefined
+  getFirst<Output extends Assignable<Element>>(output: Output): Output | undefined
 
   /**
-   * Return the index of the first element equal to the given one in this sequence or undefined 
-   * if the given value does not exist in this sequence of elements.
-   *
-   * If the given element does not exist in this collection, this method will return 
-   * undefined. We prefer to use undefined over any negative indices as a sequence may 
-   * not contain a finite number of elements.
+   * Return the index of the first element equal to the given one in this sequence or a negative 
+   * integer if the given value does not exist in this sequence of elements.
    *
    * A collection may not be randomly accessible, and, in such cases, this method may 
    * use the iterator exposed by this collection to find the requested element. Randomly 
@@ -82,9 +64,9 @@ export interface Sequence<Element> extends Collection<Element> {
    * @param element - An element to search for.
    *
    * @returns Return the index of the first element equal to the given one in this sequence 
-   *         or undefined if the given value does not exist in this sequence of elements.
+   *          or a negative integer if the given value does not exist in this sequence of elements.
    */
-  indexOf(element: Element): number | undefined
+  indexOf(element: Element): number
 
   /**
    * @see Sequence.indexOf
@@ -96,10 +78,10 @@ export interface Sequence<Element> extends Collection<Element> {
    * @param size - Elements to search.
    *
    * @returns Return the index of the first element equal to the given one in the described
-   *         subsequence or undefined if the given value does not exist in the described 
+   *         subsequence or a negative integer if the given value does not exist in the described 
    *         subsequence of elements.
    */
-  indexOfInSubsequence(element: Element, offset: number, size: number): number | undefined
+  indexOfInSubsequence(element: Element, offset: number, size: number): number
 
   /**
    * @see Sequence.has
@@ -123,11 +105,6 @@ export interface Sequence<Element> extends Collection<Element> {
    * @see Collection.view
    */
   view(): Sequence<Element>
-
-  /**
-  * @returns A javascript iterator over this sequence of elements.
-  */
-  [Symbol.iterator](): IterableIterator<Element>
 }
 
 /**

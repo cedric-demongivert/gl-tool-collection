@@ -1,5 +1,4 @@
 import { Comparator } from '@cedric-demongivert/gl-tool-utils'
-
 import { List } from '../sequence/List'
 
 /**
@@ -41,18 +40,18 @@ function partition<Element>(
   comparator: Comparator<Element, Element>,
   left: number, right: number
 ): number {
-  const pivot: Element = sequence.get((left + right) >>> 1)
+  const pivot: Element = sequence.get((left + right) >>> 1)!
   let lower: number = left - 1
   let upper: number = right + 1
 
   do {
     do {
       lower += 1
-    } while (comparator(sequence.get(lower), pivot) < 0)
+    } while (comparator(sequence.get(lower)!, pivot) < 0)
 
     do {
       upper -= 1
-    } while (comparator(sequence.get(upper), pivot) > 0)
+    } while (comparator(sequence.get(upper)!, pivot) > 0)
 
     if (lower >= upper) {
       return upper
