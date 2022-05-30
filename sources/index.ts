@@ -1,6 +1,7 @@
 export { Collection } from './Collection'
 export { CollectionView } from './CollectionView'
 export { EmptyCollection } from './EmptyCollection'
+export { IsCollection } from './IsCollection'
 
 export { ReallocableCollection } from './ReallocableCollection'
 export { StaticCollection } from './StaticCollection'
