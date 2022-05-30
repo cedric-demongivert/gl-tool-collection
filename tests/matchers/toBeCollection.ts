@@ -1,5 +1,6 @@
 import { toString } from '@cedric-demongivert/gl-tool-utils'
 import { Collection } from '../../sources/Collection'
+import { IsCollection } from '../../sources/IsCollection';
 
 /**
  * 
@@ -36,17 +37,17 @@ function createNotAnObjectMessage(this: jest.MatcherContext, received: unknown) 
  */
 function createNoCollectionSymbolMessage(this: jest.MatcherContext, received: object) {
   return (
-    'Expected ' + received.toString() + ' to have a ' + Collection.IS.toString() + ' property.'
+    'Expected ' + received.toString() + ' to have a ' + IsCollection.SYMBOL.toString() + ' property.'
   )
 }
 
 /**
  * 
  */
-function createIllegalCollectionSymbolMessage(this: jest.MatcherContext, received: { [Collection.IS]: unknown }) {
+function createIllegalCollectionSymbolMessage(this: jest.MatcherContext, received: { [IsCollection.SYMBOL]: unknown }) {
   return (
-    'Expected ' + Collection.IS.toString() + ' property of ' + received.toString() + ' to be of type ' + this.utils.printExpected('function') +
-    ' but received an object with a ' + Collection.IS.toString() + ' property of type ' + this.utils.printReceived(typeof received[Collection.IS]) + ' instead.'
+    'Expected ' + IsCollection.SYMBOL.toString() + ' property of ' + received.toString() + ' to be of type ' + this.utils.printExpected('function') +
+    ' but received an object with a ' + IsCollection.SYMBOL.toString() + ' property of type ' + this.utils.printReceived(typeof received[IsCollection.SYMBOL]) + ' instead.'
   )
 }
 
@@ -55,7 +56,7 @@ function createIllegalCollectionSymbolMessage(this: jest.MatcherContext, receive
  */
 function createNotACollectionMessage(this: jest.MatcherContext, received: unknown, result: unknown) {
   return (
-    'Expected the ' + Collection.IS.toString() + ' method of ' + toString(received) + ' to return ' + this.utils.printExpected(true) +
+    'Expected the ' + IsCollection.SYMBOL.toString() + ' method of ' + toString(received) + ' to return ' + this.utils.printExpected(true) +
     ' after a call but received ' + this.utils.printReceived(result) + ' instead.'
   )
 }
@@ -70,8 +71,8 @@ function createIsCollectionMessage(this: jest.MatcherContext, received: unknown)
 /**
  * 
  */
-function containsCollectionSymbol(value: object): value is { [Collection.IS]: unknown } {
-  return (value as any)[Collection.IS] != null
+function containsCollectionSymbol(value: object): value is { [IsCollection.SYMBOL]: unknown } {
+  return (value as any)[IsCollection.SYMBOL] != null
 }
 
 /**
@@ -86,7 +87,7 @@ export function toBeCollection(this: jest.MatcherContext, received: unknown): je
     return { pass: false, message: createNoCollectionSymbolMessage.bind(this, received) }
   }
 
-  const is: unknown = received[Collection.IS]
+  const is: unknown = received[IsCollection.SYMBOL]
 
   if (typeof is !== 'function') {
     return { pass: false, message: createIllegalCollectionSymbolMessage.bind(this, received) }
