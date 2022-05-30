@@ -1,6 +1,7 @@
 import { ForwardCursor } from './cursor'
 
 import { Collection } from './Collection'
+import { IsCollection } from './IsCollection'
 
 /**
  * An empty collection, e.g., a collection of zero elements.
@@ -9,7 +10,7 @@ export class EmptyCollection<Element> implements Collection<Element> {
   /**
    * @see Collection.prototype[Collection.IS]
    */
-  public [Collection.IS](): true {
+  public [IsCollection.SYMBOL](): true {
     return true
   }
 

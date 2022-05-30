@@ -1,5 +1,5 @@
-import { Collection } from '../Collection'
 import { ForwardCursor } from '../cursor'
+import { IsCollection } from '../IsCollection'
 
 import { Group } from './Group'
 import { OrderedGroup } from './OrderedGroup'
@@ -42,9 +42,9 @@ export class OrderedGroupView<Element> implements OrderedGroup<Element> {
   }
 
   /**
-   * @see Collection.prototype[Collection.IS]
+   * @see Collection.prototype[IsCollection.SYMBOL]
    */
-  public [Collection.IS](): true {
+  public [IsCollection.SYMBOL](): true {
     return true
   }
 

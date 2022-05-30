@@ -1,4 +1,4 @@
-import { Collection } from '../Collection'
+import { IsCollection } from '../IsCollection'
 import { Sequence } from '../Sequence'
 
 import { SequenceCursor } from './SequenceCursor'
@@ -38,9 +38,9 @@ export class SubSequence<Output> implements Sequence<Output> {
   }
 
   /**
-   * @see Collection.prototype[Collection.IS]
+   * @see Collection.prototype[IsCollection.SYMBOL]
    */
-  public [Collection.IS](): true {
+  public [IsCollection.SYMBOL](): true {
     return true
   }
 

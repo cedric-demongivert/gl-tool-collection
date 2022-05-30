@@ -7,11 +7,6 @@ import { Sequence } from './Sequence'
  * An empty sequence, e.g., a sequence of zero elements.
  */
 export class EmptySequence<Element> extends EmptyCollection<Element> implements Sequence<Element> {
-  [Collection
-    .
-    IS](): true {
-    throw new Error('Method not implemented.')
-  }
   /**
    * @see Collection.prototype.isSequence
    */

@@ -7,7 +7,7 @@ import { Pack } from './Pack'
 import { Heap } from './Heap'
 
 import { ForwardCursor } from '../cursor'
-import { Collection } from '../Collection'
+import { IsCollection } from '../IsCollection'
 
 /**
  * An object that uses a Pack instance as a Heap.
@@ -42,9 +42,9 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   }
 
   /**
-   * @see Collection.prototype[Collection.IS]
+   * @see Collection.prototype[IsCollection.SYMBOL]
    */
-  public [Collection.IS](): true {
+  public [IsCollection.SYMBOL](): true {
     return true
   }
 

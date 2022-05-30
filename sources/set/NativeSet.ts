@@ -1,7 +1,7 @@
 import { Set as GLToolSet } from './Set'
 import { Group } from './Group'
 import { ForwardCursor, NativeCursor } from '../cursor'
-import { Collection } from '../Collection'
+import { IsCollection } from '../IsCollection'
 
 /**
  * 
@@ -30,9 +30,9 @@ export class NativeSet<Element> implements GLToolSet<Element>
   }
 
   /**
-   * @see Collection.prototype[Collection.IS]
+   * @see Collection.prototype[IsCollection.SYMBOL]
    */
-  public [Collection.IS](): true {
+  public [IsCollection.SYMBOL](): true {
     return true
   }
 

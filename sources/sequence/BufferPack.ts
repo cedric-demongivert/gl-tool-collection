@@ -1,7 +1,7 @@
 import { Comparator, equals } from '@cedric-demongivert/gl-tool-utils'
 
 import { quicksort } from '../algorithm'
-import { Collection } from '../Collection'
+import { IsCollection } from '../IsCollection'
 import { Buffer, UnsignedIntegerBuffer, IntegerBuffer } from '../native'
 
 import type { Pack } from './Pack'
@@ -41,9 +41,9 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see Collection.prototype[Collection.IS]
+   * @see Collection.prototype[IsCollection.SYMBOL]
    */
-  public [Collection.IS](): true {
+  public [IsCollection.SYMBOL](): true {
     return true
   }
 

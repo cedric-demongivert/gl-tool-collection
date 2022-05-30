@@ -6,7 +6,7 @@ import type { Pack } from './Pack'
 
 import { Sequence } from './Sequence'
 import { SequenceCursor } from './SequenceCursor'
-import { Collection } from '../Collection'
+import { IsCollection } from '../IsCollection'
 
 /**
  * An optimized javascript array.
@@ -45,9 +45,9 @@ export class InstancePack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see Collection.prototype[Collection.IS]
+   * @see Collection.prototype[IsCollection.SYMBOL]
    */
-  public [Collection.IS](): true {
+  public [IsCollection.SYMBOL](): true {
     return true
   }
 

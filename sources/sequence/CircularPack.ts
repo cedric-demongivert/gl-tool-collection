@@ -10,7 +10,7 @@ import { SequenceCursor } from './SequenceCursor'
 import { ArrayPack } from './ArrayPack'
 import { BufferPack } from './BufferPack'
 import { InstancePack } from './InstancePack'
-import { Collection } from '../Collection'
+import { IsCollection } from '../IsCollection'
 
 /**
  * 
@@ -66,9 +66,9 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see Collection.prototype[Collection.IS]
+   * @see Collection.prototype[IsCollection.SYMBOL]
    */
-  public [Collection.IS](): true {
+  public [IsCollection.SYMBOL](): true {
     return true
   }
 

@@ -6,7 +6,7 @@ import { ForwardCursor } from '../cursor'
 import { Group } from './Group'
 import { OrderedSet } from './OrderedSet'
 import { OrderedGroup } from './OrderedGroup'
-import { Collection } from '../Collection'
+import { IsCollection } from '../IsCollection'
 
 /**
  * 
@@ -51,9 +51,9 @@ export class IdentifierSet implements OrderedSet<number>, ReallocableCollection 
   }
 
   /**
-   * @see Collection.prototype[Collection.IS]
+   * @see Collection.prototype[IsCollection.SYMBOL]
    */
-  public [Collection.IS](): true {
+  public [IsCollection.SYMBOL](): true {
     return true
   }
 

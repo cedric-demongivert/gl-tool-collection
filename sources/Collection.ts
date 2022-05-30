@@ -4,6 +4,7 @@ import type { Sequence, List, Pack } from './sequence'
 import type { Group, Set } from './set'
 
 import { ForwardCursor } from './cursor'
+import { IsCollection } from './IsCollection'
 
 /**
  * A collection is a container of elements.
@@ -12,7 +13,7 @@ export interface Collection<Element> extends Iterable<Element>, Comparable, Clon
   /**
    * 
    */
-  [Collection.IS](): true
+  [IsCollection.SYMBOL](): true
 
   /**
    * Return the number of elements in this collection.
@@ -102,16 +103,6 @@ export interface Collection<Element> extends Iterable<Element>, Comparable, Clon
  */
 export namespace Collection {
   /**
-   * 
-   */
-  export const IS: unique symbol = Symbol('gl-tool-collection/collection')
-
-  /**
-   * 
-   */
-  export type Marker = typeof IS
-
-  /**
    * Return true if the given collection is a sequence.
    *
    * @param collection - A collection to assert.
@@ -119,7 +110,12 @@ export namespace Collection {
    * @returns True if the given collection is a sequence.
    */
   export function is<Element>(value: unknown): value is Collection<Element> {
-    return value != null && typeof value === 'object' && typeof (value as any)[IS] === 'function' && (value as any)[IS]()
+    return (
+      value != null &&
+      typeof value === 'object' &&
+      typeof (value as any)[IsCollection.SYMBOL] === 'function' &&
+      (value as any)[IsCollection.SYMBOL]() === true
+    )
   }
 
   /**
@@ -147,7 +143,6 @@ export namespace Collection {
 
 import { CollectionView } from './CollectionView'
 import { EmptyCollection } from './EmptyCollection'
-
 
 /**
  * 

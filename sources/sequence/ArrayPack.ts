@@ -1,7 +1,7 @@
 import { Comparator, equals, Factory } from '@cedric-demongivert/gl-tool-utils'
 
 import { quicksort } from '../algorithm'
-import { Collection } from '../Collection'
+import { IsCollection } from '../IsCollection'
 
 import type { Pack } from './Pack'
 
@@ -50,9 +50,9 @@ export class ArrayPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see Collection.prototype[Collection.IS]
+   * @see Collection.prototype[IsCollection.SYMBOL]
    */
-  public [Collection.IS](): true {
+  public [IsCollection.SYMBOL](): true {
     return true
   }
 

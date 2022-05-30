@@ -1,6 +1,6 @@
 import { Empty } from '@cedric-demongivert/gl-tool-utils'
-import { Collection } from '../Collection'
 import { ForwardCursor } from '../cursor'
+import { IsCollection } from '../IsCollection'
 import { Pack } from '../sequence'
 
 import { Group } from './Group'
@@ -38,9 +38,9 @@ export class PackSparseDenseSet implements SparseDenseSet {
   }
 
   /**
-   * @see Collection.prototype[Collection.IS]
+   * @see Collection.prototype[IsCollection.SYMBOL]
    */
-  public [Collection.IS](): true {
+  public [IsCollection.SYMBOL](): true {
     return true
   }
 

@@ -1,6 +1,6 @@
 import { Sequence } from '../sequence/Sequence'
 import { ForwardCursor } from '../cursor'
-import { Collection } from '../Collection'
+import { IsCollection } from '../IsCollection'
 
 /**
 * A read-only view over a given sequence.
@@ -28,9 +28,9 @@ export class SequenceView<Element> implements Sequence<Element> {
   }
 
   /**
-   * @see Collection.prototype[Collection.IS]
+   * @see Collection.prototype[IsCollection.SYMBOL]
    */
-  public [Collection.IS](): true {
+  public [IsCollection.SYMBOL](): true {
     return true
   }
 

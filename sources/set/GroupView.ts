@@ -1,5 +1,5 @@
-import { Collection } from '../Collection'
 import { ForwardCursor } from '../cursor'
+import { IsCollection } from '../IsCollection'
 
 import { Group } from './Group'
 
@@ -27,9 +27,9 @@ export class GroupView<Element> implements Group<Element> {
   }
 
   /**
-   * @see Collection.prototype[Collection.IS]
+   * @see Collection.prototype[IsCollection.SYMBOL]
    */
-  public [Collection.IS](): true {
+  public [IsCollection.SYMBOL](): true {
     return true
   }
 

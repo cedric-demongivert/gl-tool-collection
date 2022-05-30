@@ -1,13 +1,13 @@
 
 import { Factory } from '@cedric-demongivert/gl-tool-utils'
-import { Sequence, Pack } from '../sequence'
+import { Pack } from '../sequence'
 import { ForwardCursor } from '../cursor'
 import { ReallocableCollection } from '../ReallocableCollection'
 
 import { OrderedSet } from './OrderedSet'
 import { Group } from './Group'
 import { OrderedGroup } from './OrderedGroup'
-import { Collection } from '../Collection'
+import { IsCollection } from '../IsCollection'
 
 /**
  * 
@@ -35,9 +35,9 @@ export class PackSet<Element> implements ReallocableCollection, OrderedSet<Eleme
   }
 
   /**
-   * @see Collection.prototype[Collection.IS]
+   * @see Collection.prototype[IsCollection.SYMBOL]
    */
-  public [Collection.IS](): true {
+  public [IsCollection.SYMBOL](): true {
     return true
   }
 

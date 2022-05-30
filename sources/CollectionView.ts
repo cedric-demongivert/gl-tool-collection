@@ -1,6 +1,7 @@
 import { ForwardCursor } from './cursor'
 
 import { Collection } from './Collection'
+import { IsCollection } from './IsCollection'
 
 /**
  * A read-only view over another collection.
@@ -19,9 +20,9 @@ export class CollectionView<Element> implements Collection<Element> {
   }
 
   /**
-   * @see Collection.prototype[Collection.IS]
+   * @see Collection.prototype[IsCollection.SYMBOL]
    */
-  public [Collection.IS](): true {
+  public [IsCollection.SYMBOL](): true {
     return true
   }
 

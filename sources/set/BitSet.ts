@@ -1,4 +1,4 @@
-import { Pack, Sequence, SequenceCursor } from '../sequence'
+import { Pack, SequenceCursor } from '../sequence'
 
 import { ReallocableCollection } from '../ReallocableCollection'
 
@@ -6,7 +6,7 @@ import { Group } from './Group'
 import { OrderedSet } from './OrderedSet'
 import { OrderedGroup } from './OrderedGroup'
 import { RandomAccessCursor } from '../cursor'
-import { Collection } from '../Collection'
+import { IsCollection } from '../IsCollection'
 
 // SWAR Algorithm [SIMD Within A Register]
 function countBits(bits: number): number {
@@ -54,9 +54,9 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
   }
 
   /**
-   * @see Collection.prototype[Collection.IS]
+   * @see Collection.prototype[IsCollection.SYMBOL]
    */
-  public [Collection.IS](): true {
+  public [IsCollection.SYMBOL](): true {
     return true
   }
 
