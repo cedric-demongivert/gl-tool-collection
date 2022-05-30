@@ -412,13 +412,6 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
   public toString(): string {
     return this.constructor.name + ' ' + Group.stringify(this)
   }
-
-  /**
-   * @see Markable.prototype.is
-   */
-  public is(markLike: Mark.Alike): boolean {
-    return protomark.is(this.constructor, markLike)
-  }
 }
 
 export namespace BitSet {

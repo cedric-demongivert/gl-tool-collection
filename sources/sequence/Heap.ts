@@ -2,7 +2,6 @@ import { Clearable, Comparator, Factory } from '@cedric-demongivert/gl-tool-util
 import { Sequence, Pack } from '../sequence'
 
 import { PackHeap } from './PackHeap'
-import { Mark, Markable } from '../mark'
 
 /**
  * A heap implementation.
@@ -57,27 +56,15 @@ export interface Heap<Element> extends Sequence<Element>, Clearable {
  */
 export namespace Heap {
   /**
-   * 
-   */
-  export const MARK: Mark = Symbol('gl-tool-collection/collection/heap')
-
-  /**
-   * @see Mark.Container
-   */
-  export function mark(): Mark {
-    return MARK
-  }
-
-  /**
    * Return true if the given collection is a sequence.
    *
    * @param collection - A collection to assert.
    *
    * @returns True if the given collection is a sequence.
    */
-  export function is<Element>(collection: Markable): collection is Heap<Element> {
+  /*export function is<Element>(collection: Markable): collection is Heap<Element> {
     return collection.is(MARK)
-  }
+  }*/
 
   /**
    * 

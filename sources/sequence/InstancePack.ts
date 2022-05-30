@@ -583,13 +583,6 @@ export class InstancePack<Element> implements Pack<Element> {
   public toString(): string {
     return this.constructor.name + ' ' + Sequence.stringify(this)
   }
-
-  /**
-   * @see Markable.prototype.is
-   */
-  public is(markLike: Mark.Alike): boolean {
-    return protomark.is(this.constructor, markLike)
-  }
 }
 
 /**

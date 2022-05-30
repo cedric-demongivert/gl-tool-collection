@@ -361,13 +361,6 @@ export class IdentifierSet implements OrderedSet<number>, ReallocableCollection 
   }
 
   /**
-   * @see Markable.prototype.is
-   */
-  public is(markLike: Mark.Alike): boolean {
-    return protomark.is(this.constructor, markLike)
-  }
-
-  /**
    * @see Object.prototype.toString
    */
   public toString(): string {
