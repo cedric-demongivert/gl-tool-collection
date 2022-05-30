@@ -1,4 +1,3 @@
-import { Collection } from '../Collection'
 import { RandomAccessCursor } from '../cursor'
 
 import { Sequence } from './Sequence'
@@ -30,13 +29,6 @@ export class SequenceCursor<Element> implements RandomAccessCursor<Element>
     this.sequence = sequence
     this.index = index
     this._view = undefined
-  }
-
-  /**
-   * @see Collection.prototype[Collection.IS]
-   */
-  public [Collection.IS](): true {
-    return true
   }
 
   /**
