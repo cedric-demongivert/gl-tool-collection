@@ -1,11 +1,31 @@
 import { Clonable, Comparable } from '@cedric-demongivert/gl-tool-utils'
 
-import { Mark, Markable } from '../mark'
+import { EmptyCursor } from './EmptyCursor'
+import { CursorView } from './CursorView'
+import { NativeCursor } from './NativeCursor'
+import { BidirectionalCursor } from './BidirectionalCursor'
+import { ForwardCursor } from './ForwardCursor'
+import { RandomAccessCursor } from './RandomAccessCursor'
 
 /**
  * A cursor over a collection.
  */
-export interface Cursor<Element> extends Comparable, Clonable, Markable {
+export interface Cursor<Element> extends Comparable, Clonable {
+  /**
+   * 
+   */
+  isBidirectional(): this is BidirectionalCursor<Element>
+
+  /**
+   * 
+   */
+  isForward(): this is ForwardCursor<Element>
+
+  /**
+   * 
+   */
+  isRandomAccess(): this is RandomAccessCursor<Element>
+
   /**
    * @see Clonable.prototype.clone
    */
@@ -27,34 +47,6 @@ export interface Cursor<Element> extends Comparable, Clonable, Markable {
    */
   view(): Cursor<Element>
 }
-
-/**
- * 
- */
-export namespace Cursor {
-  /**
-   * 
-   */
-  export const MARK: Mark = Symbol('gl-tool-collection/mark/cursor')
-
-  /**
-   * @see Mark.Container
-   */
-  export function mark(): Mark {
-    return MARK
-  }
-
-  /**
-   * 
-   */
-  export function is<Element>(instance: Markable): instance is Cursor<Element> {
-    return instance.is(MARK)
-  }
-}
-
-import { EmptyCursor } from './EmptyCursor'
-import { CursorView } from './CursorView'
-import { NativeCursor } from './NativeCursor'
 
 /**
  * 

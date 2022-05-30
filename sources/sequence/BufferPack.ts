@@ -1,30 +1,17 @@
 import { Comparator, equals } from '@cedric-demongivert/gl-tool-utils'
-import { Mark, protomark } from '../mark'
 
-import { quicksort } from '../algorithm/quicksort'
+import { quicksort } from '../algorithm'
+import { Collection } from '../Collection'
+import { Buffer, UnsignedIntegerBuffer, IntegerBuffer } from '../native'
 
-import { Buffer } from '../native/Buffer'
-import { UnsignedIntegerBuffer } from '../native/UnsignedIntegerBuffer'
-import { IntegerBuffer } from '../native/IntegerBuffer'
+import type { Pack } from './Pack'
 
 import { Sequence } from './Sequence'
-import { Pack } from './Pack'
-
 import { SequenceCursor } from './SequenceCursor'
-import { Collection } from '../Collection'
-import { List } from './List'
-import { StaticCollection } from '../StaticCollection'
-import { ReallocableCollection } from '../ReallocableCollection'
 
 /**
  * A wrapper for handling javascript ArrayBuffer instances as gl-tool Packs.
  */
-@protomark(Collection)
-@protomark(Sequence)
-@protomark(List)
-@protomark(Pack)
-@protomark(StaticCollection)
-@protomark(ReallocableCollection)
 export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   /**
    * Wrapped buffer.
@@ -51,6 +38,48 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
     this._elements = elements
     this._size = size
     this._view = Sequence.view(this)
+  }
+
+  /**
+   * @see Collection.prototype[Collection.IS]
+   */
+  public [Collection.IS](): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isSequence
+   */
+  public isSequence(): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isPack
+   */
+  public isPack(): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isList
+   */
+  public isList(): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isGroup
+   */
+  public isGroup(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isSet
+   */
+  public isSet(): false {
+    return false
   }
 
   /**
@@ -144,14 +173,14 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   /**
    * @see Sequence.prototype.last
    */
-  public get last(): number | undefined {
+  public get last(): number {
     return this._elements[Math.max(this._size - 1, 0)]
   }
 
   /**
    * @see Sequence.prototype.first
    */
-  public get first(): number | undefined {
+  public get first(): number {
     return this._elements[0]
   }
 
@@ -379,7 +408,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
     const elements: Wrapped = this._elements
 
     for (let index = 0, length = toCopy.size; index < length; ++index) {
-      elements[index] = toCopy.get(index)!
+      elements[index] = toCopy.get(index)
     }
   }
 
@@ -394,7 +423,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
     }
 
     for (let index = 0; index < toConcatSize; ++index) {
-      this.push(toConcat.get(index)!)
+      this.push(toConcat.get(index))
     }
   }
 
@@ -491,13 +520,6 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
    */
   public toString(): string {
     return this.constructor.name + ' (' + this._elements.constructor.name + ') ' + Sequence.stringify(this)
-  }
-
-  /**
-   * @see Markable.prototype.is
-   */
-  public is(markLike: Mark.Alike): boolean {
-    return protomark.is(this.constructor, markLike)
   }
 }
 

@@ -1,25 +1,15 @@
-import { protomark } from '../mark'
-
 import { Group } from './Group'
 import { EmptyCollection } from '../EmptyCollection'
 
 /**
  * An empty sequence, e.g., a sequence of zero elements.
  */
-@protomark(Group)
 export class EmptyGroup<Element> extends EmptyCollection<Element> {
   /**
-   * @see Clonable.prototype.clone
+   * @see Collection.prototype.isGroup
    */
-  public clone(): this {
-    return this
-  }
-
-  /**
-   * @see Collection.prototype.view
-   */
-  public view(): this {
-    return this
+  public isGroup(): true {
+    return true
   }
 
   /**

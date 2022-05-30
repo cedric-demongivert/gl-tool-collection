@@ -1,13 +1,23 @@
-import { Markable } from '../mark'
 import { Sequence } from '../sequence'
 
 import { Set } from './Set'
 import { OrderedGroup } from './OrderedGroup'
+import { Collection } from '../Collection'
 
 /**
  * A set is an unordered collection that does not accept duplicates.
  */
-export interface OrderedSet<Element> extends Set<Element>, Sequence<Element> {
+export interface OrderedSet<Element> extends OrderedGroup<Element>, Set<Element> {
+  /**
+   * @see Collection.prototype.isSequence
+   */
+  isSequence(): true
+
+  /**
+   * @see Collection.prototype.isSet
+   */
+  isSet(): true
+
   /**
    * @see Collection.prototype.view
    */
@@ -30,7 +40,7 @@ export namespace OrderedSet {
    *
    * @returns True if the given collection is a set.
    */
-  export function is<Element>(collection: Markable): collection is OrderedSet<Element> {
+  export function is<Element>(collection: Collection<Element>): collection is OrderedSet<Element> {
     return Set.is(collection) && Sequence.is(collection)
   }
 }

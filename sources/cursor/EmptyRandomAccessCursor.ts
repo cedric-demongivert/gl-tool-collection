@@ -1,12 +1,17 @@
-import { protomark } from "../mark"
 import { EmptyBidirectionalCursor } from "./EmptyBidirectionalCursor"
 import { RandomAccessCursor } from "./RandomAccessCursor"
 
 /**
  * 
  */
-@protomark(RandomAccessCursor)
 export class EmptyRandomAccessCursor<Element> extends EmptyBidirectionalCursor<Element> implements RandomAccessCursor<Element> {
+  /**
+   * @see Cursor.prototype.isRandomAccess
+   */
+  public isRandomAccess(): true {
+    return true
+  }
+
   /**
    * @see Clonable.prototype.clone
    */

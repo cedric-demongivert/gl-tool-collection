@@ -1,23 +1,15 @@
+import { Empty } from '@cedric-demongivert/gl-tool-utils'
 import { Collection } from '../Collection'
 import { ForwardCursor } from '../cursor'
-import { Mark, Markable, protomark } from '../mark'
-import { ReallocableCollection } from '../ReallocableCollection'
-import { Sequence, Pack } from '../sequence'
-import { StaticCollection } from '../StaticCollection'
+import { Pack } from '../sequence'
+
 import { Group } from './Group'
 import { OrderedGroup } from './OrderedGroup'
-import { Set } from './Set'
 import { SparseDenseSet } from './SparseDenseSet'
 
 /**
  * 
  */
-@protomark(ReallocableCollection)
-@protomark(StaticCollection)
-@protomark(Group)
-@protomark(Set)
-@protomark(Sequence)
-@protomark(Collection)
 export class PackSparseDenseSet implements SparseDenseSet {
   /**
    * 
@@ -43,6 +35,48 @@ export class PackSparseDenseSet implements SparseDenseSet {
     this._sparse = dense.clone()
     this._dense = dense
     this._view = OrderedGroup.view(this)
+  }
+
+  /**
+   * @see Collection.prototype[Collection.IS]
+   */
+  public [Collection.IS](): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isSequence
+   */
+  public isSequence(): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isPack
+   */
+  public isPack(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isList
+   */
+  public isList(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isGroup
+   */
+  public isGroup(): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isSet
+   */
+  public isSet(): true {
+    return true
   }
 
   /**
@@ -124,7 +158,7 @@ export class PackSparseDenseSet implements SparseDenseSet {
   /**
    * @see Sequence.prototype.get
    */
-  public get(index: number): number | undefined {
+  public get(index: number): number {
     return this._dense.get(index)
   }
 
@@ -235,14 +269,14 @@ export class PackSparseDenseSet implements SparseDenseSet {
   /**
    * @see Sequence.prototype.first
    */
-  public get first(): number | undefined {
+  public get first(): number {
     return this._dense.first
   }
 
   /**
    * @see Sequence.prototype.last
    */
-  public get last(): number | undefined {
+  public get last(): number {
     return this._dense.last
   }
 
@@ -292,13 +326,6 @@ export class PackSparseDenseSet implements SparseDenseSet {
     }
 
     return false
-  }
-
-  /**
-   * @see Markable.prototype.is
-   */
-  public is(markLike: Mark.Alike): boolean {
-    return protomark.is(this.constructor, markLike)
   }
 
   /**
@@ -353,9 +380,9 @@ export namespace PackSparseDenseSet {
    *
    * @returns A new sparse-dense set of the given capacity.
    */
-  // export function any(capacity: number): PackSparseDenseSet {
-  //  return new PackSparseDenseSet(Pack.any(capacity) )
-  // }
+  export function any(capacity: number): PackSparseDenseSet {
+    return new PackSparseDenseSet(Pack.any(capacity, Empty.number))
+  }
 
   /**
    * Instantiate a sparse-dense set that can store numbers up to the given value.

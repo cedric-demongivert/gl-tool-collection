@@ -1,4 +1,4 @@
-import { Mark, protomark } from '../mark'
+import { Collection } from '../Collection'
 import { Sequence } from '../Sequence'
 
 import { SequenceCursor } from './SequenceCursor'
@@ -38,6 +38,48 @@ export class SubSequence<Output> implements Sequence<Output> {
   }
 
   /**
+   * @see Collection.prototype[Collection.IS]
+   */
+  public [Collection.IS](): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isSequence
+   */
+  public isSequence(): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isPack
+   */
+  public isPack(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isList
+   */
+  public isList(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isGroup
+   */
+  public isGroup(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isSet
+   */
+  public isSet(): false {
+    return false
+  }
+
+  /**
    * @see Sequence.prototype.size
    */
   public get size(): number {
@@ -47,22 +89,22 @@ export class SubSequence<Output> implements Sequence<Output> {
   /**
    * @see Sequence.prototype.get
    */
-  public get(index: number): Output | undefined {
+  public get(index: number): Output {
     return this.parent.get(index - this.from)
   }
 
   /**
    * @see Sequence.prototype.last
    */
-  public get last(): Output | undefined {
-    return this.to === this.from ? undefined : this.parent.get(this.to - 1)
+  public get last(): Output {
+    return this.parent.get(this.to - 1)
   }
 
   /**
    * @see Sequence.prototype.first
    */
-  public get first(): Output | undefined {
-    return this.to === this.from ? undefined : this.parent.get(this.from)
+  public get first(): Output {
+    return this.parent.get(this.from)
   }
 
   /**
@@ -123,7 +165,7 @@ export class SubSequence<Output> implements Sequence<Output> {
    */
   public * values(): IterableIterator<Output> {
     for (let index = this.from, length = this.to; index < length; ++index) {
-      yield this.parent.get(index)!
+      yield this.parent.get(index)
     }
   }
 
@@ -148,13 +190,6 @@ export class SubSequence<Output> implements Sequence<Output> {
     }
 
     return false
-  }
-
-  /**
-   * @see Markable.prototype.is
-   */
-  public is(markLike: Mark.Alike): boolean {
-    return protomark.is(this.constructor, markLike)
   }
 }
 

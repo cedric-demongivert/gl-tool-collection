@@ -1,13 +1,9 @@
 import { Factory } from "@cedric-demongivert/gl-tool-utils"
-import { Mark, protomark } from "../mark"
-import { Cursor } from "./Cursor"
 import { ForwardCursor } from "./ForwardCursor"
 
 /**
  * 
  */
-@protomark(Cursor)
-@protomark(ForwardCursor)
 export class NativeCursor<Element> implements ForwardCursor<Element> {
   /**
    * 
@@ -39,6 +35,27 @@ export class NativeCursor<Element> implements ForwardCursor<Element> {
    */
   public get index(): number {
     return this._index
+  }
+
+  /**
+   * @see Cursor.prototype.isRandomAccess
+   */
+  public isRandomAccess(): false {
+    return false
+  }
+
+  /**
+   * @see Cursor.prototype.isBidirectional
+   */
+  public isBidirectional(): false {
+    return false
+  }
+
+  /**
+   * @see Cursor.prototype.isForward
+   */
+  public isForward(): true {
+    return true
   }
 
   /**
@@ -138,13 +155,6 @@ export class NativeCursor<Element> implements ForwardCursor<Element> {
     }
 
     return false
-  }
-
-  /**
-   * @see Markable.prototype.is
-   */
-  public is(markLike: Mark.Alike): boolean {
-    return protomark.is(this.constructor, markLike)
   }
 }
 

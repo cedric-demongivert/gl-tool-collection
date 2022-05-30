@@ -1,7 +1,6 @@
 import { toString } from '@cedric-demongivert/gl-tool-utils'
 
 import { Collection } from '../Collection'
-import { Mark, Markable } from '../mark'
 
 import { EmptyGroup } from './EmptyGroup'
 import { GroupView } from './GroupView'
@@ -9,7 +8,12 @@ import { GroupView } from './GroupView'
 /**
  * A group is a read-only, unordered collection that does not accept duplicates.
  */
-export interface Group<Element> extends Collection<Element>, Markable {
+export interface Group<Element> extends Collection<Element> {
+  /**
+   * @see Collection.prototype.isGroup
+   */
+  isGroup(): true
+
   /**
    * @see Clonable.prototype.clone
    */
@@ -23,24 +27,8 @@ export namespace Group {
   /**
    * 
    */
-  export const MARK: Mark = Symbol('gl-tool-collection/mark/collection/group')
-
-  /**
-   * @see Mark.Container
-   */
-  export function mark(): Mark {
-    return MARK
-  }
-
-  /**
-   * Return true if the given collection is a group.
-   *
-   * @param collection - A collection to assert.
-   *
-   * @returns True if the given collection is a group.
-   */
-  export function is<Element>(collection: Markable): collection is Group<Element> {
-    return collection.is(MARK)
+  export function is<Element>(collection: Collection<Element>): collection is Group<Element> {
+    return collection.isGroup()
   }
 
   /**

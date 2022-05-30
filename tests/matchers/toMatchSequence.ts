@@ -1,12 +1,12 @@
 import * as chalk from 'chalk'
-import { equals, toString } from '@cedric-demongivert/gl-tool-utils'
+import { equals, toString, Empty } from '@cedric-demongivert/gl-tool-utils'
 
-import { Markable } from '../../sources/mark/Markable'
+import { Collection } from '../../sources/Collection'
 import { Sequence } from '../../sources/sequence/Sequence'
 import { ArrayPack } from '../../sources/sequence/ArrayPack'
 
-import { toBeMarkable } from './toBeMarkable'
 import { UnicodeTablePrinter } from './UnicodeTablePrinter'
+import { toBeCollection } from './toBeCollection'
 
 /**
  * 
@@ -56,10 +56,10 @@ const NO_MATCH: symbol = Symbol()
 /**
  * 
  */
-function createNotASequenceMessage(this: jest.MatcherContext, received: Markable): string {
+function createNotASequenceMessage(this: jest.MatcherContext, received: Collection<unknown>): string {
   return (
-    'Expected the "is" method of ' + received.toString() + ' to return ' + this.utils.printExpected('true') +
-    ' for the Sequence container but received ' + this.utils.printReceived(received.is(Sequence)) + ' instead.'
+    'Expected a isSequence() call to ' + received.toString() + ' to return ' + this.utils.printExpected(true) +
+    ' but received ' + this.utils.printReceived(received.isSequence()) + ' instead.'
   )
 }
 
@@ -140,22 +140,22 @@ export function toMatchSequence(this: jest.MatcherContext, received: unknown, ..
     const parameter: unknown = expected[0]
 
     if (parameter == null || typeof parameter !== 'object') {
-      return implementation.call(this, received, ArrayPack.of(parameter))
+      return implementation.call(this, received, ArrayPack.of(Empty.nullptr, parameter))
     }
 
-    if (Markable.is(parameter) && Sequence.is(parameter)) {
+    if (Collection.is(parameter) && Sequence.is(parameter)) {
       return implementation.call(this, received, parameter)
     } else if (parameter instanceof Array) {
-      return implementation.call(this, received, ArrayPack.wrap(parameter))
+      return implementation.call(this, received, ArrayPack.wrap(parameter, Empty.nullptr))
     } else if (typeof (parameter as any)[Symbol.iterator] === 'function') {
-      return implementation.call(this, received, ArrayPack.ofIterator((parameter as any)[Symbol.iterator]()))
+      return implementation.call(this, received, ArrayPack.ofIterator(Empty.nullptr, (parameter as any)[Symbol.iterator]()))
     } else if (typeof (parameter as any).next === 'function') {
-      return implementation.call(this, received, ArrayPack.ofIterator(parameter as Iterator<unknown>))
+      return implementation.call(this, received, ArrayPack.ofIterator(Empty.nullptr, parameter as Iterator<unknown>))
     } else {
-      return implementation.call(this, received, ArrayPack.of(parameter))
+      return implementation.call(this, received, ArrayPack.of(Empty.nullptr, parameter))
     }
   } else {
-    return implementation.call(this, received, ArrayPack.wrap(expected))
+    return implementation.call(this, received, ArrayPack.wrap(expected, Empty.nullptr))
   }
 }
 
@@ -163,15 +163,15 @@ export function toMatchSequence(this: jest.MatcherContext, received: unknown, ..
  * 
  */
 function implementation(this: jest.MatcherContext, received: unknown, expected: Sequence<unknown>): jest.CustomMatcherResult {
-  if (!Markable.is(received)) {
-    return toBeMarkable.call(this, received)
+  if (!Collection.is(received)) {
+    return toBeCollection.call(this, received)
   }
 
   if (!Sequence.is(received)) {
     return { pass: false, message: createNotASequenceMessage.bind(this, received) }
   }
 
-  const match: ArrayPack<unknown> = ArrayPack.copy(expected.clone())
+  const match: ArrayPack<unknown> = ArrayPack.copy(expected.clone(), Empty.nullptr)
 
   for (let index = 0; index < received.size; ++index) {
     let pass: boolean = false

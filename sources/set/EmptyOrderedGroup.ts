@@ -1,5 +1,3 @@
-import { protomark } from '../mark'
-
 import { Group } from './Group'
 import { EmptySequence } from '../sequence'
 import { OrderedGroup } from './OrderedGroup'
@@ -7,8 +5,14 @@ import { OrderedGroup } from './OrderedGroup'
 /**
  * An empty sequence, e.g., a sequence of zero elements.
  */
-@protomark(Group)
 export class EmptyOrderedGroup<Element> extends EmptySequence<Element> implements OrderedGroup<Element> {
+  /**
+   * @see Collection.prototype.isGroup
+   */
+  public isGroup(): true {
+    return true
+  }
+
   /**
    * @see Clonable.prototype.clone
    */

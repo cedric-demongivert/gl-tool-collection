@@ -1,19 +1,12 @@
-import { ForwardCursor } from '../cursor'
-import { Readonly, protomark, Markable, Mark } from '../mark'
-
 import { Collection } from '../Collection'
+import { ForwardCursor } from '../cursor'
 
 import { Group } from './Group'
-import { Sequence } from '../sequence'
 import { OrderedGroup } from './OrderedGroup'
 
 /**
  * A read-only view over another collection.
  */
-@protomark(Readonly)
-@protomark(Collection)
-@protomark(Group)
-@protomark(Sequence)
 export class OrderedGroupView<Element> implements OrderedGroup<Element> {
   /**
    * 
@@ -30,14 +23,14 @@ export class OrderedGroupView<Element> implements OrderedGroup<Element> {
   /**
    * @see Sequence.prototype.first
    */
-  public get first(): Element | undefined {
+  public get first(): Element {
     return this._group.first
   }
 
   /**
    * @see Sequence.prototype.last
    */
-  public get last(): Element | undefined {
+  public get last(): Element {
     return this._group.last
   }
 
@@ -46,6 +39,48 @@ export class OrderedGroupView<Element> implements OrderedGroup<Element> {
    */
   public constructor(group: OrderedGroup<Element>) {
     this._group = group
+  }
+
+  /**
+   * @see Collection.prototype[Collection.IS]
+   */
+  public [Collection.IS](): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isSequence
+   */
+  public isSequence(): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isPack
+   */
+  public isPack(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isList
+   */
+  public isList(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isGroup
+   */
+  public isGroup(): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isSet
+   */
+  public isSet(): false {
+    return false
   }
 
   /**
@@ -58,7 +93,7 @@ export class OrderedGroupView<Element> implements OrderedGroup<Element> {
   /**
    * @see Sequence.prototype.get
    */
-  public get(index: number): Element | undefined {
+  public get(index: number): Element {
     return this._group.get(index)
   }
 
@@ -137,13 +172,6 @@ export class OrderedGroupView<Element> implements OrderedGroup<Element> {
    */
   public toString(): string {
     return this.constructor.name + ' (' + this._group.constructor.name + ') ' + Group.stringify(this)
-  }
-
-  /**
-   * @see Markable.prototype.is
-   */
-  public is(markLike: Mark.Alike): boolean {
-    return protomark.is(this.constructor, markLike)
   }
 }
 

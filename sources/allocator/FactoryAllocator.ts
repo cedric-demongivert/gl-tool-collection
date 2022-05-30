@@ -16,7 +16,7 @@ export class FactoryAllocator<Product extends Clearable> implements Allocator<Pr
   /**
    * A pack that contains unused instances of the managed type of object.
    */
-  private readonly _instances: Pack<Product | null>
+  private readonly _instances: Pack<Product>
 
   /**
    * Instantiate a new factory allocator for a given type of object.
@@ -26,7 +26,7 @@ export class FactoryAllocator<Product extends Clearable> implements Allocator<Pr
    */
   public constructor(factory: Factory<Product>, capacity: number = 16) {
     this._factory = factory
-    this._instances = Pack.any<Product>(capacity)
+    this._instances = Pack.any<Product>(capacity, factory)
 
     while (this._instances.size < this._instances.capacity) {
       this._instances.push(this._factory())
@@ -38,7 +38,7 @@ export class FactoryAllocator<Product extends Clearable> implements Allocator<Pr
    */
   public allocate(): Product {
     if (this._instances.size > 0) {
-      return this._instances.pop()!
+      return this._instances.pop()
     } else {
       return this._factory()
     }

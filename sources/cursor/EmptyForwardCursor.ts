@@ -1,16 +1,21 @@
-import { protomark } from "../mark"
 import { ForwardCursor } from "./ForwardCursor"
 import { EmptyCursor } from "./EmptyCursor"
 
 /**
  * 
  */
-@protomark(ForwardCursor)
 export class EmptyForwardCursor<Element> extends EmptyCursor<Element> implements ForwardCursor<Element> {
   /**
    * @see ForwardCursor.prototype.index
    */
   readonly index: number = 0
+
+  /**
+   * @see Cursor.prototype.isForward
+   */
+  public isForward(): true {
+    return true
+  }
 
   /**
    * @see Clonable.prototype.clone

@@ -1,13 +1,20 @@
-import { Assignable, toString } from '@cedric-demongivert/gl-tool-utils'
+import { toString } from '@cedric-demongivert/gl-tool-utils'
 
 import { Collection } from '../Collection'
-import { Mark, Markable } from '../mark'
+
+import { EmptySequence } from './EmptySequence'
+import { SequenceView } from './SequenceView'
 
 /**
  * A sequence is an ordered collection of elements in which repetitions are allowed; 
  * it may contain a non-finite number of elements.
  */
 export interface Sequence<Element> extends Collection<Element> {
+  /**
+   * @see Collection.prototype.isSequence 
+   */
+  isSequence(): true
+
   /**
    * Return the element at the given index in this sequence of elements.
    *
@@ -20,7 +27,7 @@ export interface Sequence<Element> extends Collection<Element> {
    *
    * @see https://en.wikipedia.org/wiki/Random_access
    */
-  get(index: number): Element | undefined
+  get(index: number): Element
 
   /**
    * Return the last element of this sequence of elements.
@@ -33,7 +40,7 @@ export interface Sequence<Element> extends Collection<Element> {
    *
    * @returns The last element of this sequence of elements if any.
    */
-  last: Element | undefined
+  last: Element
 
   /**
    * Return the first element of this sequence of elements.
@@ -46,7 +53,7 @@ export interface Sequence<Element> extends Collection<Element> {
    *
    * @returns The first element of this sequence of elements.
    */
-  first: Element | undefined
+  first: Element
 
   /**
    * Return the index of the first element equal to the given one in this sequence or a negative 
@@ -109,25 +116,24 @@ export namespace Sequence {
   /**
    * 
    */
-  export const MARK: Mark = Symbol('gl-tool-collection/mark/collection/sequence')
-
-  /**
-   * @see Mark.Container
-   */
-  export function mark(): Mark {
-    return MARK
+  export function is<Element>(collection: Collection<Element>): collection is Sequence<Element> {
+    return collection.isSequence()
   }
 
   /**
-   * Return true if the given collection is a sequence.
-   *
-   * @param collection - A collection to assert.
-   *
-   * @returns True if the given collection is a sequence.
+   * @see EmptySequence.INSTANCE
    */
-  export function is<Element>(collection: Markable): collection is Sequence<Element> {
-    return collection.is(MARK)
-  }
+  export const EMPTY = EmptySequence.INSTANCE
+
+  /**
+   * @see EmptySequence.get
+   */
+  export const empty = EmptySequence.get
+
+  /**
+   * @see SequenceView.wrap
+   */
+  export const view = SequenceView.wrap
 
   /**
    * 
@@ -150,27 +156,4 @@ export namespace Sequence {
 
     return result + ']'
   }
-}
-
-import { EmptySequence } from './EmptySequence'
-import { SequenceView } from './SequenceView'
-
-/**
- * 
- */
-export namespace Sequence {
-  /**
-   * @see EmptySequence.INSTANCE
-   */
-  export const EMPTY = EmptySequence.INSTANCE
-
-  /**
-   * @see EmptySequence.get
-   */
-  export const empty = EmptySequence.get
-
-  /**
-   * @see SequenceView.wrap
-   */
-  export const view = SequenceView.wrap
 }

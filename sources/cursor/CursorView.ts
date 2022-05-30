@@ -1,10 +1,8 @@
-import { Mark, protomark, Readonly } from "../mark"
 import { Cursor } from "./Cursor"
 
 /**
  * 
  */
-@protomark(Readonly)
 export class CursorView<Element> implements Cursor<Element> {
   /**
    * 
@@ -18,6 +16,26 @@ export class CursorView<Element> implements Cursor<Element> {
    */
   public constructor(cursor: Cursor<Element>) {
     this._cursor = cursor
+  }
+  /**
+   * @see Cursor.prototype.isRandomAccess
+   */
+  public isRandomAccess(): false {
+    return false
+  }
+
+  /**
+   * @see Cursor.prototype.isBidirectional
+   */
+  public isBidirectional(): false {
+    return false
+  }
+
+  /**
+   * @see Cursor.prototype.isForward
+   */
+  public isForward(): false {
+    return false
   }
 
   /**
@@ -60,13 +78,6 @@ export class CursorView<Element> implements Cursor<Element> {
    */
   public wrap(cursor: Cursor<Element>): void {
     this._cursor = cursor
-  }
-
-  /**
-   * @see Markable.prototype.is
-   */
-  public is(markLike: Mark.Alike): boolean {
-    return protomark.is(this.constructor, markLike)
   }
 }
 

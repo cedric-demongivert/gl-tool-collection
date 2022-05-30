@@ -1,14 +1,23 @@
-import { Duplicator } from '../allocator/Duplicator'
 import { Sequence } from '../sequence/Sequence'
 import { List } from '../sequence/List'
 
 import { ReallocableCollection } from '../ReallocableCollection'
-import { Mark, Markable } from '../mark'
+
+import { BufferPack } from './BufferPack'
+import { ArrayPack } from './ArrayPack'
+import { InstancePack } from './InstancePack'
+import { CircularPack } from './CircularPack'
+import { Collection } from '../Collection'
 
 /**
  * A pack is a re-allocable mutable sequence of values.
  */
 export interface Pack<Element> extends List<Element>, ReallocableCollection {
+  /**
+   * @see Collection.prototype.isPack
+   */
+  isPack(): true
+
   /**
    * Allocate a new empty pack similar to this one with the given capacity.
    *
@@ -36,42 +45,8 @@ export namespace Pack {
   /**
    * 
    */
-  export type Factory<Element> = (capacity?: number) => Pack<Element>
-
-  /**
-   * 
-   */
-  export const MARK: Mark = Symbol('gl-tool-collection/mark/collection/pack')
-
-  /**
-   * @see Mark.Container
-   */
-  export function mark(): Mark {
-    return MARK
-  }
-}
-
-import { UnsignedIntegerBuffer } from '../native/UnsignedIntegerBuffer'
-import { IntegerBuffer } from '../native/IntegerBuffer'
-import { BufferPack } from './BufferPack'
-import { ArrayPack } from './ArrayPack'
-import { InstancePack } from './InstancePack'
-
-/**
- * 
- */
-export namespace Pack {
-
-
-  /**
-   * Return true if the given collection is a pack.
-   *
-   * @param collection - A collection to assert.
-   *
-   * @returns True if the given collection is a pack.
-   */
-  export function is<Element>(collection: Markable): collection is Pack<Element> {
-    return collection.is(MARK)
+  export function is<Element>(collection: Collection<Element>): collection is Pack<Element> {
+    return collection.isPack()
   }
 
   /**
@@ -87,140 +62,67 @@ export namespace Pack {
   }
 
   /**
-   * Instantiate a new pack that wrap an array of the given type of instance.
-   *
-   * @param capacity - Capacity of the array to allocate.
-   *
-   * @returns A new pack that wrap an array of the given type of instance.
+   * @see ArrayPack.allocate
    */
-  export function any<Element>(capacity: number): ArrayPack<Element> {
-    return ArrayPack.allocate(capacity)
-  }
-
+  export const any = ArrayPack.allocate
 
   /**
-   * Instantiate a new pack that wrap a unsigned byte buffer of the given capacity.
-   *
-   * @param capacity - Capacity of the buffer to allocate.
-   *
-   * @returns A new pack that wrap a unsigned byte buffer of the given capacity.
+   * @see BufferPack.uint8
    */
-  export function uint8(capacity: number): BufferPack<Uint8Array> {
-    return new BufferPack<Uint8Array>(new Uint8Array(capacity))
-  }
+  export const uint8 = BufferPack.uint8
 
   /**
-   * Instantiate a new pack that wrap a unsigned short buffer of the given capacity.
-   *
-   * @param capacity - Capacity of the buffer to allocate.
-   *
-   * @returns A new pack that wrap a unsigned short buffer of the given capacity.
+   * @see BufferPack.uint16
    */
-  export function uint16(capacity: number): BufferPack<Uint16Array> {
-    return new BufferPack<Uint16Array>(new Uint16Array(capacity))
-  }
+  export const uint16 = BufferPack.uint16
 
   /**
-   * Instantiate a new pack that wrap a unsigned integer buffer of the given capacity.
-   *
-   * @param capacity - Capacity of the buffer to allocate.
-   *
-   * @returns A new pack that wrap a unsigned integer buffer of the given capacity.
+   * @see BufferPack.uint32
    */
-  export function uint32(capacity: number): BufferPack<Uint32Array> {
-    return new BufferPack<Uint32Array>(new Uint32Array(capacity))
-  }
+  export const uint32 = BufferPack.uint32
 
   /**
-   * Instantiate a new pack that wrap a byte buffer of the given capacity.
-   *
-   * @param capacity - Capacity of the buffer to allocate.
-   *
-   * @returns A new pack that wrap a byte buffer of the given capacity.
+   * @see BufferPack.int8
    */
-  export function int8(capacity: number): BufferPack<Int8Array> {
-    return new BufferPack<Int8Array>(new Int8Array(capacity))
-  }
+  export const int8 = BufferPack.int8
 
   /**
-   * Instantiate a new pack that wrap a short buffer of the given capacity.
-   *
-   * @param capacity - Capacity of the buffer to allocate.
-   *
-   * @returns A new pack that wrap a short buffer of the given capacity.
+   * @see BufferPack.int16
    */
-  export function int16(capacity: number): BufferPack<Int16Array> {
-    return new BufferPack<Int16Array>(new Int16Array(capacity))
-  }
+  export const int16 = BufferPack.int16
 
   /**
-   * Instantiate a new pack that wrap a integer buffer of the given capacity.
-   *
-   * @param capacity - Capacity of the buffer to allocate.
-   *
-   * @returns A new pack that wrap a integer buffer of the given capacity.
+   * @see BufferPack.int32
    */
-  export function int32(capacity: number): BufferPack<Int32Array> {
-    return new BufferPack<Int32Array>(new Int32Array(capacity))
-  }
+  export const int32 = BufferPack.int32
 
   /**
-   * Instantiate a new pack that wrap a float buffer of the given capacity.
-   *
-   * @param capacity - Capacity of the buffer to allocate.
-   *
-   * @returns A new pack that wrap a float buffer of the given capacity.
+   * @see BufferPack.float32
    */
-  export function float32(capacity: number): BufferPack<Float32Array> {
-    return new BufferPack<Float32Array>(new Float32Array(capacity))
-  }
+  export const float32 = BufferPack.float32
 
   /**
-   * Instantiate a new pack that wrap a double buffer of the given capacity.
-   *
-   * @param capacity - Capacity of the buffer to allocate.
-   *
-   * @returns A new pack that wrap a double buffer of the given capacity.
+   * @see BufferPack.float64
    */
-  export function float64(capacity: number): BufferPack<Float64Array> {
-    return new BufferPack<Float64Array>(new Float64Array(capacity))
-  }
+  export const float64 = BufferPack.float64
 
   /**
-   * Instantiate a new pack that wrap a unsigned integer buffer that can store
-   * values in range [0, maximum] and that is of the given capacity.
-   *
-   * @param maximum - Maximum value that can be stored.
-   * @param capacity - Capacity of the buffer to allocate.
-   *
-   * @returns A new pack that wrap a unsigned integer buffer that can store values
-   *         in range [0, maximum] and that is of the given capacity.
+   * @see BufferPack.unsignedUpTo
    */
-  export function unsignedUpTo(maximum: number, capacity: number): BufferPack<UnsignedIntegerBuffer> {
-    return new BufferPack(UnsignedIntegerBuffer.upTo(maximum, capacity))
-  }
+  export const unsignedUpTo = BufferPack.unsignedUpTo
 
   /**
-   * Instantiate a new pack that wrap a signed integer buffer that can store
-   * values in range [-maximum, maximum] and that is of the given capacity.
-   *
-   * @param maximum - Maximum value that can be stored.
-   * @param capacity - Capacity of the buffer to allocate.
-   *
-   * @returns A new pack that wrap a signed integer buffer that can store values
-   *         in range [-maximum, maximum] and that is of the given capacity.
+   * @see BufferPack.signedUpTo
    */
-  export function signedUpTo(maximum: number, capacity: number): BufferPack<IntegerBuffer> {
-    return new BufferPack(IntegerBuffer.upTo(maximum, capacity))
-  }
+  export const signedUpTo = BufferPack.signedUpTo
 
   /**
-   * Instantiate a new pack that store non-null instances of the given allocator.
-   * 
-   * @param duplicator - Allocator to use.
-   * @param capacity - Capacity of the pack to allocate.
+   * @see InstancePack.allocate
    */
-  export function instance<Element>(duplicator: Duplicator<Element>, capacity: number): InstancePack<Element> {
-    return new InstancePack<Element>(duplicator, capacity)
-  }
+  export const instance = InstancePack.allocate
+
+  /**
+   * @see InstancePack.circular
+   */
+  export const circular = CircularPack.fromPack
 }

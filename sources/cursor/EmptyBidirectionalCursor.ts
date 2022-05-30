@@ -1,12 +1,17 @@
-import { protomark } from "../mark"
 import { BidirectionalCursor } from "./BidirectionalCursor"
 import { EmptyForwardCursor } from "./EmptyForwardCursor"
 
 /**
  * 
  */
-@protomark(BidirectionalCursor)
 export class EmptyBidirectionalCursor<Element> extends EmptyForwardCursor<Element> implements BidirectionalCursor<Element> {
+  /**
+   * @see Cursor.prototype.isBidirectional
+   */
+  public isBidirectional(): true {
+    return true
+  }
+
   /**
    * @see BidirectionalCursor.prototype.at
    */

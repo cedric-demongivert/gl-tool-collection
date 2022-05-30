@@ -1,27 +1,16 @@
 import { ReallocableCollection } from '../ReallocableCollection'
-import { Sequence, SequenceCursor } from '../sequence'
-import { Mark, Markable, protomark } from '../mark'
-
-import { UnsignedIntegerBuffer } from '../native/UnsignedIntegerBuffer'
+import { SequenceCursor } from '../sequence'
+import { UnsignedIntegerBuffer } from '../native'
+import { ForwardCursor } from '../cursor'
 
 import { Group } from './Group'
 import { OrderedSet } from './OrderedSet'
-import { ForwardCursor } from '../cursor'
-import { StaticCollection } from '../StaticCollection'
-import { Collection } from '../Collection'
-import { OrderedGroupView } from './OrderedGroupView'
 import { OrderedGroup } from './OrderedGroup'
-import { Set } from './Set'
+import { Collection } from '../Collection'
 
 /**
  * 
  */
-@protomark(ReallocableCollection)
-@protomark(StaticCollection)
-@protomark(Group)
-@protomark(Set)
-@protomark(Sequence)
-@protomark(Collection)
 export class IdentifierSet implements OrderedSet<number>, ReallocableCollection {
   /**
    * 
@@ -41,7 +30,7 @@ export class IdentifierSet implements OrderedSet<number>, ReallocableCollection 
   /**
    * 
    */
-  private readonly _view: OrderedGroupView<number>
+  private readonly _view: OrderedGroup<number>
 
   /**
    * Create a new empty identifier set.
@@ -59,6 +48,48 @@ export class IdentifierSet implements OrderedSet<number>, ReallocableCollection 
     }
 
     this._view = OrderedGroup.view(this)
+  }
+
+  /**
+   * @see Collection.prototype[Collection.IS]
+   */
+  public [Collection.IS](): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isSequence
+   */
+  public isSequence(): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isPack
+   */
+  public isPack(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isList
+   */
+  public isList(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isGroup
+   */
+  public isGroup(): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isSet
+   */
+  public isSet(): true {
+    return true
   }
 
   /**
@@ -246,14 +277,14 @@ export class IdentifierSet implements OrderedSet<number>, ReallocableCollection 
   /**
    * @see Sequence.prototype.first
    */
-  public get first(): number | undefined {
+  public get first(): number {
     return this._dense[0]
   }
 
   /**
    * @see Sequence.prototype.last
    */
-  public get last(): number | undefined {
+  public get last(): number {
     return this._dense[this._size - 1]
   }
 

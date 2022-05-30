@@ -1,6 +1,6 @@
-import { Sequence } from '../Sequence'
 import { ReallocableCollection } from '../ReallocableCollection'
 
+import { OrderedGroup } from './OrderedGroup'
 import { OrderedSet } from './OrderedSet'
 import { PackSparseDenseSet } from './PackSparseDenseSet'
 
@@ -11,7 +11,7 @@ export interface SparseDenseSet extends OrderedSet<number>, ReallocableCollectio
   /**
   * @see Collection.view
   */
-  view(): Sequence<number>
+  view(): OrderedGroup<number>
 
   /**
   * @see Collection.clone

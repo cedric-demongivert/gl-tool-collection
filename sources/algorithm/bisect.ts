@@ -27,7 +27,7 @@ export function bisect<Item, Search>(
 
     while (left !== right) {
       const cursor = left + ((right - left) >>> 1)
-      const comparison = comparator(value, sequence.get(cursor)!)
+      const comparison = comparator(value, sequence.get(cursor))
 
       if (comparison === 0) {
         return cursor
@@ -70,7 +70,7 @@ export namespace bisect {
 
     if (result < 0) return result
 
-    while (result > 0 && comparator(value, sequence.get(result - 1)!) === 0) {
+    while (result > 0 && comparator(value, sequence.get(result - 1)) === 0) {
       result -= 1
     }
 
@@ -101,7 +101,7 @@ export namespace bisect {
 
     const end: number = sequence.size - 1
 
-    while (result < end && comparator(value, sequence.get(result + 1)!) === 0) {
+    while (result < end && comparator(value, sequence.get(result + 1)) === 0) {
       result += 1
     }
 
@@ -132,7 +132,7 @@ export namespace bisect {
 
       while (left !== right) {
         const cursor = left + ((right - left) >>> 1)
-        const comparison = -comparator(value, sequence.get(cursor)!)
+        const comparison = -comparator(value, sequence.get(cursor))
 
         if (comparison === 0) {
           return cursor

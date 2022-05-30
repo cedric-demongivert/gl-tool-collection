@@ -1,10 +1,17 @@
-import { Mark, Markable } from '../mark'
 import { BidirectionalCursor } from './BidirectionalCursor'
+import { Cursor } from './Cursor'
+import { EmptyRandomAccessCursor } from './EmptyRandomAccessCursor'
+import { RandomAccessCursorView } from './RandomAccessCursorView'
 
 /**
 * 
 */
 export interface RandomAccessCursor<Element> extends BidirectionalCursor<Element> {
+  /**
+   * @see Cursor.prototype.isRandomAccess
+   */
+  isRandomAccess(): true
+
   /**
    * @see Clonable.prototype.clone
    */
@@ -23,39 +30,19 @@ export namespace RandomAccessCursor {
   /**
    * 
    */
-  export const MARK: Mark = Symbol('gl-tool-collection/mark/cursor/random-access')
-
-  /**
-   * @see Mark.Container
-   */
-  export function mark(): Mark {
-    return MARK
+  export function is<Element>(instance: Cursor<Element>): instance is RandomAccessCursor<Element> {
+    return instance.isRandomAccess()
   }
 
-  /**
-   * 
-   */
-  export function is<Element>(instance: Markable): instance is RandomAccessCursor<Element> {
-    return instance.is(MARK)
-  }
-}
-
-//import { EmptyRandomAccessCursor } from './EmptyRandomAccessCursor'
-import { RandomAccessCursorView } from './RandomAccessCursorView'
-
-/**
- * 
- */
-export namespace RandomAccessCursor {
   /**
    * @see EmptyRandomAccessCursor.INSTANCE
    */
-  //export const EMPTY = EmptyRandomAccessCursor.INSTANCE
+  export const EMPTY = EmptyRandomAccessCursor.INSTANCE
 
   /**
    * @see EmptyRandomAccessCursor.get
    */
-  //export const empty = EmptyRandomAccessCursor.get
+  export const empty = EmptyRandomAccessCursor.get
 
   /**
    * @see RandomAccessCursorView.wrap

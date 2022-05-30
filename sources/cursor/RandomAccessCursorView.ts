@@ -1,17 +1,8 @@
-import { Mark, protomark, Readonly } from "../mark"
-import { BidirectionalCursor } from "./BidirectionalCursor"
-import { Cursor } from "./Cursor"
-import { ForwardCursor } from "./ForwardCursor"
 import { RandomAccessCursor } from "./RandomAccessCursor"
 
 /**
  * 
  */
-@protomark(Cursor)
-@protomark(ForwardCursor)
-@protomark(BidirectionalCursor)
-@protomark(RandomAccessCursor)
-@protomark(Readonly)
 export class RandomAccessCursorView<Element> implements RandomAccessCursor<Element> {
   /**
    * 
@@ -32,6 +23,27 @@ export class RandomAccessCursorView<Element> implements RandomAccessCursor<Eleme
    */
   public constructor(cursor: RandomAccessCursor<Element>) {
     this._cursor = cursor
+  }
+
+  /**
+   * @see Cursor.prototype.isRandomAccess
+   */
+  public isRandomAccess(): true {
+    return true
+  }
+
+  /**
+   * @see Cursor.prototype.isBidirectional
+   */
+  public isBidirectional(): true {
+    return true
+  }
+
+  /**
+   * @see Cursor.prototype.isForward
+   */
+  public isForward(): true {
+    return true
   }
 
   /**
@@ -130,13 +142,6 @@ export class RandomAccessCursorView<Element> implements RandomAccessCursor<Eleme
    */
   public view(): this {
     return this
-  }
-
-  /**
-   * @see Markable.prototype.is
-   */
-  public is(markLike: Mark.Alike): boolean {
-    return protomark.is(this.constructor, markLike)
   }
 }
 

@@ -1,11 +1,16 @@
 import { Clearable, Clonable } from '@cedric-demongivert/gl-tool-utils'
-import { Mark, Markable } from '../mark'
+import { Collection } from '../Collection'
 import { Group } from './Group'
 
 /**
  * A set is an unordered collection that does not accept duplicates.
  */
 export interface Set<Element> extends Group<Element>, Clearable, Clonable {
+  /**
+   * @see Collection.prototype.isSet
+   */
+  isSet(): true
+
   /**
    * Add a new element to the set.
    *
@@ -45,23 +50,7 @@ export namespace Set {
   /**
    * 
    */
-  export const MARK: Mark = Symbol('gl-tool-collection/mark/collection/set')
-
-  /**
-   * @see Mark.Container
-   */
-  export function mark(): Mark {
-    return MARK
-  }
-
-  /**
-   * Return true if the given collection is a set.
-   *
-   * @param collection - A collection to assert.
-   *
-   * @returns True if the given collection is a set.
-   */
-  export function is<Element>(collection: Markable): collection is Set<Element> {
-    return collection.is(MARK)
+  export function is<Element>(collection: Collection<Element>): collection is Set<Element> {
+    return collection.isSet()
   }
 }

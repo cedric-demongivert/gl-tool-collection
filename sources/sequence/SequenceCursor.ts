@@ -1,15 +1,11 @@
-import { Cursor, ForwardCursor, BidirectionalCursor, RandomAccessCursor } from '../cursor'
-import { Mark, protomark } from '../mark'
+import { Collection } from '../Collection'
+import { RandomAccessCursor } from '../cursor'
 
 import { Sequence } from './Sequence'
 
 /**
  * An iterator over any sequence instance.
  */
-@protomark(Cursor)
-@protomark(ForwardCursor)
-@protomark(BidirectionalCursor)
-@protomark(RandomAccessCursor)
 export class SequenceCursor<Element> implements RandomAccessCursor<Element>
 {
   /**
@@ -34,6 +30,34 @@ export class SequenceCursor<Element> implements RandomAccessCursor<Element>
     this.sequence = sequence
     this.index = index
     this._view = undefined
+  }
+
+  /**
+   * @see Collection.prototype[Collection.IS]
+   */
+  public [Collection.IS](): true {
+    return true
+  }
+
+  /**
+   * @see Cursor.prototype.isRandomAccess
+   */
+  public isRandomAccess(): true {
+    return true
+  }
+
+  /**
+   * @see Cursor.prototype.isBidirectional
+   */
+  public isBidirectional(): true {
+    return true
+  }
+
+  /**
+   * @see Cursor.prototype.isForward
+   */
+  public isForward(): true {
+    return true
   }
 
   /**
@@ -89,7 +113,7 @@ export class SequenceCursor<Element> implements RandomAccessCursor<Element>
   /**
    * @see Cursor.prototype.get
    */
-  public get(): Element | undefined {
+  public get(): Element {
     return this.sequence.get(this.index)
   }
 
@@ -145,13 +169,6 @@ export class SequenceCursor<Element> implements RandomAccessCursor<Element>
     }
 
     return false
-  }
-
-  /**
-   * @see Markable.prototype.is
-   */
-  public is(markLike: Mark.Alike): boolean {
-    return protomark.is(this.constructor, markLike)
   }
 }
 

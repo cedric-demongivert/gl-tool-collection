@@ -1,4 +1,4 @@
-import { Clearable, Comparator } from '@cedric-demongivert/gl-tool-utils'
+import { Clearable, Comparator, Factory } from '@cedric-demongivert/gl-tool-utils'
 import { Sequence, Pack } from '../sequence'
 
 import { PackHeap } from './PackHeap'
@@ -82,8 +82,8 @@ export namespace Heap {
   /**
    * 
    */
-  export function any<Element>(capacity: number, comparator: Comparator<Element | null, Element | null>): PackHeap<Element | null> {
-    return new PackHeap(Pack.any<Element>(capacity), comparator)
+  export function any<Element>(capacity: number, defaultValue: Factory<Element>, comparator: Comparator<Element, Element>): PackHeap<Element> {
+    return new PackHeap(Pack.any(capacity, defaultValue), comparator)
   }
 
   /**

@@ -1,15 +1,53 @@
-import { EmptyForwardCursor } from './cursor'
-import { Readonly, Empty, protomark, Mark } from './mark'
+import { ForwardCursor } from './cursor'
 
 import { Collection } from './Collection'
 
 /**
  * An empty collection, e.g., a collection of zero elements.
  */
-@protomark(Readonly)
-@protomark(Empty)
-@protomark(Collection)
 export class EmptyCollection<Element> implements Collection<Element> {
+  /**
+   * @see Collection.prototype[Collection.IS]
+   */
+  public [Collection.IS](): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isSequence
+   */
+  public isSequence(): boolean {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isPack
+   */
+  public isPack(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isList
+   */
+  public isList(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isGroup
+   */
+  public isGroup(): boolean {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isSet
+   */
+  public isSet(): false {
+    return false
+  }
+
   /**
    * @see Collection.prototype.size
    */
@@ -41,8 +79,8 @@ export class EmptyCollection<Element> implements Collection<Element> {
   /**
    * @see Collection.prototype.forward
    */
-  public forward(): EmptyForwardCursor<Element> {
-    return EmptyForwardCursor.get()
+  public forward(): ForwardCursor<Element> {
+    return ForwardCursor.empty()
   }
 
   /**
@@ -57,13 +95,6 @@ export class EmptyCollection<Element> implements Collection<Element> {
    */
   public [Symbol.iterator](): IterableIterator<Element> {
     return this.values()
-  }
-
-  /**
-   * @see Markable.prototype.is
-   */
-  public is(markLike: Mark.Alike): boolean {
-    return protomark.is(this.constructor, markLike)
   }
 
   /**

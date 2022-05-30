@@ -1,14 +1,12 @@
 import { Pack, Sequence, SequenceCursor } from '../sequence'
-import { Mark, Markable, protomark } from '../mark'
 
 import { ReallocableCollection } from '../ReallocableCollection'
-import { StaticCollection } from '../StaticCollection'
 
-import { Set } from './Set'
 import { Group } from './Group'
 import { OrderedSet } from './OrderedSet'
 import { OrderedGroup } from './OrderedGroup'
 import { RandomAccessCursor } from '../cursor'
+import { Collection } from '../Collection'
 
 // SWAR Algorithm [SIMD Within A Register]
 function countBits(bits: number): number {
@@ -29,11 +27,6 @@ for (let index = 0; index < 32; ++index) {
 /**
  * 
  */
-@protomark(StaticCollection)
-@protomark(ReallocableCollection)
-@protomark(Set)
-@protomark(Sequence)
-@protomark(Group)
 export class BitSet implements ReallocableCollection, OrderedSet<number>
 {
   /**
@@ -58,6 +51,48 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
     this._elements = Pack.uint32(capacity >> 5 + (capacity % 32 === 0 ? 0 : 1))
     this._size = 0
     this._view = OrderedGroup.view(this)
+  }
+
+  /**
+   * @see Collection.prototype[Collection.IS]
+   */
+  public [Collection.IS](): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isSequence
+   */
+  public isSequence(): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isPack
+   */
+  public isPack(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isList
+   */
+  public isList(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isGroup
+   */
+  public isGroup(): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isSet
+   */
+  public isSet(): true {
+    return true
   }
 
   /**
@@ -308,7 +343,7 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
   /**
   * @see Sequence.prototype.last
   */
-  public get last(): number | undefined {
+  public get last(): number {
     // optimizable
     return this.get(this._size - 1)
   }

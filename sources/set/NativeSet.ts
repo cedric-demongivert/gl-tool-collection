@@ -1,16 +1,11 @@
-import { Collection } from '../Collection'
-
 import { Set as GLToolSet } from './Set'
 import { Group } from './Group'
-import { Mark, Markable, protomark } from '../mark'
-import { Cursor, ForwardCursor, NativeCursor } from '../cursor'
+import { ForwardCursor, NativeCursor } from '../cursor'
+import { Collection } from '../Collection'
 
 /**
  * 
  */
-@protomark(GLToolSet)
-@protomark(Group)
-@protomark(Collection)
 export class NativeSet<Element> implements GLToolSet<Element>
 {
   /**
@@ -32,6 +27,48 @@ export class NativeSet<Element> implements GLToolSet<Element>
     this._elements = elements
     this._view = Group.view(this)
     this.values = this.values.bind(this)
+  }
+
+  /**
+   * @see Collection.prototype[Collection.IS]
+   */
+  public [Collection.IS](): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isSequence
+   */
+  public isSequence(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isPack
+   */
+  public isPack(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isList
+   */
+  public isList(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isGroup
+   */
+  public isGroup(): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isSet
+   */
+  public isSet(): true {
+    return true
   }
 
   /**
@@ -81,9 +118,9 @@ export class NativeSet<Element> implements GLToolSet<Element>
   /**
    * @see Sequence.prototype.get
    */
-  public get(index: number): Element | undefined {
+  public get(index: number): Element {
     if (index < 0) {
-      return undefined
+      return undefined!
     }
 
     let cursor: number = 0
@@ -96,7 +133,7 @@ export class NativeSet<Element> implements GLToolSet<Element>
       }
     }
 
-    return undefined
+    return undefined!
   }
 
   /**
@@ -170,13 +207,6 @@ export class NativeSet<Element> implements GLToolSet<Element>
     }
 
     return false
-  }
-
-  /**
-   * @see Markable.prototype.is
-   */
-  public is(markLike: Mark.Alike): boolean {
-    return protomark.is(this.constructor, markLike)
   }
 
   /**

@@ -1,10 +1,17 @@
-import { Markable, Mark } from '../mark'
 import { Cursor } from './Cursor'
+
+import { EmptyForwardCursor } from './EmptyForwardCursor'
+import { ForwardCursorView } from './ForwardCursorView'
 
 /**
  * A cursor over a sequence of values that can only move from an element to its consecutive one.
  */
 export interface ForwardCursor<Element> extends Cursor<Element> {
+  /**
+   * @see Cursor.prototype.isForward
+   */
+  isForward(): true
+
   /**
    * Returns the location of this cursor into its underlying sequence.
    * 
@@ -56,30 +63,10 @@ export namespace ForwardCursor {
   /**
    * 
    */
-  export const MARK: Mark = Symbol('gl-tool-collection/mark/cursor/forward')
-
-  /**
-   * @see Mark.Container
-   */
-  export function mark(): Mark {
-    return MARK
+  export function is<Element>(instance: Cursor<Element>): instance is ForwardCursor<Element> {
+    return instance.isForward()
   }
 
-  /**
-   * 
-   */
-  export function is<Element>(instance: Markable): instance is ForwardCursor<Element> {
-    return instance.is(MARK)
-  }
-}
-
-import { EmptyForwardCursor } from './EmptyForwardCursor'
-import { ForwardCursorView } from './ForwardCursorView'
-
-/**
- * 
- */
-export namespace ForwardCursor {
   /**
    * @see EmptyForwardCursor.INSTANCE
    */

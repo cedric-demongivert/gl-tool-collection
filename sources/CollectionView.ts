@@ -1,13 +1,10 @@
 import { ForwardCursor } from './cursor'
-import { Readonly, protomark, Mark } from './mark'
 
 import { Collection } from './Collection'
 
 /**
  * A read-only view over another collection.
  */
-@protomark(Readonly)
-@protomark(Collection)
 export class CollectionView<Element> implements Collection<Element> {
   /**
    * 
@@ -19,6 +16,48 @@ export class CollectionView<Element> implements Collection<Element> {
    */
   public get size(): number {
     return this._collection.size
+  }
+
+  /**
+   * @see Collection.prototype[Collection.IS]
+   */
+  public [Collection.IS](): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isSequence
+   */
+  public isSequence(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isPack
+   */
+  public isPack(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isList
+   */
+  public isList(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isGroup
+   */
+  public isGroup(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isSet
+   */
+  public isSet(): false {
+    return false
   }
 
   /**
@@ -68,13 +107,6 @@ export class CollectionView<Element> implements Collection<Element> {
    */
   public [Symbol.iterator](): IterableIterator<Element> {
     return this._collection.values()
-  }
-
-  /**
-   * @see Markable.prototype.is
-   */
-  public is(markLike: Mark.Alike): boolean {
-    return protomark.is(this.constructor, markLike)
   }
 
   /**

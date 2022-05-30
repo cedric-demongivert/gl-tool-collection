@@ -1,11 +1,13 @@
-import { Comparator } from '@cedric-demongivert/gl-tool-utils'
-import { Sequence, Pack } from '../sequence'
+import { Comparator, Factory } from '@cedric-demongivert/gl-tool-utils'
 
 import { ReallocableCollection } from '../ReallocableCollection'
 
+import { Sequence } from './Sequence'
+import { Pack } from './Pack'
 import { Heap } from './Heap'
+
 import { ForwardCursor } from '../cursor'
-import { Mark, Markable, protomark } from '../mark'
+import { Collection } from '../Collection'
 
 /**
  * An object that uses a Pack instance as a Heap.
@@ -40,10 +42,52 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   }
 
   /**
+   * @see Collection.prototype[Collection.IS]
+   */
+  public [Collection.IS](): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isSequence
+   */
+  public isSequence(): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isPack
+   */
+  public isPack(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isList
+   */
+  public isList(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isGroup
+   */
+  public isGroup(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isSet
+   */
+  public isSet(): false {
+    return false
+  }
+
+  /**
    * @see Heap.prototype.next
    */
   public next(): Element {
-    const result: Element = this._elements.get(0)!
+    const result: Element = this._elements.get(0)
     this.delete(0)
     return result
   }
@@ -70,7 +114,7 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
     let cell: number = index
     let parent: number = (cell - 1) >> 1
 
-    while (cell > 0 && comparator(elements.get(cell)!, elements.get(parent)!) > 0) {
+    while (cell > 0 && comparator(elements.get(cell), elements.get(parent)) > 0) {
       elements.swap(cell, parent)
       cell = parent
       parent = (cell - 1) >> 1
@@ -95,15 +139,15 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
     let next: number = (cell << 1) + 1
 
     while (next < size) {
-      if (next + 1 < size && comparator(elements.get(cell)!, elements.get(next + 1)!) < 0) {
-        if (comparator(elements.get(next)!, elements.get(next + 1)!) < 0) {
+      if (next + 1 < size && comparator(elements.get(cell), elements.get(next + 1)) < 0) {
+        if (comparator(elements.get(next), elements.get(next + 1)) < 0) {
           elements.swap(cell, next + 1)
           cell = next + 1
         } else {
           elements.swap(cell, next)
           cell = next
         }
-      } else if (comparator(elements.get(cell)!, elements.get(next)!) < 0) {
+      } else if (comparator(elements.get(cell), elements.get(next)) < 0) {
         elements.swap(cell, next)
         cell = next
       } else {
@@ -134,13 +178,13 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
    */
   public compare(left: number, right: number): number {
     const elements: Pack<Element> = this._elements
-    return this._comparator(elements.get(left)!, elements.get(right)!)
+    return this._comparator(elements.get(left), elements.get(right))
   }
 
   /**
    * @see Sequence.prototype.get
    */
-  public get(index: number): Element | undefined {
+  public get(index: number): Element {
     return this._elements.get(index)
   }
 
@@ -175,14 +219,14 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   /**
    * @see Sequence.prototype.first
    */
-  public get first(): Element | undefined {
+  public get first(): Element {
     return this._elements.first
   }
 
   /**
    * @see Sequence.prototype.last
    */
-  public get last(): Element | undefined {
+  public get last(): Element {
     return this._elements.last
   }
 
@@ -284,13 +328,6 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   public [Symbol.iterator](): IterableIterator<Element> {
     return this._elements.values()
   }
-
-  /**
-   * @see Markable.prototype.is
-   */
-  public is(markLike: Mark.Alike): boolean {
-    return protomark.is(this.constructor, markLike)
-  }
 }
 
 /**
@@ -300,8 +337,8 @@ export namespace PackHeap {
   /**
    * 
    */
-  export function any<Element>(capacity: number, comparator: Comparator<Element | null, Element | null>): PackHeap<Element | null> {
-    return new PackHeap(Pack.any<Element>(capacity), comparator)
+  export function any<Element>(capacity: number, defaultValue: Factory<Element>, comparator: Comparator<Element, Element>): PackHeap<Element> {
+    return new PackHeap(Pack.any(capacity, defaultValue), comparator)
   }
 
   /**

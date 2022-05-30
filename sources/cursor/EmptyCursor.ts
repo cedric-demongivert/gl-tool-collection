@@ -1,13 +1,30 @@
-import { Empty, Readonly, protomark, Mark } from "../mark"
 import { Cursor } from "./Cursor"
 
 /**
  * 
  */
-@protomark(Empty)
-@protomark(Readonly)
-@protomark(Cursor)
 export class EmptyCursor<Element> implements Cursor<Element> {
+  /**
+   * @see Cursor.prototype.isRandomAccess
+   */
+  public isRandomAccess(): boolean {
+    return false
+  }
+
+  /**
+   * @see Cursor.prototype.isBidirectional
+   */
+  public isBidirectional(): boolean {
+    return false
+  }
+
+  /**
+   * @see Cursor.prototype.isForward
+   */
+  public isForward(): boolean {
+    return false
+  }
+
   /**
    * @see Clonable.prototype.clone
    */
@@ -37,13 +54,6 @@ export class EmptyCursor<Element> implements Cursor<Element> {
    */
   public view(): this {
     return this
-  }
-
-  /**
-   * @see Markable.prototype.is
-   */
-  public is(markLike: Mark.Alike): boolean {
-    return protomark.is(this.constructor, markLike)
   }
 }
 

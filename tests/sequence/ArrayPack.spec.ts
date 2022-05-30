@@ -1,4 +1,4 @@
-import { Comparator } from '@cedric-demongivert/gl-tool-utils'
+import { Comparator, Empty } from '@cedric-demongivert/gl-tool-utils'
 import { zeros } from '../../sources/generators/zeros'
 import { nulls } from '../../sources/generators/nulls'
 import { range } from '../../sources/generators/range'
@@ -23,14 +23,14 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('returns an instance filled with the given elements', function () {
-      expect(ArrayPack.of(0, 1, 2, 3, 4)).toEqualSequence(0, 1, 2, 3, 4)
+      expect(ArrayPack.of(Empty.zero, 0, 1, 2, 3, 4)).toEqualSequence(0, 1, 2, 3, 4)
     })
 
     /**
      * 
      */
     it('returns an empty instance', function () {
-      expect(ArrayPack.of()).toEqualSequence()
+      expect(ArrayPack.of(Empty.zero,)).toEqualSequence()
     })
   })
 
@@ -42,14 +42,14 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('returns an instance filled with the content of the given iterator', function () {
-      expect(ArrayPack.ofIterator(range(5))).toEqualSequence(0, 1, 2, 3, 4)
+      expect(ArrayPack.ofIterator(Empty.zero, range(5))).toEqualSequence(0, 1, 2, 3, 4)
     })
 
     /**
      * 
      */
     it('allows to specify the capacity to allocate', function () {
-      expect(ArrayPack.ofIterator(range(5), 32).capacity).toBe(32)
+      expect(ArrayPack.ofIterator(Empty.zero, range(5), 32).capacity).toBe(32)
     })
   })
 
@@ -62,7 +62,7 @@ describe('sequence/ArrayPack', function () {
      */
     it('wraps an existing array', function () {
       const array: number[] = [0, 1, 2, 3, 4]
-      const pack: ArrayPack<number> = ArrayPack.wrap(array)
+      const pack: ArrayPack<number> = ArrayPack.wrap(array, Empty.zero)
 
       expect(pack).toEqualSequence(0, 1, 2, 3, 4)
 
@@ -76,7 +76,7 @@ describe('sequence/ArrayPack', function () {
      */
     it('allows to define a size', function () {
       const array: number[] = [0, 1, 2, 3, 4]
-      const pack: ArrayPack<number> = ArrayPack.wrap(array, 3)
+      const pack: ArrayPack<number> = ArrayPack.wrap(array, Empty.zero, 3)
 
       expect(pack).toEqualSequence(0, 1, 2)
     })
@@ -86,7 +86,7 @@ describe('sequence/ArrayPack', function () {
      */
     it('match the capacity of the array', function () {
       const array: number[] = [0, 1, 2, 3, 4]
-      const pack: ArrayPack<number> = ArrayPack.wrap(array)
+      const pack: ArrayPack<number> = ArrayPack.wrap(array, Empty.zero)
 
       expect(pack.capacity).toBe(array.length)
     })
@@ -100,19 +100,19 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('copy a given sequence', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
-      expect(ArrayPack.copy(pack)).toEqualSequence(0, 1, 2, 3)
-      expect(ArrayPack.copy(pack)).not.toBe(pack)
+      expect(ArrayPack.copy(pack, Empty.zero)).toEqualSequence(0, 1, 2, 3)
+      expect(ArrayPack.copy(pack, Empty.zero)).not.toBe(pack)
     })
 
     /**
      * 
      */
     it('allows to define a capacity', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
-      expect(ArrayPack.copy(pack, 32).capacity).toBe(32)
+      expect(ArrayPack.copy(pack, Empty.zero, 32).capacity).toBe(32)
     })
   })
 
@@ -124,14 +124,14 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('creates an empty instance', function () {
-      expect(ArrayPack.allocate(32)).toEqualSequence()
+      expect(ArrayPack.allocate(32, Empty.zero)).toEqualSequence()
     })
 
     /**
      * 
      */
     it('allows to define a capacity', function () {
-      expect(ArrayPack.allocate(32).capacity).toBe(32)
+      expect(ArrayPack.allocate(32, Empty.zero).capacity).toBe(32)
     })
   })
 
@@ -143,7 +143,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('expands the capacity', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
       expect(pack.capacity).toBe(4)
@@ -163,7 +163,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('reduces the capacity', function () {
-      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(12)], 4)
+      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(12)], Empty.zero, 4)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
       expect(pack.capacity).toBe(16)
@@ -180,7 +180,7 @@ describe('sequence/ArrayPack', function () {
     })
 
     it('truncates the content', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3, 4, 5, 6, 7)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3, 4, 5, 6, 7)
 
       expect(pack).toEqualSequence(0, 1, 2, 3, 4, 5, 6, 7)
       expect(pack.capacity).toBe(8)
@@ -205,7 +205,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('reduces the capacity to the size', function () {
-      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(12)], 4)
+      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(12)], Empty.zero, 4)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
       expect(pack.capacity).toBe(16)
@@ -225,28 +225,28 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('returns the number of elements', function () {
-      expect(ArrayPack.of(0, 1, 2, 3).size).toBe(4)
-      expect(ArrayPack.wrap([0, 1, 2, 3, ...zeros(12)], 4).size).toBe(4)
+      expect(ArrayPack.of(Empty.zero, 0, 1, 2, 3).size).toBe(4)
+      expect(ArrayPack.wrap([0, 1, 2, 3, ...zeros(12)], Empty.zero, 4).size).toBe(4)
     })
 
     /**
      * 
      */
     it('updates the number of elements', function () {
-      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(12)], 4)
+      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(12)], Empty.zero, 4)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
 
       pack.size = 8
 
-      expect(pack).toEqualSequence(0, 1, 2, 3, ...nulls(4))
+      expect(pack).toEqualSequence(0, 1, 2, 3, ...zeros(4))
     })
 
     /**
      * 
      */
     it('may reallocate', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack.capacity).toBe(4)
 
@@ -264,7 +264,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('does not updates the capacity', function () {
-      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(12)], 4)
+      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(12)], Empty.zero, 4)
 
       expect(pack.capacity).toBe(16)
 
@@ -281,7 +281,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('removes the last element', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
 
@@ -298,7 +298,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('returns the removed element', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack.pop()).toBe(3)
       expect(pack.pop()).toBe(2)
@@ -315,7 +315,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('does not updates the capacity', function () {
-      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(12)], 4)
+      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(12)], Empty.zero, 4)
 
       expect(pack.capacity).toBe(16)
 
@@ -332,7 +332,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('removes the first element', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
 
@@ -349,7 +349,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('returns the removed element', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack.shift()).toBe(0)
       expect(pack.shift()).toBe(1)
@@ -366,7 +366,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('does not update the capacity', function () {
-      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(12)], 4)
+      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(12)], Empty.zero, 4)
 
       expect(pack.capacity).toBe(16)
 
@@ -383,7 +383,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('swap two elements', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
 
@@ -401,7 +401,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('replaces an element', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
 
@@ -414,20 +414,20 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('defines an element', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
 
       pack.set(7, 8)
 
-      expect(pack).toEqualSequence(0, 1, 2, 3, null, null, null, 8)
+      expect(pack).toEqualSequence(0, 1, 2, 3, 0, 0, 0, 8)
     })
 
     /**
      * 
      */
     it('does not update the capacity when it replaces', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack.capacity).toBe(4)
 
@@ -440,7 +440,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('may reallocate', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack.capacity).toBe(4)
 
@@ -458,7 +458,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('replaces many elements', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
 
@@ -471,20 +471,20 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('defines many elements', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
 
       pack.setMany(5, 3, 8)
 
-      expect(pack).toEqualSequence(0, 1, 2, 3, null, 8, 8, 8)
+      expect(pack).toEqualSequence(0, 1, 2, 3, 0, 8, 8, 8)
     })
 
     /**
      * 
      */
     it('does not update the capacity when it replaces', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack.capacity).toBe(4)
 
@@ -497,7 +497,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('may reallocate', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack.capacity).toBe(4)
 
@@ -515,11 +515,11 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('sorts', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(1, 3, 2, 0)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 1, 3, 2, 0)
 
       expect(pack).toEqualSequence(1, 3, 2, 0)
 
-      pack.sort(Comparator.compareOptionalNumbers)
+      pack.sort(Comparator.compareNumbers)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
     })
@@ -528,11 +528,11 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('does not update the capacity', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(1, 3, 2, 0)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 1, 3, 2, 0)
 
       expect(pack.capacity).toBe(4)
 
-      pack.sort(Comparator.compareOptionalNumbers)
+      pack.sort(Comparator.compareNumbers)
 
       expect(pack.capacity).toBe(4)
     })
@@ -546,11 +546,11 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('sorts a subsequence', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(1, 3, 2, 0, 7, 4, 6, 8, 5)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 1, 3, 2, 0, 7, 4, 6, 8, 5)
 
       expect(pack).toEqualSequence(1, 3, 2, 0, 7, 4, 6, 8, 5)
 
-      pack.subsort(2, 5, Comparator.compareOptionalNumbers)
+      pack.subsort(2, 5, Comparator.compareNumbers)
 
       expect(pack).toEqualSequence(1, 3, 0, 2, 4, 6, 7, 8, 5)
     })
@@ -559,11 +559,11 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('does not update the capacity', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(1, 3, 2, 0, 7, 4, 6, 8, 5)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 1, 3, 2, 0, 7, 4, 6, 8, 5)
 
       expect(pack.capacity).toBe(9)
 
-      pack.subsort(2, 5, Comparator.compareOptionalNumbers)
+      pack.subsort(2, 5, Comparator.compareNumbers)
 
       expect(pack.capacity).toBe(9)
     })
@@ -577,7 +577,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('inserts an element', function () {
-      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(4)], 4)
+      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(4)], Empty.zero, 4)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
 
@@ -590,20 +590,20 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('defines an element', function () {
-      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(4)], 4)
+      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(4)], Empty.zero, 4)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
 
       pack.insert(5, 8)
 
-      expect(pack).toEqualSequence(0, 1, 2, 3, null, 8)
+      expect(pack).toEqualSequence(0, 1, 2, 3, 0, 8)
     })
 
     /**
      * 
      */
     it('does not update the capacity when the insertion does not overflow', function () {
-      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(4)], 4)
+      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(4)], Empty.zero, 4)
 
       expect(pack.capacity).toBe(8)
 
@@ -616,7 +616,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('updates the capacity if the insertion overflows', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack.capacity).toBe(4)
 
@@ -634,7 +634,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('add an element at the end', function () {
-      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(4)], 4)
+      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(4)], Empty.zero, 4)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
 
@@ -647,7 +647,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('does not update the capacity if the insertion does not overflow', function () {
-      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(4)], 4)
+      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(4)], Empty.zero, 4)
 
       expect(pack.capacity).toBe(8)
 
@@ -660,7 +660,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('updates the capacity if the insertion overflows', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack.capacity).toBe(4)
 
@@ -678,7 +678,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('add an element at the start', function () {
-      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(4)], 4)
+      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(4)], Empty.zero, 4)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
 
@@ -691,7 +691,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('does not update the capacity if the insertion does not overflow', function () {
-      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(4)], 4)
+      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(4)], Empty.zero, 4)
 
       expect(pack.capacity).toBe(8)
 
@@ -704,7 +704,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('updates the capacity if the insertion overflows', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack.capacity).toBe(4)
 
@@ -722,7 +722,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('removes an element', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
 
@@ -735,7 +735,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('does not update the capacity', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack.capacity).toBe(4)
 
@@ -753,7 +753,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('removes many elements', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
 
@@ -766,7 +766,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('does not update the capacity', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack.capacity).toBe(4)
 
@@ -784,7 +784,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('fastly removes an element', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
 
@@ -797,7 +797,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('does not update the capacity', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack.capacity).toBe(4)
 
@@ -815,7 +815,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('fastly removes many element', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3, 4, 5, 6)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3, 4, 5, 6)
 
       expect(pack).toEqualSequence(0, 1, 2, 3, 4, 5, 6)
 
@@ -828,7 +828,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('does not update the capacity', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3, 4, 5, 6)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3, 4, 5, 6)
 
       expect(pack.capacity).toBe(7)
 
@@ -846,7 +846,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('fills with a value', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
 
@@ -859,7 +859,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('does not update the capacity', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack.capacity).toBe(4)
 
@@ -877,8 +877,8 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('push a sequence', function () {
-      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(12)], 4)
-      const rest: ArrayPack<number> = ArrayPack.of(4, 5, 6, 7)
+      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(12)], Empty.zero, 4)
+      const rest: ArrayPack<number> = ArrayPack.of(Empty.zero, 4, 5, 6, 7)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
       expect(rest).toEqualSequence(4, 5, 6, 7)
@@ -893,8 +893,8 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('does not update the capacity when the insertion does not overflow', function () {
-      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(12)], 4)
-      const rest: ArrayPack<number> = ArrayPack.of(4, 5, 6, 7)
+      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(12)], Empty.zero, 4)
+      const rest: ArrayPack<number> = ArrayPack.of(Empty.zero, 4, 5, 6, 7)
 
       expect(pack.capacity).toBe(16)
       expect(rest.capacity).toBe(4)
@@ -909,8 +909,8 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('updates the capacity when the insertion overflows', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
-      const rest: ArrayPack<number> = ArrayPack.of(4, 5, 6, 7)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
+      const rest: ArrayPack<number> = ArrayPack.of(Empty.zero, 4, 5, 6, 7)
 
       expect(pack.capacity).toBe(4)
       expect(rest.capacity).toBe(4)
@@ -930,7 +930,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('push an array', function () {
-      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(12)], 4)
+      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(12)], Empty.zero, 4)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
 
@@ -943,7 +943,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('does not update the capacity when the insertion does not overflow', function () {
-      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(12)], 4)
+      const pack: ArrayPack<number> = ArrayPack.wrap([0, 1, 2, 3, ...zeros(12)], Empty.zero, 4)
 
       expect(pack.capacity).toBe(16)
 
@@ -956,7 +956,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('updates the capacity when the insertion overflows', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack.capacity).toBe(4)
 
@@ -974,8 +974,8 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('copy a sequence', function () {
-      const pack: ArrayPack<number> = ArrayPack.allocate(16)
-      const toCopy: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3, 4, 5)
+      const pack: ArrayPack<number> = ArrayPack.allocate(16, Empty.zero)
+      const toCopy: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3, 4, 5)
 
       expect(pack).toEqualSequence()
       expect(toCopy).toEqualSequence(0, 1, 2, 3, 4, 5)
@@ -990,8 +990,8 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('does not update the capacity when the insertion does not overflow', function () {
-      const pack: ArrayPack<number> = ArrayPack.allocate(16)
-      const toCopy: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.allocate(16, Empty.zero)
+      const toCopy: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack.capacity).toBe(16)
       expect(toCopy.capacity).toBe(4)
@@ -1008,8 +1008,8 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('does not update the capacity when the insertion does not overflow', function () {
-      const pack: ArrayPack<number> = ArrayPack.allocate(4)
-      const toCopy: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3, 4, 5, 6, 7)
+      const pack: ArrayPack<number> = ArrayPack.allocate(4, Empty.zero)
+      const toCopy: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3, 4, 5, 6, 7)
 
       expect(pack.capacity).toBe(4)
       expect(toCopy.capacity).toBe(8)
@@ -1029,7 +1029,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('deletes all elements', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
 
@@ -1042,7 +1042,7 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('does not update the capacity', function () {
-      const pack: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const pack: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(pack.capacity).toBe(4)
 
@@ -1060,14 +1060,14 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('returns true if both instances are equals', function () {
-      expect(ArrayPack.of(0, 1, 2, 3).equals(ArrayPack.of(0, 1, 2, 3))).toBeTruthy()
+      expect(ArrayPack.of(Empty.zero, 0, 1, 2, 3).equals(ArrayPack.of(Empty.zero, 0, 1, 2, 3))).toBeTruthy()
     })
 
     /**
      * 
      */
     it('returns true for itself', function () {
-      const instance: ArrayPack<number> = ArrayPack.of(0, 1, 2, 3)
+      const instance: ArrayPack<number> = ArrayPack.of(Empty.zero, 0, 1, 2, 3)
 
       expect(instance.equals(instance)).toBeTruthy()
     })
@@ -1076,31 +1076,31 @@ describe('sequence/ArrayPack', function () {
      * 
      */
     it('returns false if the size change', function () {
-      expect(ArrayPack.of(0, 1, 2, 3).equals(ArrayPack.of(0, 1, 2, 3, 4, 5))).toBeFalsy()
+      expect(ArrayPack.of(Empty.zero, 0, 1, 2, 3).equals(ArrayPack.of(Empty.zero, 0, 1, 2, 3, 4, 5))).toBeFalsy()
     })
 
     /**
      * 
      */
     it('returns false if on element change', function () {
-      expect(ArrayPack.of(0, 1, 2, 3).equals(ArrayPack.of(0, 1, 3, 3))).toBeFalsy()
+      expect(ArrayPack.of(Empty.zero, 0, 1, 2, 3).equals(ArrayPack.of(Empty.zero, 0, 1, 3, 3))).toBeFalsy()
     })
 
     /**
      * 
      */
     it('returns false for instances of other types', function () {
-      expect(ArrayPack.of(0, 1, 2, 3).equals(10)).toBeFalsy()
-      expect(ArrayPack.of(0, 1, 2, 3).equals('test')).toBeFalsy()
-      expect(ArrayPack.of(0, 1, 2, 3).equals(new Date())).toBeFalsy()
+      expect(ArrayPack.of(Empty.zero, 0, 1, 2, 3).equals(10)).toBeFalsy()
+      expect(ArrayPack.of(Empty.zero, 0, 1, 2, 3).equals('test')).toBeFalsy()
+      expect(ArrayPack.of(Empty.zero, 0, 1, 2, 3).equals(new Date())).toBeFalsy()
     })
 
     /**
      * 
      */
     it('returns false for null or undefined values', function () {
-      expect(ArrayPack.of(0, 1, 2, 3).equals(null)).toBeFalsy()
-      expect(ArrayPack.of(0, 1, 2, 3).equals(undefined)).toBeFalsy()
+      expect(ArrayPack.of(Empty.zero, 0, 1, 2, 3).equals(null)).toBeFalsy()
+      expect(ArrayPack.of(Empty.zero, 0, 1, 2, 3).equals(undefined)).toBeFalsy()
     })
   })
 })

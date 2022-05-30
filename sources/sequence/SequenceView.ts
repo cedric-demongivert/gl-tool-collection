@@ -1,16 +1,10 @@
-import { Mark, protomark, Readonly } from '../mark'
-
-import { Collection } from '../Collection'
-
 import { Sequence } from '../sequence/Sequence'
 import { ForwardCursor } from '../cursor'
+import { Collection } from '../Collection'
 
 /**
 * A read-only view over a given sequence.
 */
-@protomark(Readonly)
-@protomark(Collection)
-@protomark(Sequence)
 export class SequenceView<Element> implements Sequence<Element> {
   /**
    * The underlying sequence.
@@ -34,23 +28,65 @@ export class SequenceView<Element> implements Sequence<Element> {
   }
 
   /**
+   * @see Collection.prototype[Collection.IS]
+   */
+  public [Collection.IS](): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isSequence
+   */
+  public isSequence(): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isPack
+   */
+  public isPack(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isList
+   */
+  public isList(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isGroup
+   */
+  public isGroup(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isSet
+   */
+  public isSet(): false {
+    return false
+  }
+
+  /**
    * @see Sequence.prototype.get
    */
-  public get(index: number): Element | undefined {
+  public get(index: number): Element {
     return this._sequence.get(index)
   }
 
   /**
    * @see Sequence.prototype.first
    */
-  public get first(): Element | undefined {
+  public get first(): Element {
     return this._sequence.first
   }
 
   /**
    * @see Sequence.prototype.last
    */
-  public get last(): Element | undefined {
+  public get last(): Element {
     return this._sequence.last
   }
 
@@ -136,13 +172,6 @@ export class SequenceView<Element> implements Sequence<Element> {
    */
   public toString(): string {
     return this.constructor.name + ' (' + this._sequence.constructor.name + ') ' + Sequence.stringify(this)
-  }
-
-  /**
-   * @see Markable.prototype.is
-   */
-  public is(markLike: Mark.Alike): boolean {
-    return protomark.is(this.constructor, markLike)
   }
 }
 

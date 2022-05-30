@@ -1,29 +1,18 @@
-import { Assignable, Comparator, equals } from '@cedric-demongivert/gl-tool-utils'
+import { Comparator, equals } from '@cedric-demongivert/gl-tool-utils'
 import { Duplicator } from '../allocator/Duplicator'
 import { quicksort } from '../algorithm/quicksort'
-import { Mark, protomark } from '../mark'
+
+import type { Pack } from './Pack'
 
 import { Sequence } from './Sequence'
-
-import { StaticCollection } from '../StaticCollection'
-import { ReallocableCollection } from '../ReallocableCollection'
-import { Collection } from '../Collection'
-
-import { Pack } from './Pack'
 import { SequenceCursor } from './SequenceCursor'
-import { List } from './List'
+import { Collection } from '../Collection'
 
 /**
  * An optimized javascript array.
  *
  * @see https://v8.dev/blog/elements-kinds?fbclid=IwAR337wb3oxEpjz_5xVHL-Y14gUpVElementOztLSIikVVQLGN6qcKidEjMLJ4vO3M
  */
-@protomark(Collection)
-@protomark(Sequence)
-@protomark(List)
-@protomark(Pack)
-@protomark(StaticCollection)
-@protomark(ReallocableCollection)
 export class InstancePack<Element> implements Pack<Element> {
   /**
    * Wrapped javascript array.
@@ -53,6 +42,48 @@ export class InstancePack<Element> implements Pack<Element> {
     this._size = 0
     this._view = Sequence.view(this)
     this.duplicator = duplicator
+  }
+
+  /**
+   * @see Collection.prototype[Collection.IS]
+   */
+  public [Collection.IS](): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isSequence
+   */
+  public isSequence(): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isPack
+   */
+  public isPack(): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isList
+   */
+  public isList(): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isGroup
+   */
+  public isGroup(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isSet
+   */
+  public isSet(): false {
+    return false
   }
 
   /**
@@ -139,20 +170,18 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
    * @see Sequence.prototype.get
    */
-  public get(index: number): Element | undefined {
+  public get(index: number): Element {
     return this._elements[index]
   }
 
   /**
    * @see List.prototype.pop
    */
-  public pop(): Element | undefined {
-    if (this._size < 1) return undefined
-
+  public pop(): Element {
     const last: number = this._size - 1
     const elements: Element[] = this._elements
 
-    const result: Element | undefined = elements[last]
+    const result: Element = elements[last]
     elements[last] = this.duplicator.allocate()
 
     this._size -= 1
@@ -163,14 +192,14 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
    * @see Sequence.prototype.last
    */
-  public get last(): Element | undefined {
+  public get last(): Element {
     return this._elements[this._size - 1]
   }
 
   /**
    * @see Sequence.prototype.first
    */
-  public get first(): Element | undefined {
+  public get first(): Element {
     return this._elements[0]
   }
 
@@ -190,7 +219,7 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
    * @see List.prototype.shift
    */
-  public shift(): Element | undefined {
+  public shift(): Element {
     const elements: Array<Element> = this._elements
 
     const value: Element = elements[0]
@@ -220,7 +249,7 @@ export class InstancePack<Element> implements Pack<Element> {
   public swap(first: number, second: number): void {
     const elements: Array<Element> = this._elements
 
-    const tmp: Element | null = elements[first]
+    const tmp: Element = elements[first]
     elements[first] = elements[second]
     elements[second] = tmp
   }
@@ -438,7 +467,7 @@ export class InstancePack<Element> implements Pack<Element> {
     this.size = toCopy.size
 
     for (let index = 0, length = toCopy.size; index < length; ++index) {
-      this.set(index, toCopy.get(index)!)
+      this.set(index, toCopy.get(index))
     }
   }
 
@@ -453,7 +482,7 @@ export class InstancePack<Element> implements Pack<Element> {
     }
 
     for (let index = 0; index < toConcatSize; ++index) {
-      this.push(toConcat.get(index)!)
+      this.push(toConcat.get(index))
     }
   }
 

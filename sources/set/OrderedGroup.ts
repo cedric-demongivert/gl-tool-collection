@@ -1,4 +1,4 @@
-import { Markable } from '../mark'
+import { Collection } from '../Collection'
 import { Sequence } from '../sequence'
 import { EmptyOrderedGroup } from './EmptyOrderedGroup'
 import { Group } from './Group'
@@ -8,6 +8,16 @@ import { OrderedGroupView } from './OrderedGroupView'
  * 
  */
 export interface OrderedGroup<Element> extends Group<Element>, Sequence<Element> {
+  /**
+   * @see Collection.prototype.isSequence
+   */
+  isSequence(): true
+
+  /**
+   * @see Collection.prototype.isGroup
+   */
+  isGroup(): true
+
   /**
    * @see Clonable.prototype.clone
    */
@@ -31,7 +41,7 @@ export namespace OrderedGroup {
    *
    * @returns True if the given collection is a group.
    */
-  export function is<Element>(collection: Markable): collection is OrderedGroup<Element> {
+  export function is<Element>(collection: Collection<Element>): collection is OrderedGroup<Element> {
     return Group.is(collection) && Sequence.is(collection)
   }
 

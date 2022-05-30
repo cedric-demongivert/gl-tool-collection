@@ -1,10 +1,17 @@
-import { Markable, Mark } from '../mark'
 import { ForwardCursor } from './ForwardCursor'
+import { BidirectionalCursorView } from './BidirectionalCursorView'
+import { EmptyBidirectionalCursor } from './EmptyBidirectionalCursor'
+import { Cursor } from './Cursor'
 
 /**
 * A cursor over a sequence of values that can move from an element to its consecutive or preceding one.
 */
 export interface BidirectionalCursor<Element> extends ForwardCursor<Element> {
+  /**
+   * @see Cursor.prototype.isBidirectional
+   */
+  isBidirectional(): true
+
   /**
    * Moves this cursor to the requested element.
    * 
@@ -55,30 +62,10 @@ export namespace BidirectionalCursor {
   /**
    * 
    */
-  export const MARK: Mark = Symbol('gl-tool-collection/mark/cursor/bidirectional')
-
-  /**
-   * @see Mark.Container
-   */
-  export function mark(): Mark {
-    return MARK
+  export function is<Element>(instance: Cursor<Element>): instance is BidirectionalCursor<Element> {
+    return instance.isBidirectional()
   }
 
-  /**
-   * 
-   */
-  export function is<Element>(instance: Markable): instance is BidirectionalCursor<Element> {
-    return instance.is(MARK)
-  }
-}
-
-import { BidirectionalCursorView } from './BidirectionalCursorView'
-import { EmptyBidirectionalCursor } from './EmptyBidirectionalCursor'
-
-/**
- * 
- */
-export namespace BidirectionalCursor {
   /**
    * @see EmptyBidirectionalCursor.INSTANCE
    */

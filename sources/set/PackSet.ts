@@ -1,24 +1,17 @@
-import { ReallocableCollection } from '../ReallocableCollection'
+
+import { Factory } from '@cedric-demongivert/gl-tool-utils'
 import { Sequence, Pack } from '../sequence'
+import { ForwardCursor } from '../cursor'
+import { ReallocableCollection } from '../ReallocableCollection'
 
 import { OrderedSet } from './OrderedSet'
-import { Set } from './Set'
 import { Group } from './Group'
-import { Mark, Markable, protomark } from '../mark'
-import { StaticCollection } from '../StaticCollection'
-import { Collection } from '../Collection'
 import { OrderedGroup } from './OrderedGroup'
-import { ForwardCursor } from '../cursor'
+import { Collection } from '../Collection'
 
 /**
  * 
  */
-@protomark(ReallocableCollection)
-@protomark(StaticCollection)
-@protomark(Set)
-@protomark(Group)
-@protomark(Sequence)
-@protomark(Collection)
 export class PackSet<Element> implements ReallocableCollection, OrderedSet<Element>
 {
   /**
@@ -39,6 +32,48 @@ export class PackSet<Element> implements ReallocableCollection, OrderedSet<Eleme
   public constructor(elements: Pack<Element>) {
     this._elements = elements
     this._view = OrderedGroup.view(this)
+  }
+
+  /**
+   * @see Collection.prototype[Collection.IS]
+   */
+  public [Collection.IS](): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isSequence
+   */
+  public isSequence(): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isPack
+   */
+  public isPack(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isList
+   */
+  public isList(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isGroup
+   */
+  public isGroup(): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isSet
+   */
+  public isSet(): true {
+    return true
   }
 
   /**
@@ -122,7 +157,7 @@ export class PackSet<Element> implements ReallocableCollection, OrderedSet<Eleme
   /**
    * @see Sequence.prototype.get
    */
-  public get(index: number): Element | undefined {
+  public get(index: number): Element {
     return this._elements.get(index)
   }
 
@@ -168,14 +203,14 @@ export class PackSet<Element> implements ReallocableCollection, OrderedSet<Eleme
   /**
    * @see Sequence.prototype.first
    */
-  public get first(): Element | undefined {
+  public get first(): Element {
     return this._elements.first
   }
 
   /**
    * @see Sequence.prototype.last
    */
-  public get last(): Element | undefined {
+  public get last(): Element {
     return this._elements.last
   }
 
@@ -229,13 +264,6 @@ export class PackSet<Element> implements ReallocableCollection, OrderedSet<Eleme
   }
 
   /**
-   * @see Markable.prototype.is
-   */
-  public is(markLike: Mark.Alike): boolean {
-    return protomark.is(this.constructor, markLike)
-  }
-
-  /**
    * @see Object.prototype.toString
    */
   public toString(): string {
@@ -260,8 +288,8 @@ export namespace PackSet {
   *
   * @returns A new set that wrap a pack of the given type of instance.
   */
-  export function any<Element>(capacity: number): PackSet<Element | null> {
-    return new PackSet(Pack.any<Element>(capacity))
+  export function any<Element>(capacity: number, defaultValue: Factory<Element>): PackSet<Element> {
+    return new PackSet(Pack.any(capacity, defaultValue))
   }
 
   /**

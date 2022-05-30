@@ -1,16 +1,11 @@
-import { ForwardCursor } from '../cursor'
-import { Readonly, protomark, Markable, Mark } from '../mark'
-
 import { Collection } from '../Collection'
+import { ForwardCursor } from '../cursor'
 
 import { Group } from './Group'
 
 /**
  * A read-only view over another collection.
  */
-@protomark(Readonly)
-@protomark(Collection)
-@protomark(Group)
 export class GroupView<Element> implements Group<Element> {
   /**
    * 
@@ -29,6 +24,48 @@ export class GroupView<Element> implements Group<Element> {
    */
   public constructor(group: Group<Element>) {
     this._group = group
+  }
+
+  /**
+   * @see Collection.prototype[Collection.IS]
+   */
+  public [Collection.IS](): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isSequence
+   */
+  public isSequence(): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isPack
+   */
+  public isPack(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isList
+   */
+  public isList(): false {
+    return false
+  }
+
+  /**
+   * @see Collection.prototype.isGroup
+   */
+  public isGroup(): true {
+    return true
+  }
+
+  /**
+   * @see Collection.prototype.isSet
+   */
+  public isSet(): false {
+    return false
   }
 
   /**
@@ -92,13 +129,6 @@ export class GroupView<Element> implements Group<Element> {
    */
   public toString(): string {
     return this.constructor.name + ' (' + this._group.constructor.name + ') ' + Group.stringify(this)
-  }
-
-  /**
-   * @see Markable.prototype.is
-   */
-  public is(markLike: Mark.Alike): boolean {
-    return protomark.is(this.constructor, markLike)
   }
 }
 

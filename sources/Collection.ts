@@ -1,12 +1,19 @@
 import { Comparable, Clonable } from '@cedric-demongivert/gl-tool-utils'
 
+import type { Sequence, List, Pack } from './sequence'
+import type { Group, Set } from './set'
+
 import { ForwardCursor } from './cursor'
-import { Mark, Markable } from './mark'
 
 /**
  * A collection is a container of elements.
  */
-export interface Collection<Element> extends Iterable<Element>, Comparable, Clonable, Markable {
+export interface Collection<Element> extends Iterable<Element>, Comparable, Clonable {
+  /**
+   * 
+   */
+  [Collection.IS](): true
+
   /**
    * Return the number of elements in this collection.
    *
@@ -18,6 +25,31 @@ export interface Collection<Element> extends Iterable<Element>, Comparable, Clon
    * @returns The number of elements in this collection.
    */
   readonly size: number
+
+  /**
+   * 
+   */
+  isSequence(): this is Sequence<Element>
+
+  /**
+   * 
+   */
+  isList(): this is List<Element>
+
+  /**
+   * 
+   */
+  isPack(): this is Pack<Element>
+
+  /**
+   * 
+   */
+  isGroup(): this is Group<Element>
+
+  /**
+   * 
+   */
+  isSet(): this is Set<Element>
 
   /**
    * @see Clonable.prototype.clone
@@ -72,14 +104,12 @@ export namespace Collection {
   /**
    * 
    */
-  export const MARK: Mark = Symbol('gl-tool-collection/mark/collection')
+  export const IS: unique symbol = Symbol('gl-tool-collection/collection')
 
   /**
-   * @see Mark.Container
+   * 
    */
-  export function mark(): Mark {
-    return MARK
-  }
+  export type Marker = typeof IS
 
   /**
    * Return true if the given collection is a sequence.
@@ -88,8 +118,8 @@ export namespace Collection {
    *
    * @returns True if the given collection is a sequence.
    */
-  export function is<Element>(collection: Markable): collection is Collection<Element> {
-    return collection.is(MARK)
+  export function is<Element>(value: unknown): value is Collection<Element> {
+    return value != null && typeof value === 'object' && typeof (value as any)[IS] === 'function' && (value as any)[IS]()
   }
 
   /**
