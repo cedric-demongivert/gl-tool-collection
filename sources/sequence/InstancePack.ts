@@ -524,7 +524,7 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
    * @see List.prototype.subCopy
    */
-  public subCopy(toCopy: Sequence<Element>, offset: number = 0, size: number = toCopy.size): void {
+  public subCopy(toCopy: Sequence<Element>, offset: number = 0, size: number = toCopy.size - offset): void {
     const elements: Array<Element> = this._elements
     const duplicator: Duplicator<Element> = this.duplicator
     const toCopySizeOrCapacity: number = size < elements.length ? size : elements.length
