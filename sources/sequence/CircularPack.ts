@@ -514,6 +514,21 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
+   * @see List.prototype.subCopy
+   */
+  public subCopy(toCopy: Sequence<Element>, offset: number = 0, size: number = toCopy.size): void {
+    if (size > this.capacity) {
+      this.reallocate(size)
+    }
+
+    this.clear()
+
+    for (let index = 0; index < size; ++index) {
+      this.push(toCopy.get(offset + index))
+    }
+  }
+
+  /**
    * @see Clonable.prototype.clone
    */
   public clone(): CircularPack<Element> {

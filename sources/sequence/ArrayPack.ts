@@ -459,6 +459,24 @@ export class ArrayPack<Element> implements Pack<Element> {
   }
 
   /**
+   * @see List.prototype.subCopy
+   */
+  public subCopy(toCopy: Sequence<Element>, offset: number = 0, size: number = toCopy.size): void {
+    const elements: Array<Element> = this._elements
+    const toCopySizeOrCapacity: number = size < elements.length ? size : elements.length
+
+    for (let index = 0; index < toCopySizeOrCapacity; ++index) {
+      elements[index] = toCopy.get(offset + index)
+    }
+
+    while (elements.length < toCopy.size) {
+      elements.push(toCopy.get(offset + elements.length))
+    }
+
+    this._size = size
+  }
+
+  /**
    * @see List.prototype.concat
    */
   public concat(toConcat: Sequence<Element>): void {

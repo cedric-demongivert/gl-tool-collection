@@ -1,12 +1,14 @@
-import { Comparator, equals } from '@cedric-demongivert/gl-tool-utils'
-import { Duplicator } from '../allocator/Duplicator'
-import { quicksort } from '../algorithm/quicksort'
+import { Comparator, equals, Factory } from '@cedric-demongivert/gl-tool-utils'
+
+import { quicksort } from '../algorithm'
+import { Duplicator } from '../allocator'
+import { IsCollection } from '../IsCollection'
 
 import type { Pack } from './Pack'
 
 import { Sequence } from './Sequence'
 import { SequenceCursor } from './SequenceCursor'
-import { IsCollection } from '../IsCollection'
+
 
 /**
  * An optimized javascript array.
@@ -17,7 +19,7 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
    * Wrapped javascript array.
    */
-  private _elements: Array<Element>
+  private readonly _elements: Array<Element>
 
   /**
    * Number of elements stored.
@@ -37,11 +39,18 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
    * 
    */
-  public constructor(duplicator: Duplicator<Element>, capacity: number = 0) {
-    this._elements = []
+  public constructor(duplicator: Duplicator<Element>, capacity: number = 8) {
     this._size = 0
     this._view = Sequence.view(this)
     this.duplicator = duplicator
+
+    const elements: Element[] = []
+
+    while (elements.length < capacity) {
+      elements.push(duplicator.allocate())
+    }
+
+    this._elements = elements
   }
 
   /**
@@ -94,25 +103,33 @@ export class InstancePack<Element> implements Pack<Element> {
   }
 
   /**
+   * @see List.prototype.defaultValue
+   */
+  public defaultValue(): Element {
+    return this.duplicator.allocate()
+  }
+
+  /**
    * @see List.prototype.size
    */
-  public set size(value: number) {
+  public set size(newSize: number) {
+    const elements: Array<Element> = this._elements
     const duplicator: Duplicator<Element> = this.duplicator
-    const elements: Element[] = this._elements
+    const until: number = newSize < elements.length ? newSize : elements.length
 
-    /**
-     * @see https://v8.dev/blog/elements-kinds?fbclid=IwAR337wb3oxEpjz_5xVHL-Y14gUpVElementOztLSIikVVQLGN6qcKidEjMLJ4vO3M
-     */
-    while (value > this._elements.length) {
-      elements.push(duplicator.allocate())
-    }
-
-    for (let index = this._size; index < value; ++index) {
+    for (let index = this._size; index < until; ++index) {
       duplicator.free(elements[index])
       elements[index] = duplicator.allocate()
     }
 
-    this._size = value
+    /**
+     * @see https://v8.dev/blog/elements-kinds?fbclid=IwAR337wb3oxEpjz_5xVHL-Y14gUpVElementOztLSIikVVQLGN6qcKidEjMLJ4vO3M
+     */
+    while (elements.length < newSize) {
+      elements.push(duplicator.allocate())
+    }
+
+    this._size = newSize
   }
 
   /**
@@ -123,33 +140,26 @@ export class InstancePack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see List.prototype.defaultValue
-   */
-  public defaultValue(): Element {
-    return this.duplicator.allocate()
-  }
-
-  /**
    * @see ReallocableCollection.prototype.reallocate
    */
   public reallocate(capacity: number): void {
+    const elements: Array<Element> = this._elements
     const duplicator: Duplicator<Element> = this.duplicator
-    const elements: Element[] = this._elements
 
-    if (capacity < this._elements.length) {
+    /**
+     * @see https://v8.dev/blog/elements-kinds?fbclid=IwAR337wb3oxEpjz_5xVHL-Y14gUpVElementOztLSIikVVQLGN6qcKidEjMLJ4vO3M
+     */
+    while (elements.length < capacity) {
+      elements.push(duplicator.allocate())
+    }
+
+    if (elements.length > capacity) {
       for (let index = capacity; index < elements.length; ++index) {
         duplicator.free(elements[index])
       }
 
       elements.length = capacity
-      this._size = Math.min(this._size, capacity)
-    } else {
-      /**
-       * @see https://v8.dev/blog/elements-kinds?fbclid=IwAR337wb3oxEpjz_5xVHL-Y14gUpVElementOztLSIikVVQLGN6qcKidEjMLJ4vO3M
-       */
-      while (elements.length != capacity) {
-        elements.push(duplicator.allocate())
-      }
+      this._size = this._size < capacity ? this._size : capacity
     }
   }
 
@@ -157,8 +167,8 @@ export class InstancePack<Element> implements Pack<Element> {
    * @see ReallocableCollection.prototype.fit
    */
   public fit(): void {
-    const duplicator: Duplicator<Element> = this.duplicator
     const elements: Element[] = this._elements
+    const duplicator: Duplicator<Element> = this.duplicator
 
     for (let index = this._size; index < elements.length; ++index) {
       duplicator.free(elements[index])
@@ -178,13 +188,12 @@ export class InstancePack<Element> implements Pack<Element> {
    * @see List.prototype.pop
    */
   public pop(): Element {
-    const last: number = this._size - 1
     const elements: Element[] = this._elements
 
-    const result: Element = elements[last]
-    elements[last] = this.duplicator.allocate()
-
     this._size -= 1
+
+    const result: Element = elements[this._size]
+    elements[this._size] = this.duplicator.allocate()
 
     return result
   }
@@ -207,8 +216,8 @@ export class InstancePack<Element> implements Pack<Element> {
    * @see List.prototype.fill
    */
   public fill(element: Element): void {
-    const duplicator: Duplicator<Element> = this.duplicator
     const elements: Array<Element> = this._elements
+    const duplicator: Duplicator<Element> = this.duplicator
 
     for (let index = 0, size = this._size; index < size; ++index) {
       duplicator.free(elements[index])
@@ -220,10 +229,11 @@ export class InstancePack<Element> implements Pack<Element> {
    * @see List.prototype.shift
    */
   public shift(): Element {
-    const elements: Array<Element> = this._elements
+    const elements: Element[] = this._elements
 
     const value: Element = elements[0]
     elements[0] = this.duplicator.allocate()
+
     this.delete(0)
 
     return value
@@ -249,104 +259,138 @@ export class InstancePack<Element> implements Pack<Element> {
   public swap(first: number, second: number): void {
     const elements: Array<Element> = this._elements
 
-    const tmp: Element = elements[first]
+    const swap: Element = elements[first]
     elements[first] = elements[second]
-    elements[second] = tmp
+    elements[second] = swap
   }
 
   /**
    * @see List.prototype.set
    */
   public set(index: number, value: Element): void {
-    const duplicator: Duplicator<Element> = this.duplicator
     const elements: Array<Element> = this._elements
+    const duplicator: Duplicator<Element> = this.duplicator
+    const afterIndexOrCapacity: number = index < elements.length ? index + 1 : elements.length
 
-    if (index >= this._size) this.size = index + 1
+    for (let cursor = this._size; cursor < afterIndexOrCapacity; ++cursor) {
+      duplicator.free(elements[cursor])
+      elements[cursor] = duplicator.allocate()
+    }
+
+    while (elements.length <= index) {
+      elements.push(duplicator.allocate())
+    }
 
     duplicator.free(elements[index])
     elements[index] = duplicator.copy(value)
+    this._size = index < this._size ? this._size : index + 1
   }
 
   /**
    * @see List.prototype.setMany
    */
   public setMany(from: number, count: number, value: Element): void {
+    const to: number = from + count
     const duplicator: Duplicator<Element> = this.duplicator
     const elements: Array<Element> = this._elements
 
-    const to: number = from + count
+    const fromOrCapacity: number = from < elements.length ? from : elements.length
 
-    if (to > this._size) {
-      this.size = to
+    for (let index = this._size; index < fromOrCapacity; ++index) {
+      duplicator.free(elements[index])
+      elements[index] = duplicator.allocate()
     }
 
-    for (let cursor = from; cursor < to; ++cursor) {
-      duplicator.free(elements[cursor])
-      elements[cursor] = duplicator.copy(value)
+    const toOrCapacity: number = to < elements.length ? to : elements.length
+
+    for (let index = from; index < toOrCapacity; ++index) {
+      duplicator.free(elements[index])
+      elements[index] = duplicator.copy(value)
     }
+
+    while (elements.length < from) {
+      elements.push(duplicator.allocate())
+    }
+
+    while (elements.length < to) {
+      elements.push(duplicator.copy(value))
+    }
+
+    this._size = to < this._size ? this._size : to
   }
 
   /**
    * @see List.prototype.insert
    */
   public insert(index: number, value: Element): void {
-    const duplicator: Duplicator<Element> = this.duplicator
-    const elements: Array<Element> = this._elements
-
     if (index >= this._size) {
-      this.set(index, value)
-    } else {
-      this.size += 1
-
-      duplicator.free(elements[this._size - 1])
-
-      for (let cursor = this._size - 1; cursor > index; --cursor) {
-        elements[cursor] = elements[cursor - 1]
-      }
-
-      elements[index] = duplicator.copy(value)
+      return this.set(index, value)
     }
+
+    const elements: Array<Element> = this._elements
+    const duplicator: Duplicator<Element> = this.duplicator
+
+    if (elements.length === this._size) {
+      elements.push(duplicator.allocate())
+    }
+
+    duplicator.free(elements[this._size])
+
+    for (let cursor = this._size; cursor > index; --cursor) {
+      elements[cursor] = elements[cursor - 1]
+    }
+
+    elements[index] = duplicator.copy(value)
+
+    this._size += 1
   }
 
   /**
    * @see List.prototype.push
    */
   public push(value: Element): void {
+    const index: number = this._size
     const duplicator: Duplicator<Element> = this.duplicator
     const elements: Array<Element> = this._elements
 
-    const index: number = this._size
+    if (index === elements.length) {
+      elements.push(duplicator.copy(value))
+    } else {
+      duplicator.free(elements[index])
+      elements[index] = duplicator.copy(value)
+    }
 
-    this.size += 1
-
-    duplicator.free(elements[index])
-    elements[index] = duplicator.copy(value)
+    this._size += 1
   }
 
   /**
    * @see List.prototype.unshift
    */
   public unshift(value: Element): void {
-    const duplicator: Duplicator<Element> = this.duplicator
     const elements: Array<Element> = this._elements
+    const duplicator: Duplicator<Element> = this.duplicator
 
-    this.size += 1
+    if (this._size === elements.length) {
+      elements.push(duplicator.copy(value))
+    }
 
-    duplicator.free(elements[this._size - 1])
+    duplicator.free(elements[this._size])
 
-    for (let index = this._size - 1; index > 0; --index) {
+    for (let index = this._size; index > 0; --index) {
       elements[index] = elements[index - 1]
     }
 
     elements[0] = duplicator.copy(value)
+
+    this._size += 1
   }
 
   /**
    * @see List.prototype.delete
    */
   public delete(index: number): void {
-    const duplicator: Duplicator<Element> = this.duplicator
     const elements: Array<Element> = this._elements
+    const duplicator: Duplicator<Element> = this.duplicator
 
     duplicator.free(elements[index])
 
@@ -356,45 +400,38 @@ export class InstancePack<Element> implements Pack<Element> {
 
     elements[this._size - 1] = duplicator.allocate()
 
-    this.size -= 1
+    this._size -= 1
   }
 
   /**
    * @see List.prototype.deleteMany
    */
   public deleteMany(from: number, size: number): void {
-    const duplicator: Duplicator<Element> = this.duplicator
     const elements: Array<Element> = this._elements
+    const duplicator: Duplicator<Element> = this.duplicator
 
     const toMove: number = this._size - from - size
     const offset: number = from + size
 
-    for (let cursor = 0; cursor < size; ++cursor) {
-      duplicator.free(elements[from + cursor])
-    }
-
     for (let cursor = 0; cursor < toMove; ++cursor) {
+      duplicator.free(elements[from + cursor])
       elements[from + cursor] = elements[offset + cursor]
+      elements[offset + cursor] = duplicator.allocate()
     }
 
-    for (let cursor = 0; cursor < size; ++cursor) {
-      elements[this.size - cursor - 1] = duplicator.allocate()
-    }
-
-    this.size -= size
+    this._size -= size
   }
 
   /**
    * @see List.prototype.warp
    */
   public warp(index: number): void {
-    const duplicator: Duplicator<Element> = this.duplicator
     const elements: Array<Element> = this._elements
+    const duplicator: Duplicator<Element> = this.duplicator
 
     duplicator.free(elements[index])
     elements[index] = elements[this._size - 1]
     elements[this._size - 1] = duplicator.allocate()
-
     this.size -= 1
   }
 
@@ -406,8 +443,8 @@ export class InstancePack<Element> implements Pack<Element> {
     const rest: number = size - from - count
 
     if (rest > 0) {
-      const duplicator: Duplicator<Element> = this.duplicator
       const elements: Array<Element> = this._elements
+      const duplicator: Duplicator<Element> = this.duplicator
       const toWarp: number = rest > count ? count : rest
 
       for (let index = 0; index < toWarp; ++index) {
@@ -431,8 +468,10 @@ export class InstancePack<Element> implements Pack<Element> {
    * @see Sequence.prototype.indexOf
    */
   public indexOf(element: Element): number {
+    const elements: Array<Element> = this._elements
+
     for (let index = 0, length = this._size; index < length; ++index) {
-      if (equals(element, this._elements[index])) {
+      if (equals(element, elements[index])) {
         return index
       }
     }
@@ -451,8 +490,10 @@ export class InstancePack<Element> implements Pack<Element> {
    * @see Sequence.prototype.indexOfInSubsequence
    */
   public indexOfInSubsequence(element: Element, offset: number, size: number): number {
+    const elements: Array<Element> = this._elements
+
     for (let index = offset, length = offset + size; index < length; ++index) {
-      if (equals(element, this._elements[index])) {
+      if (equals(element, elements[index])) {
         return index
       }
     }
@@ -464,39 +505,84 @@ export class InstancePack<Element> implements Pack<Element> {
    * @see List.prototype.copy
    */
   public copy(toCopy: Sequence<Element>): void {
-    this.size = toCopy.size
+    const elements: Array<Element> = this._elements
+    const duplicator: Duplicator<Element> = this.duplicator
+    const toCopySizeOrCapacity: number = toCopy.size < elements.length ? toCopy.size : elements.length
 
-    for (let index = 0, length = toCopy.size; index < length; ++index) {
-      this.set(index, toCopy.get(index))
+    for (let index = 0; index < toCopySizeOrCapacity; ++index) {
+      duplicator.free(elements[index])
+      elements[index] = duplicator.copy(toCopy.get(index))
     }
+
+    while (elements.length < toCopy.size) {
+      elements.push(duplicator.copy(toCopy.get(elements.length)))
+    }
+
+    this._size = toCopy.size
+  }
+
+  /**
+   * @see List.prototype.subCopy
+   */
+  public subCopy(toCopy: Sequence<Element>, offset: number = 0, size: number = toCopy.size): void {
+    const elements: Array<Element> = this._elements
+    const duplicator: Duplicator<Element> = this.duplicator
+    const toCopySizeOrCapacity: number = size < elements.length ? size : elements.length
+
+    for (let index = 0; index < toCopySizeOrCapacity; ++index) {
+      duplicator.free(elements[index])
+      elements[index] = duplicator.copy(toCopy.get(offset + index))
+    }
+
+    while (elements.length < toCopy.size) {
+      elements.push(duplicator.copy(toCopy.get(offset + elements.length)))
+    }
+
+    this._size = size
   }
 
   /**
    * @see List.prototype.concat
    */
   public concat(toConcat: Sequence<Element>): void {
-    const toConcatSize: number = toConcat.size
+    const elements: Array<Element> = this._elements
+    const offset: number = this._size
+    const end: number = offset + toConcat.size
+    const endOrCapacity: number = end < elements.length ? end : elements.length
+    const duplicator: Duplicator<Element> = this.duplicator
 
-    if (this.capacity < this.size + toConcatSize) {
-      this.reallocate(this.size + toConcatSize)
+    for (let index = offset; index < endOrCapacity; ++index) {
+      duplicator.free(elements[index])
+      elements[index] = duplicator.copy(toConcat.get(index - offset))
     }
 
-    for (let index = 0; index < toConcatSize; ++index) {
-      this.push(toConcat.get(index))
+    while (elements.length < end) {
+      elements.push(duplicator.copy(toConcat.get(elements.length - offset)))
     }
+
+    this._size = end
   }
 
   /**
    * @see List.prototype.concatArray
    */
-  public concatArray(toConcat: Element[]): void {
-    if (this.capacity < this.size + toConcat.length) {
-      this.reallocate(this.size + toConcat.length)
+  public concatArray(toConcat: Array<Element>): void {
+    const elements: Array<Element> = this._elements
+    const offset: number = this._size
+    const end: number = offset + toConcat.length
+    const endOrCapacity: number = end < elements.length ? end : elements.length
+    const duplicator: Duplicator<Element> = this.duplicator
+
+    for (let index = this._size; index < endOrCapacity; ++index) {
+      duplicator.free(elements[index])
+      elements[index] = duplicator.copy(toConcat[index - offset])
     }
 
-    for (let index = 0, size = toConcat.length; index < size; ++index) {
-      this.push(toConcat[index])
+    while (elements.length < end) {
+      elements.push(duplicator.copy(toConcat[elements.length - offset]))
     }
+
+    this._size = end
   }
 
   /**
@@ -510,14 +596,7 @@ export class InstancePack<Element> implements Pack<Element> {
    * @see Clonable.prototype.clone
    */
   public clone(): InstancePack<Element> {
-    const result: InstancePack<Element> = new InstancePack(this.duplicator, this.capacity)
-    const elements: Element[] = this._elements
-
-    for (let index = 0; index < elements.length; ++index) {
-      result.push(elements[index])
-    }
-
-    return result
+    return InstancePack.copy(this, this.duplicator)
   }
 
   /**
@@ -590,14 +669,10 @@ export class InstancePack<Element> implements Pack<Element> {
  */
 export namespace InstancePack {
   /**
-   * Return an empty array pack of the given capacity.
-   *
-   * @param capacity - Capacity of the pack to allocate.
-   *
-   * @returns An empty array pack of the given capacity.
+   * 
    */
   export function allocate<Element>(duplicator: Duplicator<Element>, capacity: number): InstancePack<Element> {
-    return new InstancePack<Element>(duplicator, capacity)
+    return new InstancePack(duplicator, capacity)
   }
 
   /**
@@ -608,7 +683,7 @@ export namespace InstancePack {
      * @see InstancePack.allocate
      */
     export function withDefaultCapacity(duplicator: Duplicator<Element>): InstancePack<Element> {
-      return new InstancePack<Element>(duplicator, 32)
+      return allocate(duplicator, 32)
     }
   }
 
@@ -620,9 +695,34 @@ export namespace InstancePack {
    *
    * @returns A copy of the given sequence with the requested capacity.
    */
-  export function copy<Element>(toCopy: InstancePack<Element>, capacity: number = toCopy.capacity): InstancePack<Element> {
-    const result: InstancePack<Element> = InstancePack.allocate(toCopy.duplicator, capacity)
+  export function copy<Element>(toCopy: Sequence<Element>, duplicator: Duplicator<Element>, capacity: number = toCopy.size): InstancePack<Element> {
+    const result: InstancePack<Element> = InstancePack.allocate(duplicator, capacity)
     result.copy(toCopy)
+    return result
+  }
+
+  /**
+   * 
+   */
+  export function of<Element>(duplicator: Duplicator<Element>, ...elements: Element[]): InstancePack<Element> {
+    const result: InstancePack<Element> = InstancePack.allocate(duplicator, elements.length)
+    result.concatArray(elements)
+    return result
+  }
+
+  /**
+   * 
+   */
+  export function ofIterator<Element>(duplicator: Duplicator<Element>, elements: Iterator<Element>, capacity: number = 16): InstancePack<Element> {
+    const result: InstancePack<Element> = InstancePack.allocate(duplicator, capacity)
+
+    let iteratorResult = elements.next()
+
+    while (!iteratorResult.done) {
+      result.push(iteratorResult.value)
+      iteratorResult = elements.next()
+    }
+
     return result
   }
 }

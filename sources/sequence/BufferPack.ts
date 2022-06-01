@@ -413,6 +413,20 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
+   * @see List.prototype.subCopy
+   */
+  public subCopy(toCopy: Sequence<number>, offset: number = 0, size: number = toCopy.size): void {
+    this.size = size
+
+    const elements: Wrapped = this._elements
+
+    for (let index = 0; index < size; ++index) {
+      elements[index] = toCopy.get(offset + index)
+    }
+  }
+
+
+  /**
    * @see Sequence.prototype.concat
    */
   public concat(toConcat: Sequence<number>): void {

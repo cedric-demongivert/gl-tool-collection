@@ -231,6 +231,11 @@ export interface List<Element> extends Sequence<Element>, Clearable {
   copy(toCopy: Sequence<Element>): void
 
   /**
+   * 
+   */
+  subCopy(toCopy: Sequence<Element>, offset?: number, size?: number): void
+
+  /**
    * @see Collection.prototype.view
    */
   view(): Sequence<Element>
