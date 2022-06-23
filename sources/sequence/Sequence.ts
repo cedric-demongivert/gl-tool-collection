@@ -1,6 +1,7 @@
 import { toString } from '@cedric-demongivert/gl-tool-utils'
 
 import { Collection } from '../Collection'
+import { ArrayView } from './ArrayView'
 
 import { EmptySequence } from './EmptySequence'
 import { SequenceView } from './SequenceView'
@@ -129,6 +130,11 @@ export namespace Sequence {
    * @see EmptySequence.get
    */
   export const empty = EmptySequence.get
+
+  /**
+   * @see ArrayView.wrap
+   */
+  export const array = ArrayView.wrap
 
   /**
    * @see SequenceView.wrap

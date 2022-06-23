@@ -1,6 +1,7 @@
 
 
 export { ArrayPack } from './ArrayPack'
+export { ArrayView } from './ArrayView'
 export { BufferPack } from './BufferPack'
 export { CircularPack } from './CircularPack'
 export { EmptySequence } from './EmptySequence'
