@@ -125,4 +125,9 @@ export namespace Pack {
    * @see InstancePack.circular
    */
   export const circular = CircularPack.fromPack
+
+  /**
+   * 
+   */
+  export type Allocator<Element> = (size: number) => Pack<Element>
 }
