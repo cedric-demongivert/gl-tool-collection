@@ -28,6 +28,7 @@
     "cross-env": "^7.0.3",
     "eslint": "^8.17.0",
     "jest": "^28.1.0",
+    "jest-mock-extended": "^3.0.1",
     "laravel-mix": "^6.0.48",
     "npx": "^10.2.2",
     "ts-jest": "^28.0.4",

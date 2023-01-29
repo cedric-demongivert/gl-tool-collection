@@ -7,28 +7,28 @@ import { OrderedGroup } from './OrderedGroup'
  */
 export class EmptyOrderedGroup<Element> extends EmptySequence<Element> implements OrderedGroup<Element> {
   /**
-   * @see Collection.prototype.isGroup
+   * @see {@link Collection.isGroup}
    */
   public isGroup(): true {
     return true
   }
 
   /**
-   * @see Clonable.prototype.clone
+   * @see {@link Clonable.clone}
    */
   public clone(): this {
     return this
   }
 
   /**
-   * @see Collection.prototype.view
+   * @see {@link Collection.view}
    */
   public view(): this {
     return this
   }
 
   /**
-   * @see Comparable.prototype.equals
+   * @see {@link Comparable.equals}
    */
   public equals(other: any): boolean {
     if (other == null) return false
@@ -38,7 +38,7 @@ export class EmptyOrderedGroup<Element> extends EmptySequence<Element> implement
   }
 
   /**
-   * @see Object.prototype.toString
+   * @see {@link Object.toString}
    */
   public toString(): string {
     return this.constructor.name + ' ' + Group.stringify(this)

@@ -9,22 +9,22 @@ import { OrderedGroupView } from './OrderedGroupView'
  */
 export interface OrderedGroup<Element> extends Group<Element>, Sequence<Element> {
   /**
-   * @see Collection.prototype.isSequence
+   * @see {@link Collection.isSequence}
    */
   isSequence(): true
 
   /**
-   * @see Collection.prototype.isGroup
+   * @see {@link Collection.isGroup}
    */
   isGroup(): true
 
   /**
-   * @see Clonable.prototype.clone
+   * @see {@link Clonable.clone}
    */
   clone(): OrderedGroup<Element>
 
   /**
-   * @see Collection.prototype.view
+   * @see {@link Collection.view}
    */
   view(): OrderedGroup<Element>
 }
@@ -46,17 +46,17 @@ export namespace OrderedGroup {
   }
 
   /**
-   * @see EmptyOrderedGroup.INSTANCE
+   * @see {@link EmptyOrderedGroup.INSTANCE}
    */
   export const EMPTY = EmptyOrderedGroup.INSTANCE
 
   /**
-   * @see EmptyOrderedGroup.get
+   * @see {@link EmptyOrderedGroup.get}
    */
   export const empty = EmptyOrderedGroup.get
 
   /**
-   * @see OrderedGroupView.wrap
+   * @see {@link OrderedGroupView.wrap}
    */
   export const view = OrderedGroupView.wrap
 }

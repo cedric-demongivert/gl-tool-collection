@@ -1,22 +1,29 @@
-import { FactoryAllocator } from './FactoryAllocator'
+import { Clearable } from '@cedric-demongivert/gl-tool-utils'
+
+import { createFactoryAllocator } from './FactoryAllocator'
 
 /**
- * An object specialized in managing instances of a given type of object.
+ * An object specialized in managing instances of a given type.
  */
-export interface Allocator<Product> {
+export interface Allocator<Product> extends Clearable {
   /**
    * Allocate and return a new instance of the managed type of object.
    *
-   * @returns A new Product of the managed type of object.
+   * @returns A new instance of the managed type of object.
    */
   allocate(): Product
 
   /**
    * Return the given instance to the allocator.
    *
-   * @param Product - An Product to free.
+   * @param instance - An instance to free.
    */
-  free(Product: Product): void
+  free(instance: Product): void
+
+  /**
+   * Empty this allocator of all of it's currently pre-allocated instances.
+   */
+  clear(): void
 }
 
 /**
@@ -26,5 +33,5 @@ export namespace Allocator {
   /**
    *
    */
-  export const fromFactory = FactoryAllocator.create
+  export const fromFactory = createFactoryAllocator
 }

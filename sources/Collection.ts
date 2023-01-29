@@ -1,66 +1,25 @@
 import { Comparable, Clonable } from '@cedric-demongivert/gl-tool-utils'
 
-import type { Sequence, List, Pack } from './sequence'
-import type { Group, Set } from './set'
-
 import { ForwardCursor } from './cursor'
-import { IsCollection } from './IsCollection'
+import { createCollectionView } from './CollectionView'
+import { EMPTY_COLLECTION_INSTANCE } from './EmptyCollection'
+import { getEmptyCollection } from './EmptyCollection'
 
 /**
- * A collection is a container of elements.
+ * An enumerable container.
  */
 export interface Collection<Element> extends Iterable<Element>, Comparable, Clonable {
   /**
-   * 
-   */
-  [IsCollection.SYMBOL](): true
-
-  /**
-   * Return the number of elements in this collection.
+   * Return the total number of enumerable elements.
    *
-   * A container may hold an infinite number of elements, and for such cases, 
-   * this property MUST return the value Number.POSITIVE_INFINITY. Otherwise, 
-   * this property MUST return a non-negative integer equal to the number of 
-   * elements in the collection.
+   * An enumerable container that holds an infinite number of 
+   * elements MUST return the value Number.POSITIVE_INFINITY. 
+   * Otherwise, this property MUST be equal to a non-negative 
+   * integer.
    * 
-   * @returns The number of elements in this collection.
+   * @returns The total number of enumerable elements.
    */
   readonly size: number
-
-  /**
-   * 
-   */
-  isSequence(): this is Sequence<Element>
-
-  /**
-   * 
-   */
-  isList(): this is List<Element>
-
-  /**
-   * 
-   */
-  isPack(): this is Pack<Element>
-
-  /**
-   * 
-   */
-  isGroup(): this is Group<Element>
-
-  /**
-   * 
-   */
-  isSet(): this is Set<Element>
-
-  /**
-   * @see Clonable.prototype.clone
-   */
-  clone(): Collection<Element>
-
-  /**
-   * @see Comparable.prototype.equals
-   */
-  equals(other: unknown): boolean
 
   /**
    * Returns a forward iterator over this collection.
@@ -103,22 +62,6 @@ export interface Collection<Element> extends Iterable<Element>, Comparable, Clon
  */
 export namespace Collection {
   /**
-   * Return true if the given collection is a sequence.
-   *
-   * @param collection - A collection to assert.
-   *
-   * @returns True if the given collection is a sequence.
-   */
-  export function is<Element>(value: unknown): value is Collection<Element> {
-    return (
-      value != null &&
-      typeof value === 'object' &&
-      typeof (value as any)[IsCollection.SYMBOL] === 'function' &&
-      (value as any)[IsCollection.SYMBOL]() === true
-    )
-  }
-
-  /**
    * Return true if the given collection contains a non-finite number of elements.
    *
    * @param collection - A collection to assert.
@@ -139,27 +82,19 @@ export namespace Collection {
   export function isFinite<Element>(collection: Collection<Element>): boolean {
     return collection.size !== Number.POSITIVE_INFINITY
   }
-}
-
-import { CollectionView } from './CollectionView'
-import { EmptyCollection } from './EmptyCollection'
-
-/**
- * 
- */
-export namespace Collection {
-  /**
-   * @see EmptyCollection.INSTANCE
-   */
-  export const EMPTY = EmptyCollection.INSTANCE
 
   /**
-   * @see EmptyCollection.get
+   * @see {@link EMPTY_COLLECTION_INSTANCE}
    */
-  export const empty = EmptyCollection.get
+  export const EMPTY = EMPTY_COLLECTION_INSTANCE
 
   /**
-   * @see CollectionView.wrap
+   * @see {@link getEmptyCollection}
    */
-  export const view = CollectionView.wrap
+  export const empty = getEmptyCollection
+
+  /**
+   * @see {@link createCollectionView}
+   */
+  export const view = createCollectionView
 }

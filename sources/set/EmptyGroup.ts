@@ -6,14 +6,14 @@ import { EmptyCollection } from '../EmptyCollection'
  */
 export class EmptyGroup<Element> extends EmptyCollection<Element> {
   /**
-   * @see Collection.prototype.isGroup
+   * @see {@link Collection.isGroup}
    */
   public isGroup(): true {
     return true
   }
 
   /**
-   * @see Comparable.prototype.equals
+   * @see {@link Comparable.equals}
    */
   public equals(other: any): boolean {
     if (other == null) return false
@@ -23,7 +23,7 @@ export class EmptyGroup<Element> extends EmptyCollection<Element> {
   }
 
   /**
-   * @see Object.prototype.toString
+   * @see {@link Object.toString}
    */
   public toString(): string {
     return this.constructor.name + ' ' + Group.stringify(this)

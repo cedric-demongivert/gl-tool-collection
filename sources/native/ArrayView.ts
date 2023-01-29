@@ -1,7 +1,7 @@
 import { Sequence } from '../sequence/Sequence'
 import { ForwardCursor } from '../cursor'
 import { IsCollection } from '../IsCollection'
-import { SequenceCursor } from './SequenceCursor'
+import { SequenceCursor } from '../sequence/SequenceCursor'
 
 /**
 * A read-only view over a given array.
@@ -13,7 +13,7 @@ export class ArrayView<Element> implements Sequence<Element> {
   private _array: Array<Element>
 
   /**
-   * @see Collection.prototype.size
+   * @see {@link Collection.size}
    */
   public get size(): number {
     return this._array.length
@@ -29,63 +29,63 @@ export class ArrayView<Element> implements Sequence<Element> {
   }
 
   /**
-   * @see Collection.prototype[IsCollection.SYMBOL]
+   * @see {@link Collection[IsCollection.SYMBOL]}
    */
   public [IsCollection.SYMBOL](): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.isSequence
+   * @see {@link Collection.isSequence}
    */
   public isSequence(): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.isPack
+   * @see {@link Collection.isPack}
    */
   public isPack(): false {
     return false
   }
 
   /**
-   * @see Collection.prototype.isList
+   * @see {@link Collection.isList}
    */
   public isList(): false {
     return false
   }
 
   /**
-   * @see Collection.prototype.isGroup
+   * @see {@link Collection.isGroup}
    */
   public isGroup(): false {
     return false
   }
 
   /**
-   * @see Collection.prototype.isSet
+   * @see {@link Collection.isSet}
    */
   public isSet(): false {
     return false
   }
 
   /**
-   * @see Sequence.prototype.get
+   * @see {@link Sequence.get}
    */
   public get(index: number): Element {
     return this._array[index]
   }
 
   /**
-   * @see Sequence.prototype.first
+   * @see {@link Sequence.first}
    */
   public get first(): Element {
     return this._array[0]
   }
 
   /**
-   * @see Sequence.prototype.last
+   * @see {@link Sequence.last}
    */
   public get last(): Element {
     const array = this._array
@@ -93,28 +93,28 @@ export class ArrayView<Element> implements Sequence<Element> {
   }
 
   /**
-   * @see Collection.prototype.has
+   * @see {@link Collection.has}
    */
   public has(value: Element): boolean {
     return this._array.indexOf(value) > -1
   }
 
   /**
-   * @see Clonable.prototype.clone
+   * @see {@link Clonable.clone}
    */
   public clone(): ArrayView<Element> {
     return ArrayView.wrap(this._array)
   }
 
   /**
-   * @see Sequence.prototype.indexOf
+   * @see {@link Sequence.indexOf}
    */
   public indexOf(element: Element): number {
     return this._array.indexOf(element)
   }
 
   /**
-  * @see Sequence.prototype.indexOfInSubsequence
+  * @see {@link Sequence.indexOfInSubsequence}
   */
   public indexOfInSubsequence(element: Element, offset: number, size: number): number {
     const result: number = this._array.indexOf(element, offset)
@@ -122,7 +122,7 @@ export class ArrayView<Element> implements Sequence<Element> {
   }
 
   /**
-   * @see Sequence.prototype.hasInSubsequence
+   * @see {@link Sequence.hasInSubsequence}
    */
   public hasInSubsequence(element: Element, offset: number, size: number): boolean {
     const result: number = this._array.indexOf(element, offset)
@@ -130,21 +130,21 @@ export class ArrayView<Element> implements Sequence<Element> {
   }
 
   /**
-   * @see Collection.prototype.view
+   * @see {@link Collection.view}
    */
   public view(): ArrayView<Element> {
     return this
   }
 
   /**
-   * @see Collection.prototype.forward
+   * @see {@link Collection.forward}
    */
   public forward(): ForwardCursor<Element> {
     return new SequenceCursor(this, 0)
   }
 
   /**
-   * @see Comparable.prototype.equals
+   * @see {@link Comparable.equals}
    */
   public equals(other: any): boolean {
     if (other == null) return false
@@ -158,21 +158,21 @@ export class ArrayView<Element> implements Sequence<Element> {
   }
 
   /**
-  * @see Collection.prototype.values
+  * @see {@link Collection.values}
   */
   public values(): IterableIterator<Element> {
     return this._array.values()
   }
 
   /**
-  * @see Collection.prototype[Symbol.iterator]
+  * @see {@link Collection[Symbol.iterator]}
   */
   public [Symbol.iterator](): IterableIterator<Element> {
     return this._array.values()
   }
 
   /**
-   * @see Object.prototype.toString
+   * @see {@link Object.toString}
    */
   public toString(): string {
     return this.constructor.name + ' ' + Sequence.stringify(this)

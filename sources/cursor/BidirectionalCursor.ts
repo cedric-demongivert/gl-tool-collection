@@ -1,17 +1,11 @@
 import { ForwardCursor } from './ForwardCursor'
-import { BidirectionalCursorView } from './BidirectionalCursorView'
-import { EmptyBidirectionalCursor } from './EmptyBidirectionalCursor'
-import { Cursor } from './Cursor'
+import { createBidirectionalCursorView } from './BidirectionalCursorView'
+import { EMPTY_RANDOM_ACCESS_CURSOR_INSTANCE } from './EmptyRandomAccessCursor'
 
 /**
 * A cursor over a sequence of values that can move from an element to its consecutive or preceding one.
 */
 export interface BidirectionalCursor<Element> extends ForwardCursor<Element> {
-  /**
-   * @see Cursor.prototype.isBidirectional
-   */
-  isBidirectional(): true
-
   /**
    * Moves this cursor to the requested element.
    * 
@@ -31,7 +25,7 @@ export interface BidirectionalCursor<Element> extends ForwardCursor<Element> {
   backward(count: number): void
 
   /**
-   * @see Clonable.prototype.clone
+   * @see {@link ForwardCursor.clone}
    */
   clone(): BidirectionalCursor<Element>
 
@@ -50,7 +44,7 @@ export interface BidirectionalCursor<Element> extends ForwardCursor<Element> {
   previous(): void
 
   /**
-   * @see Cursor.prototype.view
+   * @see {@link ForwardCursor.view}
    */
   view(): BidirectionalCursor<Element>
 }
@@ -62,22 +56,17 @@ export namespace BidirectionalCursor {
   /**
    * 
    */
-  export function is<Element>(instance: Cursor<Element>): instance is BidirectionalCursor<Element> {
-    return instance.isBidirectional()
+  export const EMPTY: BidirectionalCursor<any> = EMPTY_RANDOM_ACCESS_CURSOR_INSTANCE
+
+  /**
+   * 
+   */
+  export function empty<T>(): BidirectionalCursor<T> {
+    return EMPTY
   }
 
   /**
-   * @see EmptyBidirectionalCursor.INSTANCE
+   * @see {@link createBidirectionalCursorView}
    */
-  export const EMPTY = EmptyBidirectionalCursor.INSTANCE
-
-  /**
-   * @see EmptyBidirectionalCursor.get
-   */
-  export const empty = EmptyBidirectionalCursor.get
-
-  /**
-   * @see BidirectionalCursor.wrap
-   */
-  export const view = BidirectionalCursorView.wrap
+  export const view = createBidirectionalCursorView
 }

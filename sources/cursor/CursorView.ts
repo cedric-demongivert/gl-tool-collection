@@ -17,57 +17,37 @@ export class CursorView<Element> implements Cursor<Element> {
   public constructor(cursor: Cursor<Element>) {
     this._cursor = cursor
   }
-  /**
-   * @see Cursor.prototype.isRandomAccess
-   */
-  public isRandomAccess(): false {
-    return false
-  }
 
   /**
-   * @see Cursor.prototype.isBidirectional
-   */
-  public isBidirectional(): false {
-    return false
-  }
-
-  /**
-   * @see Cursor.prototype.isForward
-   */
-  public isForward(): false {
-    return false
-  }
-
-  /**
-   * @see ForwardCursor.prototype.clone
+   * @see {@link Cursor.clone}
    */
   public clone(): CursorView<Element> {
     return new CursorView(this._cursor)
   }
 
   /**
-   * @see Comparable.prototype.equals
+   * @see {@link Cursor.equals}
    */
   public equals(other: unknown): boolean {
     if (other == null) return false
     if (other === this) return true
 
     if (other instanceof CursorView) {
-      return other._cursor.equals(this._cursor)
+      return other._cursor === this._cursor
     }
 
     return false
   }
 
   /**
-   * @see Cursor.prototype.get
+   * @see {@link Cursor.get}
    */
   public get(): Element | undefined {
     return this._cursor.get()
   }
 
   /**
-   * @see Cursor.prototype.view
+   * @see {@link Cursor.view}
    */
   public view(): this {
     return this
@@ -76,19 +56,21 @@ export class CursorView<Element> implements Cursor<Element> {
   /**
    * 
    */
-  public wrap(cursor: Cursor<Element>): void {
+  public setCursor(cursor: Cursor<Element>): void {
     this._cursor = cursor
+  }
+
+  /**
+   * 
+   */
+  public hasCursor(cursor: Cursor<Element>): boolean {
+    return this._cursor === cursor
   }
 }
 
 /**
  * 
  */
-export namespace CursorView {
-  /**
-   * 
-   */
-  export function wrap<Element>(cursor: Cursor<Element>): CursorView<Element> {
-    return new CursorView(cursor)
-  }
+export function createCursorView<Element>(cursor: Cursor<Element>): CursorView<Element> {
+  return new CursorView(cursor)
 }

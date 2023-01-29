@@ -30,42 +30,42 @@ export class NativeSet<Element> implements GLToolSet<Element>
   }
 
   /**
-   * @see Collection.prototype[IsCollection.SYMBOL]
+   * @see {@link Collection[IsCollection.SYMBOL]}
    */
   public [IsCollection.SYMBOL](): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.isSequence
+   * @see {@link Collection.isSequence}
    */
   public isSequence(): false {
     return false
   }
 
   /**
-   * @see Collection.prototype.isPack
+   * @see {@link Collection.isPack}
    */
   public isPack(): false {
     return false
   }
 
   /**
-   * @see Collection.prototype.isList
+   * @see {@link Collection.isList}
    */
   public isList(): false {
     return false
   }
 
   /**
-   * @see Collection.prototype.isGroup
+   * @see {@link Collection.isGroup}
    */
   public isGroup(): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.isSet
+   * @see {@link Collection.isSet}
    */
   public isSet(): true {
     return true
@@ -88,35 +88,35 @@ export class NativeSet<Element> implements GLToolSet<Element>
   }
 
   /**
-   * @see Collection.prototype.size
+   * @see {@link Collection.size}
    */
   public get size(): number {
     return this._elements.size
   }
 
   /**
-   * @see Collection.prototype.has
+   * @see {@link Collection.has}
    */
   public has(element: Element): boolean {
     return this._elements.has(element)
   }
 
   /**
-   * @see GLToolSet.prototype.add
+   * @see {@link GLToolSet.add}
    */
   public add(element: Element): void {
     this._elements.add(element)
   }
 
   /**
-   * @see GLToolSet.prototype.delete
+   * @see {@link GLToolSet.delete}
    */
   public delete(element: Element): void {
     this._elements.delete(element)
   }
 
   /**
-   * @see Sequence.prototype.get
+   * @see {@link Sequence.get}
    */
   public get(index: number): Element {
     if (index < 0) {
@@ -137,7 +137,7 @@ export class NativeSet<Element> implements GLToolSet<Element>
   }
 
   /**
-   * @see GLToolSet.prototype.copy
+   * @see {@link GLToolSet.copy}
    */
   public copy(toCopy: Group<Element>): void {
     this._elements.clear()
@@ -148,49 +148,49 @@ export class NativeSet<Element> implements GLToolSet<Element>
   }
 
   /**
-   * @see Clonable.prototype.clone
+   * @see {@link Clonable.clone}
    */
   public clone(): NativeSet<Element> {
     return new NativeSet<Element>(new Set<Element>(this._elements))
   }
 
   /**
-   * @see Clearable.prototype.clear
+   * @see {@link Clearable.clear}
    */
   public clear(): void {
     this._elements.clear()
   }
 
   /**
-   * @see Collection.prototype.view
+   * @see {@link Collection.view}
    */
   public view(): Group<Element> {
     return this._view
   }
 
   /**
-  * @see Collection.prototype.forward
+  * @see {@link Collection.forward}
   */
   public forward(): ForwardCursor<Element> {
     return NativeCursor.from(this.values)
   }
 
   /**
-   * @see Collection.prototype.values
+   * @see {@link Collection.values}
    */
   public values(): IterableIterator<Element> {
     return this._elements.values()
   }
 
   /**
-   * @see Collection.prototype[Symbol.iterator]
+   * @see {@link Collection[Symbol.iterator]}
    */
   public [Symbol.iterator](): IterableIterator<Element> {
     return this._elements.values()
   }
 
   /**
-   * @see Comparable.prototype.equals
+   * @see {@link Comparable.equals}
    */
   public equals(other: unknown): boolean {
     if (other == null) return false
@@ -210,7 +210,7 @@ export class NativeSet<Element> implements GLToolSet<Element>
   }
 
   /**
-   * @see Object.prototype.toString
+   * @see {@link Object.toString}
    */
   public toString(): string {
     return this.constructor.name + ' ' + Group.stringify(this)

@@ -46,7 +46,7 @@ export interface Heap<Element> extends Sequence<Element>, Clearable {
   next(): Element
 
   /**
-   * @see Collection.prototype.clone
+   * @see {@link Collection.clone}
    */
   clone(): Heap<Element>
 }

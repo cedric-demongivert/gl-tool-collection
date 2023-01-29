@@ -1,21 +1,17 @@
 import { toString } from '@cedric-demongivert/gl-tool-utils'
 
 import { Collection } from '../Collection'
-import { ArrayView } from './ArrayView'
+import { ArrayView } from '../native/ArrayView'
 
-import { EmptySequence } from './EmptySequence'
-import { SequenceView } from './SequenceView'
+import { EMPTY_SEQUENCE_INSTANCE } from './EmptySequence'
+import { getEmptySequence } from './EmptySequence'
+import { createSequenceView } from './SequenceView'
 
 /**
  * A sequence is an ordered collection of elements in which repetitions are allowed; 
  * it may contain a non-finite number of elements.
  */
 export interface Sequence<Element> extends Collection<Element> {
-  /**
-   * @see Collection.prototype.isSequence 
-   */
-  isSequence(): true
-
   /**
    * Return the element at the given index in this sequence of elements.
    *
@@ -26,9 +22,9 @@ export interface Sequence<Element> extends Collection<Element> {
    *
    * @returns The element at the given index in this sequence of elements.
    *
-   * @see https://en.wikipedia.org/wiki/Random_access
+   * @see {@link https://en.wikipedia.org/wiki/Random_access}
    */
-  get(index: number): Element
+  get(index: number): Element | undefined
 
   /**
    * Return the last element of this sequence of elements.
@@ -72,7 +68,7 @@ export interface Sequence<Element> extends Collection<Element> {
   indexOf(element: Element): number
 
   /**
-   * @see Sequence.indexOf
+   * @see {@link Sequence.indexOf}
    *
    * Act like indexOf but only over the given subsequence of elements.
    *
@@ -87,7 +83,7 @@ export interface Sequence<Element> extends Collection<Element> {
   indexOfInSubsequence(element: Element, offset: number, size: number): number
 
   /**
-   * @see Sequence.has
+   * @see {@link Sequence.has}
    *
    * Act like has but only over the given subsequence of elements.
    *
@@ -100,12 +96,12 @@ export interface Sequence<Element> extends Collection<Element> {
   hasInSubsequence(element: Element, offset: number, size: number): boolean
 
   /**
-   * @see Collection.clone
+   * @see {@link Collection.clone}
    */
   clone(): Sequence<Element>
 
   /**
-   * @see Collection.view
+   * @see {@link Collection.view}
    */
   view(): Sequence<Element>
 }
@@ -115,38 +111,31 @@ export interface Sequence<Element> extends Collection<Element> {
  */
 export namespace Sequence {
   /**
-   * 
+   * @see {@link EMPTY_SEQUENCE_INSTANCE}
    */
-  export function is<Element>(collection: Collection<Element>): collection is Sequence<Element> {
-    return collection.isSequence()
-  }
+  export const EMPTY = EMPTY_SEQUENCE_INSTANCE
 
   /**
-   * @see EmptySequence.INSTANCE
+   * @see {@link getEmptySequence}
    */
-  export const EMPTY = EmptySequence.INSTANCE
+  export const empty = getEmptySequence
 
   /**
-   * @see EmptySequence.get
-   */
-  export const empty = EmptySequence.get
-
-  /**
-   * @see ArrayView.wrap
+   * @see {@link ArrayView.wrap}
    */
   export const array = ArrayView.wrap
 
   /**
-   * @see SequenceView.wrap
+   * @see {@link createSequenceView}
    */
-  export const view = SequenceView.wrap
+  export const view = createSequenceView
 
   /**
    * 
    */
-  export function stringify(sequence: Sequence<unknown>): string {
+  export function stringify(sequence: Iterable<unknown>): string {
     let result: string = '['
-    let iterator: IterableIterator<unknown> = sequence.values()
+    let iterator: Iterator<unknown> = sequence[Symbol.iterator]()
     let iteratorResult: IteratorResult<unknown> = iterator.next()
 
     if (!iteratorResult.done) {

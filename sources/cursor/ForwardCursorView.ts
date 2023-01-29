@@ -10,7 +10,7 @@ export class ForwardCursorView<Element> implements ForwardCursor<Element> {
   private _cursor: ForwardCursor<Element>
 
   /**
-   * @see ForwardCursor.prototype.index
+   * @see {@link ForwardCursor.index}
    */
   public get index(): number {
     return this._cursor.index
@@ -26,77 +26,56 @@ export class ForwardCursorView<Element> implements ForwardCursor<Element> {
   }
 
   /**
-   * @see Cursor.prototype.isRandomAccess
-   */
-  public isRandomAccess(): false {
-    return false
-  }
-
-  /**
-   * @see Cursor.prototype.isBidirectional
-   */
-  public isBidirectional(): false {
-    return false
-  }
-
-  /**
-   * @see Cursor.prototype.isForward
-   */
-  public isForward(): true {
-    return true
-  }
-
-  /**
-   * @see ForwardCursor.prototype.clone
+   * @see {@link ForwardCursor.clone}
    */
   public clone(): ForwardCursorView<Element> {
     return new ForwardCursorView(this._cursor)
   }
 
   /**
-   * 
+   * @see {@link ForwardCursor.equals}
    */
   public equals(other: unknown): boolean {
     if (other == null) return false
     if (other === this) return true
 
     if (other instanceof ForwardCursorView) {
-      return other._cursor.equals(this._cursor)
+      return other._cursor === this._cursor
     }
 
     return false
   }
 
   /**
-   * @see ForwardCursor.prototype.forward
+   * @see {@link ForwardCursor.forward}
    */
   public forward(count: number): void {
     this._cursor.forward(count)
   }
 
   /**
-   * @see Cursor.prototype.get
+   * @see {@link Cursor.get}
    */
   public get(): Element | undefined {
     return this._cursor.get()
   }
 
   /**
-   * @see ForwardCursor.prototype.isEnd
+   * @see {@link ForwardCursor.isEnd}
    */
   public isEnd(): boolean {
     return this._cursor.isEnd()
   }
 
   /**
-   * @see ForwardCursor.prototype.isInside
+   * @see {@link ForwardCursor.isInside}
    */
   public isInside(): boolean {
     return this._cursor.isInside()
   }
 
   /**
-   * @see ForwardCursor.prototype.next
+   * @see {@link ForwardCursor.next}
    */
   public next(): void {
     this._cursor.next()
@@ -105,12 +84,19 @@ export class ForwardCursorView<Element> implements ForwardCursor<Element> {
   /**
    * 
    */
-  public wrap(cursor: ForwardCursor<Element>): void {
+  public setCursor(cursor: ForwardCursor<Element>): void {
     this._cursor = cursor
   }
 
   /**
-   * @see Cursor.prototype.view
+   * 
+   */
+  public hasCursor(cursor: ForwardCursor<Element>): boolean {
+    return this._cursor === cursor
+  }
+
+  /**
+   * @see {@link Cursor.view}
    */
   public view(): this {
     return this
@@ -120,11 +106,6 @@ export class ForwardCursorView<Element> implements ForwardCursor<Element> {
 /**
  * 
  */
-export namespace ForwardCursorView {
-  /**
-   * 
-   */
-  export function wrap<Element>(cursor: ForwardCursor<Element>): ForwardCursorView<Element> {
-    return new ForwardCursorView(cursor)
-  }
+export function createForwardCursorView<Element>(cursor: ForwardCursor<Element>): ForwardCursorView<Element> {
+  return new ForwardCursorView(cursor)
 }

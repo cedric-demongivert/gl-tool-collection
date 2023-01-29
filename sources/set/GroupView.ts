@@ -13,7 +13,7 @@ export class GroupView<Element> implements Group<Element> {
   private _group: Group<Element>
 
   /**
-   * @see Collection.prototype.size
+   * @see {@link Collection.size}
    */
   public get size(): number {
     return this._group.size
@@ -27,91 +27,91 @@ export class GroupView<Element> implements Group<Element> {
   }
 
   /**
-   * @see Collection.prototype[IsCollection.SYMBOL]
+   * @see {@link Collection[IsCollection.SYMBOL]}
    */
   public [IsCollection.SYMBOL](): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.isSequence
+   * @see {@link Collection.isSequence}
    */
   public isSequence(): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.isPack
+   * @see {@link Collection.isPack}
    */
   public isPack(): false {
     return false
   }
 
   /**
-   * @see Collection.prototype.isList
+   * @see {@link Collection.isList}
    */
   public isList(): false {
     return false
   }
 
   /**
-   * @see Collection.prototype.isGroup
+   * @see {@link Collection.isGroup}
    */
   public isGroup(): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.isSet
+   * @see {@link Collection.isSet}
    */
   public isSet(): false {
     return false
   }
 
   /**
-   * @see Collection.prototype.has
+   * @see {@link Collection.has}
    */
   public has(element: Element): boolean {
     return this._group.has(element)
   }
 
   /**
-   * @see Clonable.prototype.clone
+   * @see {@link Clonable.clone}
    */
   public clone(): GroupView<Element> {
     return new GroupView(this._group)
   }
 
   /**
-   * @see Collection.prototype.view
+   * @see {@link Collection.view}
    */
   public view(): this {
     return this
   }
 
   /**
-   * @see Collection.prototype.forward
+   * @see {@link Collection.forward}
    */
   public forward(): ForwardCursor<Element> {
     return this._group.forward().view()
   }
 
   /**
-   * @see Collection.prototype.values
+   * @see {@link Collection.values}
    */
   public values(): IterableIterator<Element> {
     return this._group.values()
   }
 
   /**
-   * @see Collection.prototype[Symbol.iterator]
+   * @see {@link Collection[Symbol.iterator]}
    */
   public [Symbol.iterator](): IterableIterator<Element> {
     return this._group.values()
   }
 
   /**
-   * @see Comparable.prototype.equals
+   * @see {@link Comparable.equals}
    */
   public equals(other: any): boolean {
     if (other == null) return false
@@ -125,7 +125,7 @@ export class GroupView<Element> implements Group<Element> {
   }
 
   /**
-   * @see Object.prototype.toString
+   * @see {@link Object.toString}
    */
   public toString(): string {
     return this.constructor.name + ' (' + this._group.constructor.name + ') ' + Group.stringify(this)

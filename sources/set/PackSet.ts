@@ -35,42 +35,42 @@ export class PackSet<Element> implements ReallocableCollection, OrderedSet<Eleme
   }
 
   /**
-   * @see Collection.prototype[IsCollection.SYMBOL]
+   * @see {@link Collection[IsCollection.SYMBOL]}
    */
   public [IsCollection.SYMBOL](): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.isSequence
+   * @see {@link Collection.isSequence}
    */
   public isSequence(): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.isPack
+   * @see {@link Collection.isPack}
    */
   public isPack(): false {
     return false
   }
 
   /**
-   * @see Collection.prototype.isList
+   * @see {@link Collection.isList}
    */
   public isList(): false {
     return false
   }
 
   /**
-   * @see Collection.prototype.isGroup
+   * @see {@link Collection.isGroup}
    */
   public isGroup(): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.isSet
+   * @see {@link Collection.isSet}
    */
   public isSet(): true {
     return true
@@ -93,49 +93,49 @@ export class PackSet<Element> implements ReallocableCollection, OrderedSet<Eleme
   }
 
   /**
-   * @see Collection.prototype.size
+   * @see {@link Collection.size}
    */
   public get size(): number {
     return this._elements.size
   }
 
   /**
-   * @see StaticCollection.prototype.capacity
+   * @see {@link StaticCollection.capacity}
    */
   public get capacity(): number {
     return this._elements.capacity
   }
 
   /**
-   * @see Collection.prototype.has
+   * @see {@link Collection.has}
    */
   public has(element: Element): boolean {
     return this._elements.has(element)
   }
 
   /**
-   * @see Sequence.prototype.indexOf
+   * @see {@link Sequence.indexOf}
    */
   public indexOf(element: Element): number {
     return this._elements.indexOf(element)
   }
 
   /**
-   * @see Sequence.prototype.hasInSubsequence
+   * @see {@link Sequence.hasInSubsequence}
    */
   public hasInSubsequence(element: Element, offset: number, size: number): boolean {
     return this._elements.hasInSubsequence(element, offset, size)
   }
 
   /**
-   * @see Sequence.prototype.indexOfInSubsequence
+   * @see {@link Sequence.indexOfInSubsequence}
    */
   public indexOfInSubsequence(element: Element, offset: number, size: number): number {
     return this._elements.indexOfInSubsequence(element, offset, size)
   }
 
   /**
-   * @see Set.prototype.add
+   * @see {@link Set.add}
    */
   public add(element: Element): void {
     if (this._elements.indexOf(element) === -1) {
@@ -144,7 +144,7 @@ export class PackSet<Element> implements ReallocableCollection, OrderedSet<Eleme
   }
 
   /**
-   * @see Set.prototype.delete
+   * @see {@link Set.delete}
    */
   public delete(element: Element): void {
     const index: number = this._elements.indexOf(element)
@@ -155,28 +155,28 @@ export class PackSet<Element> implements ReallocableCollection, OrderedSet<Eleme
   }
 
   /**
-   * @see Sequence.prototype.get
+   * @see {@link Sequence.get}
    */
   public get(index: number): Element {
     return this._elements.get(index)
   }
 
   /**
-   * @see ReallocableCollection.prototype.reallocate
+   * @see {@link ReallocableCollection.reallocate}
    */
   public reallocate(capacity: number): void {
     this._elements.reallocate(capacity)
   }
 
   /**
-   * @see ReallocableCollection.prototype.fit
+   * @see {@link ReallocableCollection.fit}
    */
   public fit(): void {
     this._elements.fit()
   }
 
   /**
-   * @see Set.prototype.copy
+   * @see {@link Set.copy}
    */
   public copy(toCopy: Group<Element>): void {
     this.clear()
@@ -187,49 +187,49 @@ export class PackSet<Element> implements ReallocableCollection, OrderedSet<Eleme
   }
 
   /**
-   * @see Clonable.prototype.clone
+   * @see {@link Clonable.clone}
    */
   public clone(): PackSet<Element> {
     return new PackSet<Element>(this._elements.clone())
   }
 
   /**
-   * @see Group.prototype.clear
+   * @see {@link Group.clear}
    */
   public clear(): void {
     this._elements.clear()
   }
 
   /**
-   * @see Sequence.prototype.first
+   * @see {@link Sequence.first}
    */
   public get first(): Element {
     return this._elements.first
   }
 
   /**
-   * @see Sequence.prototype.last
+   * @see {@link Sequence.last}
    */
   public get last(): Element {
     return this._elements.last
   }
 
   /**
-   * @see Collection.prototype.view
+   * @see {@link Collection.view}
    */
   public view(): OrderedGroup<Element> {
     return this._view
   }
 
   /**
-  * @see Collection.prototype.forward
+  * @see {@link Collection.forward}
   */
   public forward(): ForwardCursor<Element> {
     return this._elements.forward()
   }
 
   /**
-  * @see Collection.prototype.values
+  * @see {@link Collection.values}
   */
   public values(): IterableIterator<Element> {
     return this._elements.values()
@@ -237,14 +237,14 @@ export class PackSet<Element> implements ReallocableCollection, OrderedSet<Eleme
 
 
   /**
-  * @see Collection.prototype[Symbol.iterator]
+  * @see {@link Collection[Symbol.iterator]}
   */
   public [Symbol.iterator](): IterableIterator<Element> {
     return this._elements.values()
   }
 
   /**
-  * @see Comparable.prototype.equals
+  * @see {@link Comparable.equals}
   */
   public equals(other: any): boolean {
     if (other == null) return false
@@ -264,7 +264,7 @@ export class PackSet<Element> implements ReallocableCollection, OrderedSet<Eleme
   }
 
   /**
-   * @see Object.prototype.toString
+   * @see {@link Object.toString}
    */
   public toString(): string {
     return this.constructor.name + ' (' + this._elements.constructor.name + ') ' + Group.stringify(this)

@@ -1,51 +1,33 @@
 import { Clonable, Comparable } from '@cedric-demongivert/gl-tool-utils'
 
-import { EmptyCursor } from './EmptyCursor'
-import { CursorView } from './CursorView'
-import { NativeCursor } from './NativeCursor'
-import { BidirectionalCursor } from './BidirectionalCursor'
-import { ForwardCursor } from './ForwardCursor'
-import { RandomAccessCursor } from './RandomAccessCursor'
+import { EMPTY_RANDOM_ACCESS_CURSOR_INSTANCE } from './EmptyRandomAccessCursor'
+import { createCursorView } from './CursorView'
+import { NativeCursor } from '../native/NativeCursor'
 
 /**
  * A cursor over a collection.
  */
 export interface Cursor<Element> extends Comparable, Clonable {
   /**
-   * 
-   */
-  isBidirectional(): this is BidirectionalCursor<Element>
-
-  /**
-   * 
-   */
-  isForward(): this is ForwardCursor<Element>
-
-  /**
-   * 
-   */
-  isRandomAccess(): this is RandomAccessCursor<Element>
-
-  /**
-   * @see Clonable.prototype.clone
-   */
-  clone(): Cursor<Element>
-
-  /**
-   * Resolves and returns the element pointed by this cursor.
+   * Returns the element pointed by this cursor.
    * 
    * @returns The element pointed by this cursor.
    */
   get(): Element | undefined
 
   /**
-   * Return an immutable instance of the cursor. 
+   * Returns a readonly instance of the cursor. 
    * 
-   * An immutable cursor MUST always return itself.
+   * A readonly cursor MUST always return itself.
    * 
    * @returns A read-only instance of the cursor. 
    */
   view(): Cursor<Element>
+  
+  /**
+   * @see {@link Clonable.clone}
+   */
+  clone(): Cursor<Element>
 }
 
 /**
@@ -53,22 +35,24 @@ export interface Cursor<Element> extends Comparable, Clonable {
  */
 export namespace Cursor {
   /**
-   * @see EmptyForwardCursor.INSTANCE
+   * 
    */
-  export const EMPTY = EmptyCursor.INSTANCE
+  export const EMPTY: Cursor<any> = EMPTY_RANDOM_ACCESS_CURSOR_INSTANCE
 
   /**
-   * @see EmptyForwardCursor.get
+   * 
    */
-  export const empty = EmptyCursor.get
+  export function empty<T>(): Cursor<T> {
+    return EMPTY
+  }
 
   /**
-   * @see CursorView.wrap
+   * @see {@link createCursorView}
    */
-  export const view = CursorView.wrap
+  export const view = createCursorView
 
   /**
-   * @see NativeCursor.from
+   * @see {@link NativeCursor.from}
    */
   export const fromIterator = NativeCursor.from
 }

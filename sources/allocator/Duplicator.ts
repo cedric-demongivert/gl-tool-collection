@@ -1,5 +1,6 @@
 import { Allocator } from './Allocator'
-import { FactoryDuplicator } from './FactoryDuplicator'
+
+import { createFactoryDuplicator } from './FactoryDuplicator'
 
 /**
  * An allocator that can clone existing instances of the managed object.
@@ -22,5 +23,5 @@ export namespace Duplicator {
   /**
    *
    */
-  export const fromFactory = FactoryDuplicator.create
+  export const fromFactory = createFactoryDuplicator
 }

@@ -1,8 +1,8 @@
-import { Sequence } from '../Sequence'
+import { Sequence } from '../../Sequence'
 import { Comparator } from '../Comparator'
 import { bissect } from '../algorithm/bissect'
 import { View } from '../view/View'
-import { Collection } from '../Collection'
+import { Collection } from '../../Collection'
 import { CollectionIterator } from '../iterator/CollectionIterator'
 
 import { BalancedTreeWalker } from './BalancedTreeWalker'
@@ -102,7 +102,7 @@ export class BalancedTree<Element> implements Sequence<Element>
   }
 
   /**
-  * @see Sequence.get
+  * @see {@link Sequence.get}
   */
   public get(index: number): Element {
     let current: number = 0
@@ -119,7 +119,7 @@ export class BalancedTree<Element> implements Sequence<Element>
   }
 
   /**
-  * @see Sequence.indexOf
+  * @see {@link Sequence.indexOf}
   */
   public indexOf(element: Element): number {
     let current: number = 0
@@ -136,14 +136,14 @@ export class BalancedTree<Element> implements Sequence<Element>
   }
 
   /**
-  * @see Sequence.hasInSubsequence
+  * @see {@link Sequence.hasInSubsequence}
   */
   public hasInSubsequence(element: Element, offset: number, size: number): boolean {
     return this.indexOfInSubsequence(element, offset, size) >= 0
   }
 
   /**
-  * @see Sequence.indexOfInSubsequence
+  * @see {@link Sequence.indexOfInSubsequence}
   */
   public indexOfInSubsequence(element: Element, offset: number, size: number): number {
     const index: number = this.indexOf(element)
@@ -151,7 +151,7 @@ export class BalancedTree<Element> implements Sequence<Element>
   }
 
   /**
-  * @see Sequence.first
+  * @see {@link Sequence.first}
   */
   public get first(): Element {
     let current: BalancedTreeElement<Element> = this._root
@@ -164,14 +164,14 @@ export class BalancedTree<Element> implements Sequence<Element>
   }
 
   /**
-  * @see Sequence.firstIndex
+  * @see {@link Sequence.firstIndex}
   */
   public get firstIndex(): number {
     return 0
   }
 
   /**
-  * @see Sequence.last
+  * @see {@link Sequence.last}
   */
   public get last(): Element {
     let current: BalancedTreeElement<Element> = this._root
@@ -184,7 +184,7 @@ export class BalancedTree<Element> implements Sequence<Element>
   }
 
   /**
-  * @see Sequence.lastIndex
+  * @see {@link Sequence.lastIndex}
   */
   public get lastIndex(): number {
     return this._size - 1
@@ -214,7 +214,7 @@ export class BalancedTree<Element> implements Sequence<Element>
   }
 
   /**
-  * @see Collection.has
+  * @see {@link Collection.has}
   */
   public has(element: Element): boolean {
     let current: BalancedTreeElement<Element> = this._root
@@ -324,21 +324,21 @@ export class BalancedTree<Element> implements Sequence<Element>
   }
 
   /**
-  * @see Collection.clone
+  * @see {@link Collection.clone}
   */
   public clone(): BalancedTree<Element> {
     return this
   }
 
   /**
-  * @see Collection.clone
+  * @see {@link Collection.clone}
   */
   public view(): Collection<Element> {
     return View.wrap(this)
   }
 
   /**
-  * @see Collection.iterator
+  * @see {@link Collection.iterator}
   */
   public iterator(): CollectionIterator<Element> {
     return new BalancedTreeIterator<Element>(this)
@@ -380,7 +380,7 @@ export class BalancedTree<Element> implements Sequence<Element>
   }
 
   /**
-  * @see Collection.equals
+  * @see {@link Collection.equals}
   */
   public equals(other: any): boolean {
     if (other == null) return false
@@ -406,7 +406,7 @@ export class BalancedTree<Element> implements Sequence<Element>
   }
 
   /**
-  * @see Collection.iterator
+  * @see {@link Collection.iterator}
   */
   public *[Symbol.iterator](): Iterator<Element> {
     if (this._size > 0) {

@@ -16,14 +16,14 @@ export class BalancedTreeIterator<Element> implements BidirectionalIterator<Elem
   }
 
   /**
-  * @see CollectionIterator.collection
+  * @see {@link CollectionIterator.collection}
   */
   public collection () : BalancedTree<Element> {
     return this._walker.tree
   }
 
   /**
-  * @see CollectionIterator.move
+  * @see {@link CollectionIterator.move}
   */
   public move (iterator : CollectionIterator<Element>) : void {
     if (iterator instanceof BalancedTreeIterator) {
@@ -37,14 +37,14 @@ export class BalancedTreeIterator<Element> implements BidirectionalIterator<Elem
   }
 
   /**
-  * @see CollectionIterator.get
+  * @see {@link CollectionIterator.get}
   */
   public get () : Element {
     return this._walker.key() as Element
   }
 
   /**
-  * @see ForwardIterator.end
+  * @see {@link ForwardIterator.end}
   */
   public end () : void {
     this._walker.root()
@@ -58,7 +58,7 @@ export class BalancedTreeIterator<Element> implements BidirectionalIterator<Elem
   }
 
   /**
-  * @see BackwardIterator.start
+  * @see {@link BackwardIterator.start}
   */
   public start () : void {
     this._walker.root()
@@ -73,14 +73,14 @@ export class BalancedTreeIterator<Element> implements BidirectionalIterator<Elem
   }
 
   /**
-  * @see BackwardIterator.hasPrevious
+  * @see {@link BackwardIterator.hasPrevious}
   */
   public hasPrevious () : boolean {
     return this._index > 0
   }
 
   /**
-  * @see ForwardIterator.next
+  * @see {@link ForwardIterator.next}
   */
   public previous () : void {
     if (this._walker.isLeaf() && this._walker.isOnLastElement()) {
@@ -99,7 +99,7 @@ export class BalancedTreeIterator<Element> implements BidirectionalIterator<Elem
   }
 
   /**
-  * @see BackwardIterator.backward
+  * @see {@link BackwardIterator.backward}
   */
   public backward (count : number) : void {
     for (let index = 0; index < count && this.hasPrevious(); ++index) {
@@ -108,14 +108,14 @@ export class BalancedTreeIterator<Element> implements BidirectionalIterator<Elem
   }
 
   /**
-  * @see ForwardIterator.hasNext
+  * @see {@link ForwardIterator.hasNext}
   */
   public hasNext () : boolean {
     return this._index < this._walker.tree.size - 1
   }
 
   /**
-  * @see ForwardIterator.next
+  * @see {@link ForwardIterator.next}
   */
   public next () : void {
     this._walker.previous()
@@ -133,7 +133,7 @@ export class BalancedTreeIterator<Element> implements BidirectionalIterator<Elem
   }
 
   /**
-  * @see ForwardIterator.forward
+  * @see {@link ForwardIterator.forward}
   */
   public forward (count : number) : void {
     for (let index = 0; index < count && this.hasNext(); ++index) {
@@ -142,7 +142,7 @@ export class BalancedTreeIterator<Element> implements BidirectionalIterator<Elem
   }
 
   /**
-  * @see BidirectionalIterator.go
+  * @see {@link BidirectionalIterator.go}
   */
   public go (index : number) : void {
     while (this._index > index) this.previous()
@@ -160,7 +160,7 @@ export class BalancedTreeIterator<Element> implements BidirectionalIterator<Elem
   }
 
   /**
-  * @see CollectionIterator.equals
+  * @see {@link CollectionIterator.equals}
   */
   public equals (other : any) : boolean {
     if (other == null) return false

@@ -49,7 +49,7 @@ export function bisect<Item, Search>(
  */
 export namespace bisect {
   /**
-   * @see bisect
+   * @see {@link bisect}
    *
    * A bisection implementation that always returns the FIRST element of the parent sequence that matches the given value.
    *
@@ -78,7 +78,7 @@ export namespace bisect {
   }
 
   /**
-   * @see bisect
+   * @see {@link bisect}
    *
    * A bisection implementation that always returns the LAST element of the parent sequence that matches the given value.
    *
@@ -109,7 +109,7 @@ export namespace bisect {
   }
 
   /**
-   * @see bisect
+   * @see {@link bisect}
    *
    * A bisection that use an invertion of the given comparator.
    *

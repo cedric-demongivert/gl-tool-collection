@@ -54,63 +54,63 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
   }
 
   /**
-   * @see Collection.prototype[IsCollection.SYMBOL]
+   * @see {@link Collection[IsCollection.SYMBOL]}
    */
   public [IsCollection.SYMBOL](): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.isSequence
+   * @see {@link Collection.isSequence}
    */
   public isSequence(): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.isPack
+   * @see {@link Collection.isPack}
    */
   public isPack(): false {
     return false
   }
 
   /**
-   * @see Collection.prototype.isList
+   * @see {@link Collection.isList}
    */
   public isList(): false {
     return false
   }
 
   /**
-   * @see Collection.prototype.isGroup
+   * @see {@link Collection.isGroup}
    */
   public isGroup(): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.isSet
+   * @see {@link Collection.isSet}
    */
   public isSet(): true {
     return true
   }
 
   /**
-  * @see Collection.prototype.size
+  * @see {@link Collection.size}
   */
   public get size(): number {
     return this._size
   }
 
   /**
-  * @see StaticCollection.prototype.capacity
+  * @see {@link StaticCollection.capacity}
   */
   public get capacity(): number {
     return this._elements.capacity * 32
   }
 
   /**
-  * @see Collection.prototype.has
+  * @see {@link Collection.has}
   */
   public has(element: number): boolean {
     const elements: Pack<number> = this._elements
@@ -121,7 +121,7 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
   }
 
   /**
-  * @see Sequence.prototype.indexOf
+  * @see {@link Sequence.indexOf}
   */
   public indexOf(element: number): number {
     const elements: Pack<number> = this._elements
@@ -142,7 +142,7 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
   }
 
   /**
-  * @see Sequence.prototype.hasInSubsequence
+  * @see {@link Sequence.hasInSubsequence}
   */
   public hasInSubsequence(element: number, offset: number, size: number): boolean {
     const index: number = this.indexOf(element)
@@ -150,7 +150,7 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
   }
 
   /**
-  * @see Sequence.prototype.indexOfInSubsequence
+  * @see {@link Sequence.indexOfInSubsequence}
   */
   public indexOfInSubsequence(element: number, offset: number, size: number): number {
     const index: number = this.indexOf(element)
@@ -163,7 +163,7 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
   }
 
   /**
-  * @see Set.prototype.add
+  * @see {@link Set.add}
   */
   public add(element: number): void {
     const elements: Pack<number> = this._elements
@@ -186,7 +186,7 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
   }
 
   /**
-  * @see Set.prototype.delete
+  * @see {@link Set.delete}
   */
   public delete(element: number): void {
     const elements: Pack<number> = this._elements
@@ -208,7 +208,7 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
   }
 
   /**
-  * @see Sequence.prototype.get
+  * @see {@link Sequence.get}
   */
   public get(index: number): number {
     if (index > this._size) return 0
@@ -292,21 +292,21 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
   }
 
   /**
-  * @see ReallocableCollection.prototype.reallocate
+  * @see {@link ReallocableCollection.reallocate}
   */
   public reallocate(capacity: number): void {
     this._elements.reallocate(capacity)
   }
 
   /**
-  * @see ReallocableCollection.prototype.fit
+  * @see {@link ReallocableCollection.fit}
   */
   public fit(): void {
     this._elements.fit()
   }
 
   /**
-  * @see Set.prototype.copy
+  * @see {@link Set.copy}
   */
   public copy(toCopy: Group<number>): void {
     this.clear()
@@ -317,7 +317,7 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
   }
 
   /**
-  * @see Collection.prototype.clone
+  * @see {@link Collection.clone}
   */
   public clone(): BitSet {
     const result: BitSet = new BitSet(this.capacity)
@@ -326,7 +326,7 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
   }
 
   /**
-  * @see Clearable.prototype.clear
+  * @see {@link Clearable.clear}
   */
   public clear(): void {
     this._elements.clear()
@@ -334,14 +334,14 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
   }
 
   /**
-  * @see Sequence.prototype.first
+  * @see {@link Sequence.first}
   */
   public get first(): number {
     return this.get(0)
   }
 
   /**
-  * @see Sequence.prototype.last
+  * @see {@link Sequence.last}
   */
   public get last(): number {
     // optimizable
@@ -349,21 +349,21 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
   }
 
   /**
-  * @see Collection.prototype.view
+  * @see {@link Collection.view}
   */
   public view(): OrderedGroup<number> {
     return this._view
   }
 
   /**
-  * @see Collection.prototype.forward
+  * @see {@link Collection.forward}
   */
   public forward(): RandomAccessCursor<number> {
     return new SequenceCursor(this, 0)
   }
 
   /**
-  * @see Collection.prototype.values
+  * @see {@link Collection.values}
   */
   public * values(): IterableIterator<number> {
     const elements: Pack<number> = this._elements
@@ -380,14 +380,14 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
   }
 
   /**
-  * @see Collection.prototype[Symbol.iterator]
+  * @see {@link Collection[Symbol.iterator]}
   */
   public [Symbol.iterator](): IterableIterator<number> {
     return this.values()
   }
 
   /**
-  * @see Collection.equals
+  * @see {@link Collection.equals}
   */
   public equals(other: any): boolean {
     if (other == null) return false
@@ -407,7 +407,7 @@ export class BitSet implements ReallocableCollection, OrderedSet<number>
   }
 
   /**
-   * @see Object.prototype.toString
+   * @see {@link Object.toString}
    */
   public toString(): string {
     return this.constructor.name + ' ' + Group.stringify(this)

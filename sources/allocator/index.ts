@@ -1,4 +1,4 @@
-export { Allocator } from './Allocator'
-export { Duplicator } from './Duplicator'
-export { FactoryAllocator } from './FactoryAllocator'
-export { FactoryDuplicator } from './FactoryDuplicator'
+export * from './Allocator'
+export * from './Duplicator'
+export * from './FactoryAllocator'
+export * from './FactoryDuplicator'

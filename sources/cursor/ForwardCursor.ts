@@ -1,17 +1,12 @@
 import { Cursor } from './Cursor'
 
-import { EmptyForwardCursor } from './EmptyForwardCursor'
-import { ForwardCursorView } from './ForwardCursorView'
+import { EMPTY_RANDOM_ACCESS_CURSOR_INSTANCE } from './EmptyRandomAccessCursor'
+import { createForwardCursorView } from './ForwardCursorView'
 
 /**
  * A cursor over a sequence of values that can only move from an element to its consecutive one.
  */
 export interface ForwardCursor<Element> extends Cursor<Element> {
-  /**
-   * @see Cursor.prototype.isForward
-   */
-  isForward(): true
-
   /**
    * Returns the location of this cursor into its underlying sequence.
    * 
@@ -20,7 +15,7 @@ export interface ForwardCursor<Element> extends Cursor<Element> {
   readonly index: number
 
   /**
-   * @see CollectionIterator.clone
+   * @see {@link Cursor.clone}
    */
   clone(): ForwardCursor<Element>
 
@@ -46,12 +41,12 @@ export interface ForwardCursor<Element> extends Cursor<Element> {
   isInside(): boolean
 
   /**
-   * Moves this cursor to the next available element or the end of its underlying sequence.
+   * Moves this cursor to the next available element or to the end of its underlying sequence.
    */
   next(): void
 
   /**
-   * @see Cursor.prototype.view
+   * @see {@link Cursor.view}
    */
   view(): ForwardCursor<Element>
 }
@@ -63,22 +58,17 @@ export namespace ForwardCursor {
   /**
    * 
    */
-  export function is<Element>(instance: Cursor<Element>): instance is ForwardCursor<Element> {
-    return instance.isForward()
+  export const EMPTY: ForwardCursor<any> = EMPTY_RANDOM_ACCESS_CURSOR_INSTANCE
+
+  /**
+   * 
+   */
+  export function empty<T>(): ForwardCursor<T> {
+    return EMPTY
   }
 
   /**
-   * @see EmptyForwardCursor.INSTANCE
+   * @see {@link createForwardCursorView}
    */
-  export const EMPTY = EmptyForwardCursor.INSTANCE
-
-  /**
-   * @see EmptyForwardCursor.get
-   */
-  export const empty = EmptyForwardCursor.get
-
-  /**
-   * @see ForwardCursorView.wrap
-   */
-  export const view = ForwardCursorView.wrap
+  export const view = createForwardCursorView
 }

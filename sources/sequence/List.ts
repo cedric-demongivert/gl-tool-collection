@@ -8,11 +8,6 @@ import { Sequence } from './Sequence'
  */
 export interface List<Element> extends Sequence<Element>, Clearable {
   /**
-   * @see Collection.prototype.isList
-   */
-  isList(): true
-
-  /**
    * Return the number of elements in this sequence or update the current size of this sequence. 
    *
    * An update of the size of a sequence may reallocate it if the new size excess the
@@ -91,7 +86,7 @@ export interface List<Element> extends Sequence<Element>, Clearable {
   setMany(index: number, count: number, value: Element): void
 
   /**
-   * @see Array.sort
+   * @see {@link Array.sort}
    */
   sort(comparator: Comparator<Element, Element>): void
 
@@ -201,7 +196,7 @@ export interface List<Element> extends Sequence<Element>, Clearable {
   fill(value: Element): void
 
   /**
-   * @see Collection.clone
+   * @see {@link Collection.clone}
    */
   clone(): List<Element>
 
@@ -236,7 +231,7 @@ export interface List<Element> extends Sequence<Element>, Clearable {
   subCopy(toCopy: Sequence<Element>, offset?: number, size?: number): void
 
   /**
-   * @see Collection.prototype.view
+   * @see {@link Collection.view}
    */
   view(): Sequence<Element>
 }
@@ -245,10 +240,5 @@ export interface List<Element> extends Sequence<Element>, Clearable {
  * 
  */
 export namespace List {
-  /**
-   * 
-   */
-  export function is<Element>(collection: Collection<Element>): collection is List<Element> {
-    return collection.isList()
-  }
+  
 }

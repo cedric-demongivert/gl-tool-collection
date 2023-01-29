@@ -7,7 +7,7 @@ import { Group } from './Group'
  */
 export interface Set<Element> extends Group<Element>, Clearable, Clonable {
   /**
-   * @see Collection.prototype.isSet
+   * @see {@link Collection.isSet}
    */
   isSet(): true
 
@@ -33,12 +33,12 @@ export interface Set<Element> extends Group<Element>, Clearable, Clonable {
   copy(toCopy: Group<Element>): void
 
   /**
-   * @see Collection.prototype.view
+   * @see {@link Collection.view}
    */
   view(): Group<Element>
 
   /**
-   * @see Clonable.prototype.clone
+   * @see {@link Clonable.clone}
    */
   clone(): Set<Element>
 }

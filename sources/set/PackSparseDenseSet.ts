@@ -38,63 +38,63 @@ export class PackSparseDenseSet implements SparseDenseSet {
   }
 
   /**
-   * @see Collection.prototype[IsCollection.SYMBOL]
+   * @see {@link Collection[IsCollection.SYMBOL]}
    */
   public [IsCollection.SYMBOL](): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.isSequence
+   * @see {@link Collection.isSequence}
    */
   public isSequence(): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.isPack
+   * @see {@link Collection.isPack}
    */
   public isPack(): false {
     return false
   }
 
   /**
-   * @see Collection.prototype.isList
+   * @see {@link Collection.isList}
    */
   public isList(): false {
     return false
   }
 
   /**
-   * @see Collection.prototype.isGroup
+   * @see {@link Collection.isGroup}
    */
   public isGroup(): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.isSet
+   * @see {@link Collection.isSet}
    */
   public isSet(): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.size
+   * @see {@link Collection.size}
    */
   public get size(): number {
     return this._dense.size
   }
 
   /**
-   * @see StaticCollection.prototype.capacity
+   * @see {@link StaticCollection.capacity}
    */
   public get capacity(): number {
     return this._dense.capacity
   }
 
   /**
-   * @see Collection.prototype.has
+   * @see {@link Collection.has}
    */
   public has(element: number): boolean {
     const index: number = this._sparse.get(element)!
@@ -102,7 +102,7 @@ export class PackSparseDenseSet implements SparseDenseSet {
   }
 
   /**
-   * @see Sequence.prototype.indexOf
+   * @see {@link Sequence.indexOf}
    */
   public indexOf(element: number): number {
     const index: number = this._sparse.get(element)!
@@ -115,7 +115,7 @@ export class PackSparseDenseSet implements SparseDenseSet {
   }
 
   /**
-   * @see Sequence.prototype.hasInSubsequence
+   * @see {@link Sequence.hasInSubsequence}
    */
   public hasInSubsequence(element: number, offset: number, size: number): boolean {
     const index: number = this.indexOf(element)
@@ -123,7 +123,7 @@ export class PackSparseDenseSet implements SparseDenseSet {
   }
 
   /**
-   * @see Sequence.prototype.indexOfInSubsequence
+   * @see {@link Sequence.indexOfInSubsequence}
    */
   public indexOfInSubsequence(element: number, offset: number, size: number): number {
     const index: number = this.indexOf(element)
@@ -131,7 +131,7 @@ export class PackSparseDenseSet implements SparseDenseSet {
   }
 
   /**
-   * @see Set.prototype.add
+   * @see {@link Set.add}
    */
   public add(element: number): void {
     const index: number = this._sparse.get(element)!
@@ -143,7 +143,7 @@ export class PackSparseDenseSet implements SparseDenseSet {
   }
 
   /**
-   * @see Set.prototype.delete
+   * @see {@link Set.delete}
    */
   public delete(element: number): void {
     const index: number = this._sparse.get(element)!
@@ -156,14 +156,14 @@ export class PackSparseDenseSet implements SparseDenseSet {
   }
 
   /**
-   * @see Sequence.prototype.get
+   * @see {@link Sequence.get}
    */
   public get(index: number): number {
     return this._dense.get(index)
   }
 
   /**
-   * @see Set.prototype.copy
+   * @see {@link Set.copy}
    */
   public copy(toCopy: Group<number>): void {
     let max: number = 0
@@ -184,7 +184,7 @@ export class PackSparseDenseSet implements SparseDenseSet {
   }
 
   /**
-   * @see Clonable.prototype.clone
+   * @see {@link Clonable.clone}
    */
   public clone(): PackSparseDenseSet {
     const copy: PackSparseDenseSet = new PackSparseDenseSet(
@@ -198,7 +198,7 @@ export class PackSparseDenseSet implements SparseDenseSet {
   }
 
   /**
-   * @see ReallocableCollection.prototype.reallocate
+   * @see {@link ReallocableCollection.reallocate}
    */
   public reallocate(capacity: number): void {
     const oldDense: Pack<number> = this._dense
@@ -215,7 +215,7 @@ export class PackSparseDenseSet implements SparseDenseSet {
   }
 
   /**
-   * @see ReallocableCollection.prototype.fit
+   * @see {@link ReallocableCollection.fit}
    */
   public fit(): void {
     const max: number = this.max()
@@ -260,56 +260,56 @@ export class PackSparseDenseSet implements SparseDenseSet {
   }
 
   /**
-   * @see Clearable.prototype.clear
+   * @see {@link Clearable.clear}
    */
   public clear(): void {
     this._dense.clear()
   }
 
   /**
-   * @see Sequence.prototype.first
+   * @see {@link Sequence.first}
    */
   public get first(): number {
     return this._dense.first
   }
 
   /**
-   * @see Sequence.prototype.last
+   * @see {@link Sequence.last}
    */
   public get last(): number {
     return this._dense.last
   }
 
   /**
-   * @see Collection.prototype.view
+   * @see {@link Collection.view}
    */
   public view(): OrderedGroup<number> {
     return this._view
   }
 
   /**
-   * @see Collection.prototype.forward
+   * @see {@link Collection.forward}
    */
   public forward(): ForwardCursor<number> {
     return this._dense.forward()
   }
 
   /**
-   * @see Collection.prototype.values
+   * @see {@link Collection.values}
    */
   public values(): IterableIterator<number> {
     return this._dense.values()
   }
 
   /**
-   * @see Collection.prototype[Symbol.iterator]
+   * @see {@link Collection[Symbol.iterator]}
    */
   public [Symbol.iterator](): IterableIterator<number> {
     return this._dense.values()
   }
 
   /**
-   * @see Comparable.prototype.equals
+   * @see {@link Comparable.equals}
    */
   public equals(other: any): boolean {
     if (other == null) return false
@@ -329,7 +329,7 @@ export class PackSparseDenseSet implements SparseDenseSet {
   }
 
   /**
-   * @see Object.prototype.toString
+   * @see {@link Object.toString}
    */
   public toString(): string {
     return this.constructor.name + ' (' + this._dense.constructor.name + ') ' + Group.stringify(this)

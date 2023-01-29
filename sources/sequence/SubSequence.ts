@@ -1,4 +1,3 @@
-import { IsCollection } from '../IsCollection'
 import { Sequence } from '../Sequence'
 
 import { SequenceCursor } from './SequenceCursor'
@@ -38,105 +37,63 @@ export class SubSequence<Output> implements Sequence<Output> {
   }
 
   /**
-   * @see Collection.prototype[IsCollection.SYMBOL]
-   */
-  public [IsCollection.SYMBOL](): true {
-    return true
-  }
-
-  /**
-   * @see Collection.prototype.isSequence
-   */
-  public isSequence(): true {
-    return true
-  }
-
-  /**
-   * @see Collection.prototype.isPack
-   */
-  public isPack(): false {
-    return false
-  }
-
-  /**
-   * @see Collection.prototype.isList
-   */
-  public isList(): false {
-    return false
-  }
-
-  /**
-   * @see Collection.prototype.isGroup
-   */
-  public isGroup(): false {
-    return false
-  }
-
-  /**
-   * @see Collection.prototype.isSet
-   */
-  public isSet(): false {
-    return false
-  }
-
-  /**
-   * @see Sequence.prototype.size
+   * @see {@link Sequence.size}
    */
   public get size(): number {
     return this.to - this.from
   }
 
   /**
-   * @see Sequence.prototype.get
+   * @see {@link Sequence.get}
    */
   public get(index: number): Output {
     return this.parent.get(index - this.from)
   }
 
   /**
-   * @see Sequence.prototype.last
+   * @see {@link Sequence.last}
    */
   public get last(): Output {
     return this.parent.get(this.to - 1)
   }
 
   /**
-   * @see Sequence.prototype.first
+   * @see {@link Sequence.first}
    */
   public get first(): Output {
     return this.parent.get(this.from)
   }
 
   /**
-   * @see Sequence.prototype.indexOf
+   * @see {@link Sequence.indexOf}
    */
   public indexOf(element: Output): number {
     return this.parent.indexOfInSubsequence(element, this.from, this.size)
   }
 
   /**
-   * @see Sequence.prototype.has
+   * @see {@link Sequence.has}
    */
   public has(element: Output): boolean {
     return this.parent.hasInSubsequence(element, this.from, this.size)
   }
 
   /**
-   * @see Sequence.prototype.hasInSubsequence
+   * @see {@link Sequence.hasInSubsequence}
    */
   public hasInSubsequence(element: Output, offset: number, size: number): boolean {
     return this.parent.hasInSubsequence(element, this.from + offset, size)
   }
 
   /**
-   * @see Sequence.prototype.indexOfInSubsequence
+   * @see {@link Sequence.indexOfInSubsequence}
    */
   public indexOfInSubsequence(element: Output, offset: number, size: number): number {
     return this.parent.indexOfInSubsequence(element, this.from + offset, size)
   }
 
   /**
-   * @see Clonable.prototype.clone
+   * @see {@link Clonable.clone}
    */
   public clone(): SubSequence<Output> {
     const result: SubSequence<Output> = new SubSequence<Output>(this.parent)
@@ -147,21 +104,21 @@ export class SubSequence<Output> implements Sequence<Output> {
   }
 
   /**
-   * @see Collection.prototype.view
+   * @see {@link Collection.view}
    */
   public view(): Sequence<Output> {
     return this._view
   }
 
   /**
-   * @see Collection.prototype.forward
+   * @see {@link Collection.forward}
    */
   public forward(): SequenceCursor<Output> {
     return new SequenceCursor<Output>(this, 0)
   }
 
   /**
-   * @see Collection.prototype.values
+   * @see {@link Collection.values}
    */
   public * values(): IterableIterator<Output> {
     for (let index = this.from, length = this.to; index < length; ++index) {
@@ -170,14 +127,14 @@ export class SubSequence<Output> implements Sequence<Output> {
   }
 
   /**
-   * @see Collection.prototype[Symbol.iterator]
+   * @see {@link Collection[Symbol.iterator]}
    */
   public [Symbol.iterator](): IterableIterator<Output> {
     return this.values()
   }
 
   /**
-   * @see Comparable.prototype.equals
+   * @see {@link Comparable.equals}
    */
   public equals(other: any): boolean {
     if (other == null) return false
@@ -193,8 +150,3 @@ export class SubSequence<Output> implements Sequence<Output> {
   }
 }
 
-/**
- * 
- */
-export namespace SubSequence {
-}

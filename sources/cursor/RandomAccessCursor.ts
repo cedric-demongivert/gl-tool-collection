@@ -1,24 +1,18 @@
 import { BidirectionalCursor } from './BidirectionalCursor'
-import { Cursor } from './Cursor'
-import { EmptyRandomAccessCursor } from './EmptyRandomAccessCursor'
-import { RandomAccessCursorView } from './RandomAccessCursorView'
+import { EMPTY_RANDOM_ACCESS_CURSOR_INSTANCE, getEmptyRandomAccessCursor } from './EmptyRandomAccessCursor'
+import { createRandomAccessCursorView } from './RandomAccessCursorView'
 
 /**
 * 
 */
 export interface RandomAccessCursor<Element> extends BidirectionalCursor<Element> {
   /**
-   * @see Cursor.prototype.isRandomAccess
-   */
-  isRandomAccess(): true
-
-  /**
-   * @see Clonable.prototype.clone
+   * @see {@link Clonable.clone}
    */
   clone(): RandomAccessCursor<Element>
 
   /**
-   * @see Cursor.prototype.view
+   * @see {@link Cursor.view}
    */
   view(): RandomAccessCursor<Element>
 }
@@ -28,24 +22,17 @@ export interface RandomAccessCursor<Element> extends BidirectionalCursor<Element
  */
 export namespace RandomAccessCursor {
   /**
-   * 
+   * @see {@link EMPTY_RANDOM_ACCESS_CURSOR_INSTANCE}
    */
-  export function is<Element>(instance: Cursor<Element>): instance is RandomAccessCursor<Element> {
-    return instance.isRandomAccess()
-  }
+  export const EMPTY = EMPTY_RANDOM_ACCESS_CURSOR_INSTANCE
 
   /**
-   * @see EmptyRandomAccessCursor.INSTANCE
+   * @see {@link getEmptyRandomAccessCursor}
    */
-  export const EMPTY = EmptyRandomAccessCursor.INSTANCE
+  export const empty = getEmptyRandomAccessCursor
 
   /**
-   * @see EmptyRandomAccessCursor.get
+   * @see {@link createRandomAccessCursorView}
    */
-  export const empty = EmptyRandomAccessCursor.get
-
-  /**
-   * @see RandomAccessCursorView.wrap
-   */
-  export const view = RandomAccessCursorView.wrap
+  export const view = createRandomAccessCursorView
 }

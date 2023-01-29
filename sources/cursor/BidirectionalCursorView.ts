@@ -10,7 +10,7 @@ export class BidirectionalCursorView<Element> implements BidirectionalCursor<Ele
   private _cursor: BidirectionalCursor<Element>
 
   /**
-   * @see ForwardCursor.prototype.index
+   * @see {@link BidirectionalCursor.index}
    */
   public get index(): number {
     return this._cursor.index
@@ -26,28 +26,7 @@ export class BidirectionalCursorView<Element> implements BidirectionalCursor<Ele
   }
 
   /**
-   * @see Cursor.prototype.isRandomAccess
-   */
-  public isRandomAccess(): false {
-    return false
-  }
-
-  /**
-   * @see Cursor.prototype.isBidirectional
-   */
-  public isBidirectional(): true {
-    return true
-  }
-
-  /**
-   * @see Cursor.prototype.isForward
-   */
-  public isForward(): true {
-    return true
-  }
-
-  /**
-   * @see BidirectionalCursor.prototype.clone
+   * @see {@link BidirectionalCursor.clone}
    */
   public clone(): BidirectionalCursorView<Element> {
     return new BidirectionalCursorView(this._cursor)
@@ -61,70 +40,70 @@ export class BidirectionalCursorView<Element> implements BidirectionalCursor<Ele
     if (other === this) return true
 
     if (other instanceof BidirectionalCursorView) {
-      return other._cursor.equals(this._cursor)
+      return other._cursor === this._cursor
     }
 
     return false
   }
 
   /**
-   * @see BidirectionalCursor.prototype.at
+   * @see {@link BidirectionalCursor.at}
    */
   public at(index: number): void {
     this._cursor.at(index)
   }
 
   /**
-   * @see ForwardCursor.prototype.forward
+   * @see {@link BidirectionalCursor.forward}
    */
   public forward(count: number): void {
     this._cursor.forward(count)
   }
 
   /**
-   * @see BidirectionalCursor.prototype.backward
+   * @see {@link BidirectionalCursor.backward}
    */
   public backward(count: number): void {
     this._cursor.backward(count)
   }
 
   /**
-   * @see BidirectionalCursor.prototype.isStart
+   * @see {@link BidirectionalCursor.isStart}
    */
   public isStart(): boolean {
     return this._cursor.isStart()
   }
 
   /**
-   * @see Cursor.prototype.get
+   * @see {@link Cursor.get}
    */
   public get(): Element | undefined {
     return this._cursor.get()
   }
 
   /**
-   * @see ForwardCursor.prototype.isEnd
+   * @see {@link BidirectionalCursor.isEnd}
    */
   public isEnd(): boolean {
     return this._cursor.isEnd()
   }
 
   /**
-   * @see ForwardCursor.prototype.isInside
+   * @see {@link BidirectionalCursor.isInside}
    */
   public isInside(): boolean {
     return this._cursor.isInside()
   }
 
   /**
-   * @see ForwardCursor.prototype.next
+   * @see {@link BidirectionalCursor.next}
    */
   public next(): void {
     this._cursor.next()
   }
 
   /**
-   * @see BidirectionalCursor.prototype.previous
+   * @see {@link BidirectionalCursor.previous}
    */
   public previous(): void {
     return this._cursor.previous()
@@ -133,12 +112,19 @@ export class BidirectionalCursorView<Element> implements BidirectionalCursor<Ele
   /**
    * 
    */
-  public wrap(cursor: BidirectionalCursor<Element>): void {
+  public setCursor(cursor: BidirectionalCursor<Element>): void {
     this._cursor = cursor
   }
 
   /**
-   * @see Cursor.prototype.view
+   * 
+   */
+  public hasCursor(cursor: BidirectionalCursor<Element>): boolean {
+    return this._cursor === cursor
+  }
+
+  /**
+   * @see {@link BidirectionalCursor.view}
    */
   public view(): this {
     return this
@@ -148,11 +134,6 @@ export class BidirectionalCursorView<Element> implements BidirectionalCursor<Ele
 /**
  * 
  */
-export namespace BidirectionalCursorView {
-  /**
-   * 
-   */
-  export function wrap<Element>(cursor: BidirectionalCursor<Element>): BidirectionalCursorView<Element> {
-    return new BidirectionalCursorView(cursor)
-  }
+export function createBidirectionalCursorView<Element>(cursor: BidirectionalCursor<Element>): BidirectionalCursorView<Element> {
+  return new BidirectionalCursorView(cursor)
 }

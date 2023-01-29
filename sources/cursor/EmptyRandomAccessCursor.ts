@@ -1,33 +1,88 @@
-import { EmptyBidirectionalCursor } from "./EmptyBidirectionalCursor"
 import { RandomAccessCursor } from "./RandomAccessCursor"
 
 /**
  * 
  */
-export class EmptyRandomAccessCursor<Element> extends EmptyBidirectionalCursor<Element> implements RandomAccessCursor<Element> {
+export class EmptyRandomAccessCursor<Element> implements RandomAccessCursor<Element> {
   /**
-   * @see Cursor.prototype.isRandomAccess
+   * @see {@link RandomAccessCursor.index}
    */
-  public isRandomAccess(): true {
+  readonly index: number = 0
+
+  /**
+   * @see {@link RandomAccessCursor.get}
+   */
+  public get(): undefined {
+    return undefined
+  }
+
+  /**
+   * @see {@link RandomAccessCursor.forward}
+   */
+  public forward(count: number): void { }
+
+  /**
+   * @see {@link RandomAccessCursor.isEnd}
+   */
+  public isEnd(): true {
     return true
   }
 
   /**
-   * @see Clonable.prototype.clone
+   * @see {@link RandomAccessCursor.isInside}
+   */
+  public isInside(): false {
+    return false
+  }
+
+  /**
+   * @see {@link RandomAccessCursor.next}
+   */
+  public next(): void { }
+
+  /**
+   * @see {@link RandomAccessCursor.at}
+   */
+  public at(index: number): void {
+
+  }
+
+  /**
+   * @see {@link RandomAccessCursor.backward}
+   */
+  public backward(count: number): void {
+
+  }
+
+  /**
+   * @see {@link RandomAccessCursor.isStart}
+   */
+  public isStart(): true {
+    return true
+  }
+
+  /**
+   * @see {@link RandomAccessCursor.previous}
+   */
+  public previous(): void { }
+
+
+  /**
+   * @see {@link RandomAccessCursor.clone}
    */
   public clone(): this {
     return this
   }
 
   /**
-   * @see Cursor.prototype.view
+   * @see {@link RandomAccessCursor.view}
    */
   public view(): this {
     return this
   }
 
   /**
-   * @see Comparable.prototype.equals
+   * @see {@link RandomAccessCursor.equals}
    */
   public equals(other: unknown): boolean {
     if (other === this) return true
@@ -40,16 +95,11 @@ export class EmptyRandomAccessCursor<Element> extends EmptyBidirectionalCursor<E
 /**
  * 
  */
-export namespace EmptyRandomAccessCursor {
-  /**
-   * 
-   */
-  export const INSTANCE: EmptyRandomAccessCursor<any> = new EmptyRandomAccessCursor()
+export const EMPTY_RANDOM_ACCESS_CURSOR_INSTANCE: EmptyRandomAccessCursor<any> = new EmptyRandomAccessCursor()
 
-  /**
-   * 
-   */
-  export function get<Element>(): EmptyRandomAccessCursor<Element> {
-    return INSTANCE
-  }
+/**
+ * 
+ */
+export function getEmptyRandomAccessCursor<Element>(): EmptyRandomAccessCursor<Element> {
+  return EMPTY_RANDOM_ACCESS_CURSOR_INSTANCE
 }

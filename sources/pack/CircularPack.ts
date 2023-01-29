@@ -5,8 +5,8 @@ import { quicksort } from '../algorithm'
 
 import type { Pack } from './Pack'
 
-import { Sequence } from './Sequence'
-import { SequenceCursor } from './SequenceCursor'
+import { Sequence } from '../sequence/Sequence'
+import { SequenceCursor } from '../sequence/SequenceCursor'
 import { ArrayPack } from './ArrayPack'
 import { BufferPack } from './BufferPack'
 import { InstancePack } from './InstancePack'
@@ -66,63 +66,63 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see Collection.prototype[IsCollection.SYMBOL]
+   * @see {@link Collection[IsCollection.SYMBOL]}
    */
   public [IsCollection.SYMBOL](): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.isSequence
+   * @see {@link Collection.isSequence}
    */
   public isSequence(): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.isPack
+   * @see {@link Collection.isPack}
    */
   public isPack(): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.isList
+   * @see {@link Collection.isList}
    */
   public isList(): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.isGroup
+   * @see {@link Collection.isGroup}
    */
   public isGroup(): false {
     return false
   }
 
   /**
-   * @see Collection.prototype.isSet
+   * @see {@link Collection.isSet}
    */
   public isSet(): false {
     return false
   }
 
   /**
-   * @see Collection.prototype.size
+   * @see {@link Collection.size}
    */
   public get size(): number {
     return this._size
   }
 
   /**
-   * @see Pack.prototype.allocate
+   * @see {@link Pack.allocate}
    */
   public allocate(capacity: number): CircularPack<Element> {
     return new CircularPack(this._elements.allocate(capacity))
   }
 
   /**
-   * @see List.prototype.size
+   * @see {@link List.size}
    */
   public set size(newSize: number) {
     const elements: Pack<Element> = this._elements
@@ -144,21 +144,21 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see StaticCollection.prototype.capacity
+   * @see {@link StaticCollection.capacity}
    */
   public get capacity(): number {
     return this._elements.capacity
   }
 
   /**
-   * @see List.prototype.defaultValue
+   * @see {@link List.defaultValue}
    */
   public defaultValue(): Element {
     return this._elements.defaultValue()
   }
 
   /**
-   * @see ReallocableCollection.prototype.reallocate
+   * @see {@link ReallocableCollection.reallocate}
    */
   public reallocate(capacity: number): void {
     this.rotate(-this._start)
@@ -195,42 +195,42 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see ReallocableCollection.prototype.fit
+   * @see {@link ReallocableCollection.fit}
    */
   public fit(): void {
     this.reallocate(this._size)
   }
 
   /**
-   * @see Sequence.prototype.first
+   * @see {@link Sequence.first}
    */
   public get first(): Element {
     return this._elements.get(this._start)
   }
 
   /**
-   * @see Sequence.prototype.last
+   * @see {@link Sequence.last}
    */
   public get last(): Element {
     return this._elements.get((this._start + this._size) % this._elements.capacity)
   }
 
   /**
-   * @see Collection.prototype.forward
+   * @see {@link Collection.forward}
    */
   public forward(): SequenceCursor<Element> {
     return new SequenceCursor(this, 0)
   }
 
   /**
-   * @see Sequence.prototype.get
+   * @see {@link Sequence.get}
    */
   public get(index: number): Element {
     return this._elements.get((this._start + index) % this._elements.capacity)
   }
 
   /**
-   * @see List.prototype.fill
+   * @see {@link List.fill}
    */
   public fill(element: Element): void {
     for (let index = 0, size = this._size; index < size; ++index) {
@@ -239,7 +239,7 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see List.prototype.pop
+   * @see {@link List.pop}
    */
   public pop(): Element {
     const last: number = this._size - 1
@@ -251,7 +251,7 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see List.prototype.shift
+   * @see {@link List.shift}
    */
   public shift(): Element {
     const result: Element = this.get(0)
@@ -261,7 +261,7 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see List.prototype.swap
+   * @see {@link List.swap}
    */
   public swap(first: number, second: number): void {
     const rfirst: number = (this._start + first) % this._elements.capacity
@@ -271,7 +271,7 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see List.prototype.set
+   * @see {@link List.set}
    */
   public set(index: number, value: Element): void {
     if (index >= this._elements.capacity) {
@@ -290,7 +290,7 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see List.prototype.setMany
+   * @see {@link List.setMany}
    */
   public setMany(start: number, count: number, value: Element): void {
     let until: number = start + count - 1
@@ -316,21 +316,21 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see List.prototype.sort
+   * @see {@link List.sort}
    */
   public sort(comparator: Comparator<Element, Element>): void {
     quicksort(this, comparator, 0, this._size)
   }
 
   /**
-   * @see List.prototype.subsort
+   * @see {@link List.subsort}
    */
   public subsort(offset: number, size: number, comparator: Comparator<Element, Element>): void {
     quicksort(this, comparator, offset, size)
   }
 
   /**
-   * @see List.prototype.insert
+   * @see {@link List.insert}
    */
   public insert(index: number, value: Element): void {
     if (index >= this._size) {
@@ -352,7 +352,7 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see List.prototype.push
+   * @see {@link List.push}
    */
   public push(value: Element): void {
     if (this._size < this._elements.capacity) {
@@ -368,7 +368,7 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see List.prototype.unshift
+   * @see {@link List.unshift}
    */
   public unshift(value: Element): void {
     this._start -= 1
@@ -385,7 +385,7 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see List.prototype.delete
+   * @see {@link List.delete}
    */
   public delete(index: number): void {
     for (let toMove = index; toMove > 0; --toMove) {
@@ -397,7 +397,7 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see List.prototype.deleteMany
+   * @see {@link List.deleteMany}
    */
   public deleteMany(from: number, size: number): void {
     const end: number = from + size
@@ -411,7 +411,7 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see List.prototype.warp
+   * @see {@link List.warp}
    */
   public warp(index: number): void {
     this.set(index, this.get(0))
@@ -421,7 +421,7 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see List.prototype.warpMany
+   * @see {@link List.warpMany}
    */
   public warpMany(start: number, count: number): void {
     count = Math.min(this._size - start, count)
@@ -435,14 +435,14 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see Collection.prototype.has
+   * @see {@link Collection.has}
    */
   public has(element: Element): boolean {
     return this.indexOf(element) >= 0
   }
 
   /**
-   * @see Sequence.prototype.indexOf
+   * @see {@link Sequence.indexOf}
    */
   public indexOf(element: Element): number {
     for (let index = 0, length = this._size; index < length; ++index) {
@@ -458,14 +458,14 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see Sequence.prototype.hasInSubsequence
+   * @see {@link Sequence.hasInSubsequence}
    */
   public hasInSubsequence(element: Element, offset: number, size: number): boolean {
     return this.indexOfInSubsequence(element, offset, size) >= 0
   }
 
   /**
-   * @see Sequence.prototype.indexOfInSubsequence
+   * @see {@link Sequence.indexOfInSubsequence}
    */
   public indexOfInSubsequence(element: Element, offset: number, size: number): number {
     for (let index = offset, length = offset + size; index < length; ++index) {
@@ -481,7 +481,7 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see List.prototype.concat
+   * @see {@link List.concat}
    */
   public concat(toConcat: Sequence<Element>): void {
     for (let index = 0, size = toConcat.size; index < size; ++index) {
@@ -490,7 +490,7 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see List.prototype.concatArray
+   * @see {@link List.concatArray}
    */
   public concatArray(toConcat: Element[]): void {
     for (let index = 0, size = toConcat.length; index < size; ++index) {
@@ -499,7 +499,7 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see List.prototype.copy
+   * @see {@link List.copy}
    */
   public copy(toCopy: Sequence<Element>): void {
     if (toCopy.size > this.capacity) {
@@ -514,7 +514,7 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see List.prototype.subCopy
+   * @see {@link List.subCopy}
    */
   public subCopy(toCopy: Sequence<Element>, offset: number = 0, size: number = toCopy.size - offset): void {
     if (size > this.capacity) {
@@ -529,7 +529,7 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see Clonable.prototype.clone
+   * @see {@link Clonable.clone}
    */
   public clone(): CircularPack<Element> {
     return new CircularPack(
@@ -540,14 +540,14 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see Collection.prototype.view
+   * @see {@link Collection.view}
    */
   public view(): Sequence<Element> {
     return this._view
   }
 
   /**
-   * @see Clearable.prototype.clear
+   * @see {@link Clearable.clear}
    */
   public clear(): void {
     this._start = 0
@@ -555,7 +555,7 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see Collection.prototype.values
+   * @see {@link Collection.values}
    */
   public * values(): IterableIterator<Element> {
     for (let index = 0, length = this._size; index < length; ++index) {
@@ -564,14 +564,14 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see Collection.prototype[Symbol.iterator]
+   * @see {@link Collection[Symbol.iterator]}
    */
   public [Symbol.iterator](): IterableIterator<Element> {
     return this.values()
   }
 
   /**
-   * @see Comparable.prototype.equals
+   * @see {@link Comparable.equals}
    */
   public equals(other: any): boolean {
     if (other == null) return false
@@ -591,7 +591,7 @@ export class CircularPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see Object.prototype.toString
+   * @see {@link Object.toString}
    */
   public toString(): string {
     return this.constructor.name + ' (' + this._elements.constructor.name + ') ' + Sequence.stringify(this)

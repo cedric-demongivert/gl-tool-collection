@@ -1,7 +1,6 @@
-import { ForwardCursor } from './cursor'
+import { ForwardCursor } from './cursor/ForwardCursor'
 
 import { Collection } from './Collection'
-import { IsCollection } from './IsCollection'
 
 /**
  * A read-only view over another collection.
@@ -13,54 +12,12 @@ export class CollectionView<Element> implements Collection<Element> {
   private _collection: Collection<Element>
 
   /**
-   * @see Collection.prototype.size
+   * @see {@link Collection.size}
    */
   public get size(): number {
     return this._collection.size
   }
-
-  /**
-   * @see Collection.prototype[IsCollection.SYMBOL]
-   */
-  public [IsCollection.SYMBOL](): true {
-    return true
-  }
-
-  /**
-   * @see Collection.prototype.isSequence
-   */
-  public isSequence(): false {
-    return false
-  }
-
-  /**
-   * @see Collection.prototype.isPack
-   */
-  public isPack(): false {
-    return false
-  }
-
-  /**
-   * @see Collection.prototype.isList
-   */
-  public isList(): false {
-    return false
-  }
-
-  /**
-   * @see Collection.prototype.isGroup
-   */
-  public isGroup(): false {
-    return false
-  }
-
-  /**
-   * @see Collection.prototype.isSet
-   */
-  public isSet(): false {
-    return false
-  }
-
+  
   /**
    * 
    */
@@ -69,56 +26,70 @@ export class CollectionView<Element> implements Collection<Element> {
   }
 
   /**
-   * @see Collection.prototype.has
+   * @see {@link Collection.has}
    */
   public has(element: Element): boolean {
     return this._collection.has(element)
   }
 
   /**
-   * @see Clonable.prototype.clone
+   * @see {@link Clonable.clone}
    */
   public clone(): CollectionView<Element> {
     return new CollectionView(this._collection)
   }
 
   /**
-   * @see Collection.prototype.view
+   * @see {@link Collection.view}
    */
   public view(): this {
     return this
   }
 
   /**
-   * @see Collection.prototype.forward
+   * @see {@link Collection.forward}
    */
   public forward(): ForwardCursor<Element> {
     return this._collection.forward().view()
   }
 
   /**
-   * @see Collection.prototype.values
+   * @see {@link Collection.values}
    */
   public values(): IterableIterator<Element> {
     return this._collection.values()
   }
 
   /**
-   * @see Collection.prototype[Symbol.iterator]
+   * @see {@link Collection[Symbol.iterator]}
    */
   public [Symbol.iterator](): IterableIterator<Element> {
     return this._collection.values()
   }
 
   /**
-   * @see Comparable.prototype.equals
+   * 
+   */
+  public hasCollection(collection: Collection<unknown>): boolean {
+    return this._collection === collection
+  }
+
+  /**
+   * 
+   */
+  public setCollection(collection: Collection<Element>): void {
+    this._collection = collection
+  }
+
+  /**
+   * @see {@link Comparable.equals}
    */
   public equals(other: any): boolean {
     if (other == null) return false
     if (other === this) return true
 
     if (other instanceof CollectionView) {
-      return other._collection.equals(this._collection)
+      return other._collection === this._collection
     }
 
     return false
@@ -128,11 +99,7 @@ export class CollectionView<Element> implements Collection<Element> {
 /**
  * 
  */
-export namespace CollectionView {
-  /**
-   * 
-   */
-  export function wrap<Element>(collection: Collection<Element>): CollectionView<Element> {
-    return new CollectionView(collection)
-  }
+export function createCollectionView<Element>(collection: Collection<Element>): CollectionView<Element> {
+  return new CollectionView(collection)
 }
+

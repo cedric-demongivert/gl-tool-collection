@@ -1,5 +1,5 @@
 import { Factory } from "@cedric-demongivert/gl-tool-utils"
-import { ForwardCursor } from "./ForwardCursor"
+import { ForwardCursor } from "../cursor/ForwardCursor"
 
 /**
  * 
@@ -31,28 +31,28 @@ export class NativeCursor<Element> implements ForwardCursor<Element> {
   private _view: ForwardCursor<Element> | undefined
 
   /**
-   * @see ForwardCursor.prototype.index
+   * @see {@link ForwardCursor.index}
    */
   public get index(): number {
     return this._index
   }
 
   /**
-   * @see Cursor.prototype.isRandomAccess
+   * @see {@link Cursor.isRandomAccess}
    */
   public isRandomAccess(): false {
     return false
   }
 
   /**
-   * @see Cursor.prototype.isBidirectional
+   * @see {@link Cursor.isBidirectional}
    */
   public isBidirectional(): false {
     return false
   }
 
   /**
-   * @see Cursor.prototype.isForward
+   * @see {@link Cursor.isForward}
    */
   public isForward(): true {
     return true
@@ -88,14 +88,14 @@ export class NativeCursor<Element> implements ForwardCursor<Element> {
   }
 
   /**
-   * @see Clonable.prototype.clone
+   * @see {@link Clonable.clone}
    */
   public clone(): NativeCursor<Element> {
     return new NativeCursor(this._factory, this._index)
   }
 
   /**
-   * @see ForwardCursor.prototype.forward
+   * @see {@link ForwardCursor.forward}
    */
   public forward(count: number): void {
     for (let index = 0; index < count; ++index) {
@@ -106,42 +106,42 @@ export class NativeCursor<Element> implements ForwardCursor<Element> {
   }
 
   /**
-   * @see ForwardCursor.prototype.isEnd
+   * @see {@link ForwardCursor.isEnd}
    */
   public isEnd(): boolean {
     return this._result.done === true
   }
 
   /**
-   * @see ForwardCursor.prototype.isInside
+   * @see {@link ForwardCursor.isInside}
    */
   public isInside(): boolean {
     return this._result.done !== true
   }
 
   /**
-   * @see ForwardCursor.prototype.next
+   * @see {@link ForwardCursor.next}
    */
   public next(): void {
     this._result = this._iterator.next()
   }
 
   /**
-   * @see Cursor.prototype.view
+   * @see {@link Cursor.view}
    */
   public view(): ForwardCursor<Element> {
     return this._view = this._view || ForwardCursor.view(this)
   }
 
   /**
-   * @see Cursor.prototype.get
+   * @see {@link Cursor.get}
    */
   public get(): Element | undefined {
     return this._result.value
   }
 
   /**
-   * @see Comparable.prototype.equals
+   * @see {@link Comparable.equals}
    */
   public equals(other: unknown): boolean {
     if (other == null) return false

@@ -51,70 +51,70 @@ export class IdentifierSet implements OrderedSet<number>, ReallocableCollection 
   }
 
   /**
-   * @see Collection.prototype[IsCollection.SYMBOL]
+   * @see {@link Collection[IsCollection.SYMBOL]}
    */
   public [IsCollection.SYMBOL](): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.isSequence
+   * @see {@link Collection.isSequence}
    */
   public isSequence(): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.isPack
+   * @see {@link Collection.isPack}
    */
   public isPack(): false {
     return false
   }
 
   /**
-   * @see Collection.prototype.isList
+   * @see {@link Collection.isList}
    */
   public isList(): false {
     return false
   }
 
   /**
-   * @see Collection.prototype.isGroup
+   * @see {@link Collection.isGroup}
    */
   public isGroup(): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.isSet
+   * @see {@link Collection.isSet}
    */
   public isSet(): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.size
+   * @see {@link Collection.size}
    */
   public get size(): number {
     return this._size
   }
 
   /**
-   * @see StaticCollection.prototype.capacity
+   * @see {@link StaticCollection.capacity}
    */
   public get capacity(): number {
     return this._dense.length
   }
 
   /**
-   * @see Collection.prototype.has
+   * @see {@link Collection.has}
    */
   public has(element: number): boolean {
     return this._sparse[element] < this._size
   }
 
   /**
-   * @see Sequence.prototype.indexOf
+   * @see {@link Sequence.indexOf}
    */
   public indexOf(element: number): number {
     const index: number = this._sparse[element]
@@ -122,7 +122,7 @@ export class IdentifierSet implements OrderedSet<number>, ReallocableCollection 
   }
 
   /**
-   * @see Sequence.prototype.hasInSubsequence
+   * @see {@link Sequence.hasInSubsequence}
    */
   public hasInSubsequence(element: number, offset: number, size: number): boolean {
     const index: number = this.indexOf(element)
@@ -130,7 +130,7 @@ export class IdentifierSet implements OrderedSet<number>, ReallocableCollection 
   }
 
   /**
-   * @see Sequence.prototype.indexOfInSubsequence
+   * @see {@link Sequence.indexOfInSubsequence}
    */
   public indexOfInSubsequence(element: number, offset: number, size: number): number {
     const index: number = this.indexOf(element)
@@ -138,7 +138,7 @@ export class IdentifierSet implements OrderedSet<number>, ReallocableCollection 
   }
 
   /**
-   * @see Set.prototype.add
+   * @see {@link Set.add}
    */
   public add(element: number): void {
     const index: number = this._sparse[element]
@@ -162,7 +162,7 @@ export class IdentifierSet implements OrderedSet<number>, ReallocableCollection 
   }
 
   /**
-   * @see Set.prototype.delete
+   * @see {@link Set.delete}
    */
   public delete(element: number): void {
     const index: number = this._sparse[element]
@@ -180,14 +180,14 @@ export class IdentifierSet implements OrderedSet<number>, ReallocableCollection 
   }
 
   /**
-   * @see Sequence.prototype.get
+   * @see {@link Sequence.get}
    */
   public get(index: number): number {
     return this._dense[index]
   }
 
   /**
-   * @see StaticCollection.prototype.reallocate
+   * @see {@link StaticCollection.reallocate}
    */
   public reallocate(capacity: number): void {
     const oldDense: UnsignedIntegerBuffer = this._dense
@@ -224,7 +224,7 @@ export class IdentifierSet implements OrderedSet<number>, ReallocableCollection 
   }
 
   /**
-   * @see StaticCollection.prototype.fit
+   * @see {@link StaticCollection.fit}
    */
   public fit(): void {
     const max: number = this.max()
@@ -268,35 +268,35 @@ export class IdentifierSet implements OrderedSet<number>, ReallocableCollection 
   }
 
   /**
-   * @see Clearable.prototype.clear
+   * @see {@link Clearable.clear}
    */
   public clear(): void {
     this._size = 0
   }
 
   /**
-   * @see Sequence.prototype.first
+   * @see {@link Sequence.first}
    */
   public get first(): number {
     return this._dense[0]
   }
 
   /**
-   * @see Sequence.prototype.last
+   * @see {@link Sequence.last}
    */
   public get last(): number {
     return this._dense[this._size - 1]
   }
 
   /**
-   * @see Collection.prototype.forward
+   * @see {@link Collection.forward}
    */
   public forward(): ForwardCursor<number> {
     return new SequenceCursor(this, 0)
   }
 
   /**
-   * @see Set.prototype.copy
+   * @see {@link Set.copy}
    */
   public copy(toCopy: Group<number>): void {
     this.clear()
@@ -307,14 +307,14 @@ export class IdentifierSet implements OrderedSet<number>, ReallocableCollection 
   }
 
   /**
-   * @see Collection.prototype.view
+   * @see {@link Collection.view}
    */
   public view(): OrderedGroup<number> {
     return this._view
   }
 
   /**
-   * @see Clonable.prototype.clone
+   * @see {@link Clonable.clone}
    */
   public clone(): IdentifierSet {
     const result: IdentifierSet = IdentifierSet.allocate(this._dense.length)
@@ -325,7 +325,7 @@ export class IdentifierSet implements OrderedSet<number>, ReallocableCollection 
   }
 
   /**
-   * @see Collection.prototype.values
+   * @see {@link Collection.values}
    */
   public * values(): IterableIterator<number> {
     for (let index = 0, length = this._size; index < length; ++index) {
@@ -334,14 +334,14 @@ export class IdentifierSet implements OrderedSet<number>, ReallocableCollection 
   }
 
   /**
-   * @see Collection.prototype[Symbol.iterator]
+   * @see {@link Collection[Symbol.iterator]}
    */
   public [Symbol.iterator](): IterableIterator<number> {
     return this.values()
   }
 
   /**
-   * @see Comparable.prototype.equals
+   * @see {@link Comparable.equals}
    */
   public equals(other: any): boolean {
     if (other == null) return false
@@ -361,7 +361,7 @@ export class IdentifierSet implements OrderedSet<number>, ReallocableCollection 
   }
 
   /**
-   * @see Object.prototype.toString
+   * @see {@link Object.toString}
    */
   public toString(): string {
     return this.constructor.name + ' ' + Group.stringify(this)

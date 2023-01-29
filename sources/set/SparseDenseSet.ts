@@ -9,12 +9,12 @@ import { PackSparseDenseSet } from './PackSparseDenseSet'
  */
 export interface SparseDenseSet extends OrderedSet<number>, ReallocableCollection {
   /**
-  * @see Collection.view
+  * @see {@link Collection.view}
   */
   view(): OrderedGroup<number>
 
   /**
-  * @see Collection.clone
+  * @see {@link Collection.clone}
   */
   clone(): SparseDenseSet
 }

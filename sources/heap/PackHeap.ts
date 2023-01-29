@@ -2,8 +2,8 @@ import { Comparator, Factory } from '@cedric-demongivert/gl-tool-utils'
 
 import { ReallocableCollection } from '../ReallocableCollection'
 
-import { Sequence } from './Sequence'
-import { Pack } from './Pack'
+import { Sequence } from '../sequence/Sequence'
+import { Pack } from '../pack/Pack'
 import { Heap } from './Heap'
 
 import { ForwardCursor } from '../cursor'
@@ -42,49 +42,49 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   }
 
   /**
-   * @see Collection.prototype[IsCollection.SYMBOL]
+   * @see {@link Collection[IsCollection.SYMBOL]}
    */
   public [IsCollection.SYMBOL](): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.isSequence
+   * @see {@link Collection.isSequence}
    */
   public isSequence(): true {
     return true
   }
 
   /**
-   * @see Collection.prototype.isPack
+   * @see {@link Collection.isPack}
    */
   public isPack(): false {
     return false
   }
 
   /**
-   * @see Collection.prototype.isList
+   * @see {@link Collection.isList}
    */
   public isList(): false {
     return false
   }
 
   /**
-   * @see Collection.prototype.isGroup
+   * @see {@link Collection.isGroup}
    */
   public isGroup(): false {
     return false
   }
 
   /**
-   * @see Collection.prototype.isSet
+   * @see {@link Collection.isSet}
    */
   public isSet(): false {
     return false
   }
 
   /**
-   * @see Heap.prototype.next
+   * @see {@link Heap.next}
    */
   public next(): Element {
     const result: Element = this._elements.get(0)
@@ -93,7 +93,7 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   }
 
   /**
-   * @see Heap.prototype.push
+   * @see {@link Heap.push}
    */
   public push(value: Element): void {
     this._elements.push(value)
@@ -161,7 +161,7 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   }
 
   /**
-   * @see Heap.prototype.delete
+   * @see {@link Heap.delete}
    */
   public delete(index: number): void {
     const size: number = this._elements.size
@@ -174,7 +174,7 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   }
 
   /**
-   * @see Heap.prototype.compare
+   * @see {@link Heap.compare}
    */
   public compare(left: number, right: number): number {
     const elements: Pack<Element> = this._elements
@@ -182,119 +182,119 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   }
 
   /**
-   * @see Sequence.prototype.get
+   * @see {@link Sequence.get}
    */
   public get(index: number): Element {
     return this._elements.get(index)
   }
 
   /**
-   * @see Sequence.prototype.indexOf
+   * @see {@link Sequence.indexOf}
    */
   public indexOf(value: Element): number {
     return this._elements.indexOf(value)
   }
 
   /**
-   * @see Sequence.prototype.hasInSubsequence
+   * @see {@link Sequence.hasInSubsequence}
    */
   public hasInSubsequence(element: Element, offset: number, size: number): boolean {
     return this._elements.hasInSubsequence(element, offset, size)
   }
 
   /**
-   * @see Sequence.prototype.indexOfInSubsequence
+   * @see {@link Sequence.indexOfInSubsequence}
    */
   public indexOfInSubsequence(element: Element, offset: number, size: number): number {
     return this._elements.indexOfInSubsequence(element, offset, size)
   }
 
   /**
-   * @see Collection.prototype.has
+   * @see {@link Collection.has}
    */
   public has(value: Element): boolean {
     return this._elements.has(value)
   }
 
   /**
-   * @see Sequence.prototype.first
+   * @see {@link Sequence.first}
    */
   public get first(): Element {
     return this._elements.first
   }
 
   /**
-   * @see Sequence.prototype.last
+   * @see {@link Sequence.last}
    */
   public get last(): Element {
     return this._elements.last
   }
 
   /**
-   * @see Collection.prototype.forward
+   * @see {@link Collection.forward}
    */
   public forward(): ForwardCursor<Element> {
     return this._elements.forward()
   }
 
   /**
-   * @see Collection.prototype.size
+   * @see {@link Collection.size}
    */
   public get size(): number {
     return this._elements.size
   }
 
   /**
-   * @see Heap.prototype.comparator
+   * @see {@link Heap.comparator}
    */
   public get comparator(): Comparator<Element, Element> {
     return this._comparator
   }
 
   /**
-   * @see StaticCollection.prototype.capacity
+   * @see {@link StaticCollection.capacity}
    */
   public get capacity(): number {
     return this._elements.capacity
   }
 
   /**
-   * @see ReallocableCollection.prototype.reallocate
+   * @see {@link ReallocableCollection.reallocate}
    */
   public reallocate(capacity: number): void {
     this._elements.reallocate(capacity)
   }
 
   /**
-   * @see ReallocableCollection.prototype.fit
+   * @see {@link ReallocableCollection.fit}
    */
   public fit(): void {
     this._elements.fit()
   }
 
   /**
-   * @see Clearable.prototype.clear
+   * @see {@link Clearable.clear}
    */
   public clear(): void {
     this._elements.clear()
   }
 
   /**
-   * @see Clonable.prototype.clone
+   * @see {@link Clonable.clone}
    */
   public clone(): PackHeap<Element> {
     return new PackHeap<Element>(this._elements.clone(), this._comparator)
   }
 
   /**
-   * @see Collection.prototype.view
+   * @see {@link Collection.view}
    */
   public view(): Sequence<Element> {
     return this._view
   }
 
   /**
-   * @see Comparable.prototype.equals
+   * @see {@link Comparable.equals}
    */
   public equals(other: any): boolean {
     if (other == null) return false
@@ -316,14 +316,14 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   }
 
   /**
-   * @see ReallocableCollection.prototype.values
+   * @see {@link ReallocableCollection.values}
    */
   public values(): IterableIterator<Element> {
     return this._elements.values()
   }
 
   /**
-   * @see ReallocableCollection.prototype[Symbol.iterator]
+   * @see {@link ReallocableCollection[Symbol.iterator]}
    */
   public [Symbol.iterator](): IterableIterator<Element> {
     return this._elements.values()

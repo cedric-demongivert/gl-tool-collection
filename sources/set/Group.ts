@@ -10,12 +10,12 @@ import { GroupView } from './GroupView'
  */
 export interface Group<Element> extends Collection<Element> {
   /**
-   * @see Collection.prototype.isGroup
+   * @see {@link Collection.isGroup}
    */
   isGroup(): true
 
   /**
-   * @see Clonable.prototype.clone
+   * @see {@link Clonable.clone}
    */
   clone(): Group<Element>
 }
@@ -54,17 +54,17 @@ export namespace Group {
   }
 
   /**
-   * @see EmptyGroup.INSTANCE
+   * @see {@link EmptyGroup.INSTANCE}
    */
   export const EMPTY = EmptyGroup.INSTANCE
 
   /**
-   * @see EmptyGroup.get
+   * @see {@link EmptyGroup.get}
    */
   export const empty = EmptyGroup.get
 
   /**
-   * @see GroupView.wrap
+   * @see {@link GroupView.wrap}
    */
   export const view = GroupView.wrap
 }

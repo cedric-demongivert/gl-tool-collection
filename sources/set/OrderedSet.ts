@@ -9,22 +9,22 @@ import { Collection } from '../Collection'
  */
 export interface OrderedSet<Element> extends OrderedGroup<Element>, Set<Element> {
   /**
-   * @see Collection.prototype.isSequence
+   * @see {@link Collection.isSequence}
    */
   isSequence(): true
 
   /**
-   * @see Collection.prototype.isSet
+   * @see {@link Collection.isSet}
    */
   isSet(): true
 
   /**
-   * @see Collection.prototype.view
+   * @see {@link Collection.view}
    */
   view(): OrderedGroup<Element>
 
   /**
-   * @see Clonable.prototype.clone
+   * @see {@link Clonable.clone}
    */
   clone(): OrderedSet<Element>
 }

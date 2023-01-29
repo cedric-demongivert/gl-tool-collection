@@ -1,4 +1,4 @@
-import { RandomAccessCursor } from '../cursor'
+import { RandomAccessCursor } from '../cursor/RandomAccessCursor'
 
 import { Sequence } from './Sequence'
 
@@ -32,28 +32,7 @@ export class SequenceCursor<Element> implements RandomAccessCursor<Element>
   }
 
   /**
-   * @see Cursor.prototype.isRandomAccess
-   */
-  public isRandomAccess(): true {
-    return true
-  }
-
-  /**
-   * @see Cursor.prototype.isBidirectional
-   */
-  public isBidirectional(): true {
-    return true
-  }
-
-  /**
-   * @see Cursor.prototype.isForward
-   */
-  public isForward(): true {
-    return true
-  }
-
-  /**
-   * @see ForwardCursor.prototype.isInside
+   * @see {@link RandomAccessCursor.isInside}
    */
   public isInside(): boolean {
     const index: number = this.index
@@ -61,56 +40,56 @@ export class SequenceCursor<Element> implements RandomAccessCursor<Element>
   }
 
   /**
-   * @see ForwardCursor.prototype.isEnd
+   * @see {@link RandomAccessCursor.isEnd}
    */
   public isEnd(): boolean {
     return this.index >= this.sequence.size
   }
 
   /**
-   * @see BidirectionalCursor.prototype.isStart
+   * @see {@link RandomAccessCursor.isStart}
    */
   public isStart(): boolean {
     return this.index < 0
   }
 
   /**
-   * @see ForwardCursor.prototype.next
+   * @see {@link RandomAccessCursor.next}
    */
   public next(): void {
     this.index += 1
   }
 
   /**
-   * @see ForwardCursor.prototype.forward
+   * @see {@link RandomAccessCursor.forward}
    */
   public forward(count: number): void {
     this.index += count
   }
 
   /**
-   * @see BidirectionalCursor.prototype.previous
+   * @see {@link RandomAccessCursor.previous}
    */
   public previous(): void {
     this.index -= 1
   }
 
   /**
-   * @see BidirectionalCursor.prototype.backward
+   * @see {@link RandomAccessCursor.backward}
    */
   public backward(count: number): void {
     this.index -= count
   }
 
   /**
-   * @see Cursor.prototype.get
+   * @see {@link RandomAccessCursor.get}
    */
   public get(): Element {
     return this.sequence.get(this.index)
   }
 
   /**
-   * @see BidirectionalIterator.prototype.go
+   * @see {@link RandomAccessCursor.at}
    */
   public at(index: number): void {
     this.index = index
@@ -125,14 +104,14 @@ export class SequenceCursor<Element> implements RandomAccessCursor<Element>
   }
 
   /**
-   * @see Clonable.prototype.clone
+   * @see {@link RandomAccessCursor.clone}
    */
   public clone(): SequenceCursor<Element> {
     return new SequenceCursor<Element>(this.sequence, this.index)
   }
 
   /**
-   * @see Cursor.prototype.view
+   * @see {@link RandomAccessCursor.view}
    */
   public view(): RandomAccessCursor<Element> {
     return this._view = this._view || RandomAccessCursor.view(this)
@@ -141,13 +120,13 @@ export class SequenceCursor<Element> implements RandomAccessCursor<Element>
   /**
    * 
    */
-  public wrap(sequence: Sequence<Element>, index: number): void {
+  public set(sequence: Sequence<Element>, index: number): void {
     this.sequence = sequence
     this.index = index
   }
 
   /**
-   * @see Comparable.prototype.equals
+   * @see {@link Comparable.equals}
    */
   public equals(other: any): boolean {
     if (other == null) return false
@@ -167,6 +146,6 @@ export class SequenceCursor<Element> implements RandomAccessCursor<Element>
 /**
  * 
  */
-export namespace SequenceCursor {
-
+export function createSequenceCursor<Element>(sequence: Sequence<Element>, index: number = 0): SequenceCursor<Element> {
+  return new SequenceCursor(sequence, index)
 }

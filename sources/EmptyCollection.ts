@@ -1,127 +1,79 @@
-import { ForwardCursor } from './cursor'
+import { ForwardCursor } from './cursor/ForwardCursor'
 
 import { Collection } from './Collection'
-import { IsCollection } from './IsCollection'
 
 /**
  * An empty collection, e.g., a collection of zero elements.
  */
 export class EmptyCollection<Element> implements Collection<Element> {
   /**
-   * @see Collection.prototype[Collection.IS]
-   */
-  public [IsCollection.SYMBOL](): true {
-    return true
-  }
-
-  /**
-   * @see Collection.prototype.isSequence
-   */
-  public isSequence(): boolean {
-    return false
-  }
-
-  /**
-   * @see Collection.prototype.isPack
-   */
-  public isPack(): false {
-    return false
-  }
-
-  /**
-   * @see Collection.prototype.isList
-   */
-  public isList(): false {
-    return false
-  }
-
-  /**
-   * @see Collection.prototype.isGroup
-   */
-  public isGroup(): boolean {
-    return false
-  }
-
-  /**
-   * @see Collection.prototype.isSet
-   */
-  public isSet(): false {
-    return false
-  }
-
-  /**
-   * @see Collection.prototype.size
+   * @see {@link Collection.size}
    */
   public get size(): number {
     return 0
   }
 
   /**
-   * @see Collection.prototype.has
+   * @see {@link Collection.has}
    */
   public has(element: Element): false {
     return false
   }
 
   /**
-   * @see Clonable.prototype.clone
+   * @see {@link Clonable.clone}
    */
   public clone(): this {
     return this
   }
 
   /**
-   * @see Collection.prototype.view
+   * @see {@link Collection.view}
    */
   public view(): this {
     return this
   }
 
   /**
-   * @see Collection.prototype.forward
+   * @see {@link Collection.forward}
    */
   public forward(): ForwardCursor<Element> {
     return ForwardCursor.empty()
   }
 
   /**
-   * @see Collection.prototype.values
+   * @see {@link Collection.values}
    */
   public *values(): IterableIterator<Element> {
 
   }
 
   /**
-   * @see Collection.prototype[Symbol.iterator]
+   * @see {@link Collection[Symbol.iterator]}
    */
   public [Symbol.iterator](): IterableIterator<Element> {
     return this.values()
   }
 
   /**
-   * @see Comparable.prototype.equals
+   * @see {@link Comparable.equals}
    */
   public equals(other: any): boolean {
     if (other == null) return false
     if (other === this) return true
 
-    return other instanceof EmptyCollection
+    return other.constructor === EmptyCollection
   }
 }
 
 /**
  * 
  */
-export namespace EmptyCollection {
-  /**
-   * 
-   */
-  export const INSTANCE: EmptyCollection<any> = new EmptyCollection<any>()
+export const EMPTY_COLLECTION_INSTANCE: EmptyCollection<any> = new EmptyCollection<any>()
 
-  /**
-   * 
-   */
-  export function get<Element>(): EmptyCollection<Element> {
-    return INSTANCE
-  }
+/**
+ * 
+ */
+export function getEmptyCollection<Element>(): EmptyCollection<Element> {
+  return EMPTY_COLLECTION_INSTANCE
 }

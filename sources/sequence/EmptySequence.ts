@@ -1,4 +1,3 @@
-import { Collection } from '../Collection'
 import { EmptyCollection } from '../EmptyCollection'
 
 import { Sequence } from './Sequence'
@@ -8,73 +7,66 @@ import { Sequence } from './Sequence'
  */
 export class EmptySequence<Element> extends EmptyCollection<Element> implements Sequence<Element> {
   /**
-   * @see Collection.prototype.isSequence
-   */
-  public isSequence(): true {
-    return true
-  }
-
-  /**
-   * @see Collection.prototype.size
+   * @see {@link Sequence.size}
    */
   public get size(): number {
     return 0
   }
 
   /**
-   * @see Sequence.prototype.get
+   * @see {@link Sequence.get}
    */
-  public get(index: number): Element {
-    return undefined!
+  public get(index: number): undefined {
+    return undefined
   }
 
   /**
-   * @see Sequence.prototype.last
+   * @see {@link Sequence.last}
    */
   public get last(): Element {
     return undefined!
   }
 
   /**
-   * @see Sequence.prototype.first
+   * @see {@link Sequence.first}
    */
   public get first(): Element {
     return undefined!
   }
 
   /**
-   * @see Sequence.prototype.indexOf
+   * @see {@link Sequence.indexOf}
    */
   public indexOf(element: any): number {
     return -1
   }
 
   /**
-   * @see Sequence.prototype.indexOfInSubsequence
+   * @see {@link Sequence.indexOfInSubsequence}
    */
   public indexOfInSubsequence(element: Element, offset: number, size: number): number {
     return -1
   }
 
   /**
-   * @see Sequence.prototype.hasInSubsequence
+   * @see {@link Sequence.hasInSubsequence}
    */
   public hasInSubsequence(element: Element, offset: number, size: number): false {
     return false
   }
 
   /**
-   * @see Comparable.prototype.equals
+   * @see {@link Sequence.equals}
    */
   public equals(other: any): boolean {
     if (other == null) return false
     if (other === this) return true
 
-    return other instanceof EmptySequence
+    return other.constructor === EmptySequence
   }
 
   /**
-   * @see Object.prototype.toString
+   * @see {@link Sequence.toString}
    */
   public toString(): string {
     return this.constructor.name + ' ' + Sequence.stringify(this)
@@ -84,16 +76,11 @@ export class EmptySequence<Element> extends EmptyCollection<Element> implements 
 /**
  * 
  */
-export namespace EmptySequence {
-  /**
-   * 
-   */
-  export const INSTANCE: EmptySequence<any> = new EmptySequence<any>()
+export const EMPTY_SEQUENCE_INSTANCE: EmptySequence<any> = new EmptySequence<any>()
 
-  /**
-   * 
-   */
-  export function get<Element>(): EmptySequence<Element> {
-    return INSTANCE
-  }
+/**
+ * 
+ */
+export function getEmptySequence<Element>(): EmptySequence<Element> {
+  return EMPTY_SEQUENCE_INSTANCE
 }

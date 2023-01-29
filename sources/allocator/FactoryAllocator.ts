@@ -1,4 +1,4 @@
-import { Pack } from '../sequence/Pack'
+import { Pack } from '../pack/Pack'
 
 import { Clearable, Factory } from '@cedric-demongivert/gl-tool-utils'
 
@@ -11,12 +11,26 @@ export class FactoryAllocator<Product extends Clearable> implements Allocator<Pr
   /**
    * The factory used for creating new instances of the managed type of object.
    */
-  private readonly _factory: Factory<Product>
+  public readonly factory: Factory<Product>
 
   /**
    * A pack that contains unused instances of the managed type of object.
    */
   private readonly _instances: Pack<Product>
+
+  /**
+   * 
+   */
+  public get capacity(): number {
+    return this._instances.capacity
+  }
+
+  /**
+   * 
+   */
+  public get size(): number {
+    return this._instances.size
+  }
 
   /**
    * Instantiate a new factory allocator for a given type of object.
@@ -25,27 +39,27 @@ export class FactoryAllocator<Product extends Clearable> implements Allocator<Pr
    * @param [capacity = 16] - The number of object to pre-allocate.
    */
   public constructor(factory: Factory<Product>, capacity: number = 16) {
-    this._factory = factory
+    this.factory = factory
     this._instances = Pack.any<Product>(capacity, factory)
 
     while (this._instances.size < this._instances.capacity) {
-      this._instances.push(this._factory())
+      this._instances.push(this.factory())
     }
   }
 
   /**
-   * @see Allocator.allocate
+   * @see {@link Allocator.allocate}
    */
   public allocate(): Product {
     if (this._instances.size > 0) {
       return this._instances.pop()
     } else {
-      return this._factory()
+      return this.factory()
     }
   }
 
   /**
-   * @see Allocator.free
+   * @see {@link Allocator.free}
    */
   public free(instance: Product): void {
     instance.clear()
@@ -53,7 +67,7 @@ export class FactoryAllocator<Product extends Clearable> implements Allocator<Pr
   }
 
   /**
-   * Empty this allocator of all of it's currently pre-allocated instances.
+   * @see {@link Allocator.clear}
    */
   public clear(): void {
     const instances: Pack<Product | null> = this._instances
@@ -67,13 +81,8 @@ export class FactoryAllocator<Product extends Clearable> implements Allocator<Pr
 }
 
 /**
- * 
+ *
  */
-export namespace FactoryAllocator {
-  /**
-   *
-   */
-  export function create<Product extends Clearable>(factory: Factory<Product>, capacity: number = 16): FactoryAllocator<Product> {
-    return new FactoryAllocator(factory, capacity)
-  }
+export function createFactoryAllocator<Product extends Clearable>(factory: Factory<Product>, capacity: number = 16): FactoryAllocator<Product> {
+  return new FactoryAllocator(factory, capacity)
 }

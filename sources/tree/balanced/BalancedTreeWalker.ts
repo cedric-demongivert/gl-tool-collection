@@ -332,7 +332,7 @@ export class BalancedTreeWalker<Element>
   }
 
   /**
-  * @see Object.equals
+  * @see {@link Object.equals}
   */
   public equals(other: any): boolean {
     if (other == null) return other

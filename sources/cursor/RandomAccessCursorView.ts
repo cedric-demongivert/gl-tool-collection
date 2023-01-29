@@ -10,7 +10,7 @@ export class RandomAccessCursorView<Element> implements RandomAccessCursor<Eleme
   private _cursor: RandomAccessCursor<Element>
 
   /**
-   * @see ForwardCursor.prototype.index
+   * @see {@link RandomAccessCursor.index}
    */
   public get index(): number {
     return this._cursor.index
@@ -26,28 +26,7 @@ export class RandomAccessCursorView<Element> implements RandomAccessCursor<Eleme
   }
 
   /**
-   * @see Cursor.prototype.isRandomAccess
-   */
-  public isRandomAccess(): true {
-    return true
-  }
-
-  /**
-   * @see Cursor.prototype.isBidirectional
-   */
-  public isBidirectional(): true {
-    return true
-  }
-
-  /**
-   * @see Cursor.prototype.isForward
-   */
-  public isForward(): true {
-    return true
-  }
-
-  /**
-   * @see BidirectionalCursor.prototype.clone
+   * @see {@link RandomAccessCursor.clone}
    */
   public clone(): RandomAccessCursorView<Element> {
     return new RandomAccessCursorView(this._cursor)
@@ -61,70 +40,70 @@ export class RandomAccessCursorView<Element> implements RandomAccessCursor<Eleme
     if (other === this) return true
 
     if (other instanceof RandomAccessCursorView) {
-      return other._cursor.equals(this._cursor)
+      return other._cursor === this._cursor
     }
 
     return false
   }
 
   /**
-   * @see BidirectionalCursor.prototype.at
+   * @see {@link RandomAccessCursor.at}
    */
   public at(index: number): void {
     this._cursor.at(index)
   }
 
   /**
-   * @see ForwardCursor.prototype.forward
+   * @see {@link RandomAccessCursor.forward}
    */
   public forward(count: number): void {
     this._cursor.forward(count)
   }
 
   /**
-   * @see BidirectionalCursor.prototype.backward
+   * @see {@link RandomAccessCursor.backward}
    */
   public backward(count: number): void {
     this._cursor.backward(count)
   }
 
   /**
-   * @see BidirectionalCursor.prototype.isStart
+   * @see {@link RandomAccessCursor.isStart}
    */
   public isStart(): boolean {
     return this._cursor.isStart()
   }
 
   /**
-   * @see Cursor.prototype.get
+   * @see {@link RandomAccessCursor.get}
    */
   public get(): Element | undefined {
     return this._cursor.get()
   }
 
   /**
-   * @see ForwardCursor.prototype.isEnd
+   * @see {@link RandomAccessCursor.isEnd}
    */
   public isEnd(): boolean {
     return this._cursor.isEnd()
   }
 
   /**
-   * @see ForwardCursor.prototype.isInside
+   * @see {@link RandomAccessCursor.isInside}
    */
   public isInside(): boolean {
     return this._cursor.isInside()
   }
 
   /**
-   * @see ForwardCursor.prototype.next
+   * @see {@link RandomAccessCursor.next}
    */
   public next(): void {
     this._cursor.next()
   }
 
   /**
-   * @see BidirectionalCursor.prototype.previous
+   * @see {@link RandomAccessCursor.previous}
    */
   public previous(): void {
     return this._cursor.previous()
@@ -133,12 +112,19 @@ export class RandomAccessCursorView<Element> implements RandomAccessCursor<Eleme
   /**
    * 
    */
-  public wrap(cursor: RandomAccessCursor<Element>): void {
+  public setCursor(cursor: RandomAccessCursor<Element>): void {
     this._cursor = cursor
   }
 
   /**
-   * @see Cursor.prototype.view
+   * 
+   */
+  public hasCursor(cursor: RandomAccessCursor<Element>): boolean {
+    return this._cursor === cursor
+  }
+
+  /**
+   * @see {@link RandomAccessCursor.view}
    */
   public view(): this {
     return this
@@ -148,11 +134,6 @@ export class RandomAccessCursorView<Element> implements RandomAccessCursor<Eleme
 /**
  * 
  */
-export namespace RandomAccessCursorView {
-  /**
-   * 
-   */
-  export function wrap<Element>(cursor: RandomAccessCursor<Element>): RandomAccessCursorView<Element> {
-    return new RandomAccessCursorView(cursor)
-  }
+export function createRandomAccessCursorView<Element>(cursor: RandomAccessCursor<Element>): RandomAccessCursorView<Element> {
+  return new RandomAccessCursorView(cursor)
 }

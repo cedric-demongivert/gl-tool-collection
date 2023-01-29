@@ -14,7 +14,7 @@ import { Collection } from '../Collection'
  */
 export interface Pack<Element> extends List<Element>, ReallocableCollection {
   /**
-   * @see Collection.prototype.isPack
+   * @see {@link Collection.isPack}
    */
   isPack(): true
 
@@ -28,12 +28,12 @@ export interface Pack<Element> extends List<Element>, ReallocableCollection {
   allocate(capacity: number): Pack<Element>
 
   /**
-   * @see Collection.prototype.clone
+   * @see {@link Collection.clone}
    */
   clone(): Pack<Element>
 
   /**
-   * @see Collection.prototype.view
+   * @see {@link Collection.view}
    */
   view(): Sequence<Element>
 }
@@ -62,67 +62,67 @@ export namespace Pack {
   }
 
   /**
-   * @see ArrayPack.allocate
+   * @see {@link ArrayPack.allocate}
    */
   export const any = ArrayPack.allocate
 
   /**
-   * @see BufferPack.uint8
+   * @see {@link BufferPack.uint8}
    */
   export const uint8 = BufferPack.uint8
 
   /**
-   * @see BufferPack.uint16
+   * @see {@link BufferPack.uint16}
    */
   export const uint16 = BufferPack.uint16
 
   /**
-   * @see BufferPack.uint32
+   * @see {@link BufferPack.uint32}
    */
   export const uint32 = BufferPack.uint32
 
   /**
-   * @see BufferPack.int8
+   * @see {@link BufferPack.int8}
    */
   export const int8 = BufferPack.int8
 
   /**
-   * @see BufferPack.int16
+   * @see {@link BufferPack.int16}
    */
   export const int16 = BufferPack.int16
 
   /**
-   * @see BufferPack.int32
+   * @see {@link BufferPack.int32}
    */
   export const int32 = BufferPack.int32
 
   /**
-   * @see BufferPack.float32
+   * @see {@link BufferPack.float32}
    */
   export const float32 = BufferPack.float32
 
   /**
-   * @see BufferPack.float64
+   * @see {@link BufferPack.float64}
    */
   export const float64 = BufferPack.float64
 
   /**
-   * @see BufferPack.unsignedUpTo
+   * @see {@link BufferPack.unsignedUpTo}
    */
   export const unsignedUpTo = BufferPack.unsignedUpTo
 
   /**
-   * @see BufferPack.signedUpTo
+   * @see {@link BufferPack.signedUpTo}
    */
   export const signedUpTo = BufferPack.signedUpTo
 
   /**
-   * @see InstancePack.allocate
+   * @see {@link InstancePack.allocate}
    */
   export const instance = InstancePack.allocate
 
   /**
-   * @see InstancePack.circular
+   * @see {@link InstancePack.circular}
    */
   export const circular = CircularPack.fromPack
 
