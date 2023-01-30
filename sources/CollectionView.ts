@@ -5,11 +5,14 @@ import { Collection } from './Collection'
 /**
  * A read-only view over another collection.
  */
-export class CollectionView<Element> implements Collection<Element> {
+export class CollectionView<
+  Element,
+  Wrappable extends Collection<Element> = Collection<Element>
+> implements Collection<Element> {
   /**
    * 
    */
-  private _collection: Collection<Element>
+  protected _collection: Wrappable
 
   /**
    * @see {@link Collection.size}
@@ -21,7 +24,7 @@ export class CollectionView<Element> implements Collection<Element> {
   /**
    * 
    */
-  public constructor(collection: Collection<Element>) {
+  public constructor(collection: Wrappable) {
     this._collection = collection
   }
 
@@ -35,7 +38,7 @@ export class CollectionView<Element> implements Collection<Element> {
   /**
    * @see {@link Clonable.clone}
    */
-  public clone(): CollectionView<Element> {
+  public clone(): CollectionView<Element, Wrappable> {
     return new CollectionView(this._collection)
   }
 
@@ -70,14 +73,14 @@ export class CollectionView<Element> implements Collection<Element> {
   /**
    * 
    */
-  public hasCollection(collection: Collection<unknown>): boolean {
+  public hasCollection(collection: unknown): boolean {
     return this._collection === collection
   }
 
   /**
    * 
    */
-  public setCollection(collection: Collection<Element>): void {
+  public setCollection(collection: Wrappable): void {
     this._collection = collection
   }
 
@@ -85,15 +88,21 @@ export class CollectionView<Element> implements Collection<Element> {
    * @see {@link Comparable.equals}
    */
   public equals(other: any): boolean {
-    if (other == null) return false
     if (other === this) return true
 
-    if (other instanceof CollectionView) {
+    if (isCollectionView(other)) {
       return other._collection === this._collection
     }
 
     return false
   }
+}
+
+/**
+ * 
+ */
+export function isCollectionView<Element>(candidate: unknown): candidate is CollectionView<Element, never> {
+  return candidate != null && candidate.constructor === CollectionView
 }
 
 /**

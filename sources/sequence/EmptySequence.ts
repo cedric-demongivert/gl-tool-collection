@@ -7,13 +7,6 @@ import { Sequence } from './Sequence'
  */
 export class EmptySequence<Element> extends EmptyCollection<Element> implements Sequence<Element> {
   /**
-   * @see {@link Sequence.size}
-   */
-  public get size(): number {
-    return 0
-  }
-
-  /**
    * @see {@link Sequence.get}
    */
   public get(index: number): undefined {
@@ -59,10 +52,8 @@ export class EmptySequence<Element> extends EmptyCollection<Element> implements 
    * @see {@link Sequence.equals}
    */
   public equals(other: any): boolean {
-    if (other == null) return false
     if (other === this) return true
-
-    return other.constructor === EmptySequence
+    return isEmptySequence(other)
   }
 
   /**
@@ -71,6 +62,13 @@ export class EmptySequence<Element> extends EmptyCollection<Element> implements 
   public toString(): string {
     return this.constructor.name + ' ' + Sequence.stringify(this)
   }
+}
+
+/**
+ * 
+ */
+export function isEmptySequence(candidate: unknown): candidate is EmptySequence<unknown> {
+  return candidate != null && candidate.constructor === EmptySequence
 }
 
 /**

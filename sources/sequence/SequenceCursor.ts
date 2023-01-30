@@ -18,17 +18,11 @@ export class SequenceCursor<Element> implements RandomAccessCursor<Element>
   public index: number
 
   /**
-   *  
-   */
-  private _view: RandomAccessCursor<Element> | undefined
-
-  /**
    * 
    */
   public constructor(sequence: Sequence<Element>, index: number = 0) {
     this.sequence = sequence
     this.index = index
-    this._view = undefined
   }
 
   /**
@@ -84,7 +78,7 @@ export class SequenceCursor<Element> implements RandomAccessCursor<Element>
   /**
    * @see {@link RandomAccessCursor.get}
    */
-  public get(): Element {
+  public get(): Element | undefined {
     return this.sequence.get(this.index)
   }
 
@@ -114,7 +108,7 @@ export class SequenceCursor<Element> implements RandomAccessCursor<Element>
    * @see {@link RandomAccessCursor.view}
    */
   public view(): RandomAccessCursor<Element> {
-    return this._view = this._view || RandomAccessCursor.view(this)
+    return RandomAccessCursor.view(this)
   }
 
   /**
@@ -129,10 +123,9 @@ export class SequenceCursor<Element> implements RandomAccessCursor<Element>
    * @see {@link Comparable.equals}
    */
   public equals(other: any): boolean {
-    if (other == null) return false
     if (other === this) return true
 
-    if (other instanceof SequenceCursor) {
+    if (isSequenceCursor(other)) {
       return (
         other.sequence === this.sequence &&
         other.index === this.index
@@ -141,6 +134,13 @@ export class SequenceCursor<Element> implements RandomAccessCursor<Element>
 
     return false
   }
+}
+
+/**
+ * 
+ */
+export function isSequenceCursor<Element>(candidate: unknown): candidate is SequenceCursor<Element> {
+  return candidate != null && candidate.constructor === SequenceCursor
 }
 
 /**

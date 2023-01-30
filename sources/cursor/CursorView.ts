@@ -3,25 +3,28 @@ import { Cursor } from "./Cursor"
 /**
  * 
  */
-export class CursorView<Element> implements Cursor<Element> {
+export class CursorView<
+  Element, 
+  Wrappable extends Cursor<Element> = Cursor<Element>
+> implements Cursor<Element> {
   /**
    * 
    */
-  private _cursor: Cursor<Element>
+  protected _cursor: Wrappable
 
   /**
    * Create a view over the given cursor.
    * 
    * @param cursor - A cursor instance to wrap.
    */
-  public constructor(cursor: Cursor<Element>) {
+  public constructor(cursor: Wrappable) {
     this._cursor = cursor
   }
 
   /**
    * @see {@link Cursor.clone}
    */
-  public clone(): CursorView<Element> {
+  public clone(): CursorView<Element, Wrappable> {
     return new CursorView(this._cursor)
   }
 
@@ -29,10 +32,9 @@ export class CursorView<Element> implements Cursor<Element> {
    * @see {@link Cursor.equals}
    */
   public equals(other: unknown): boolean {
-    if (other == null) return false
     if (other === this) return true
 
-    if (other instanceof CursorView) {
+    if (isCursorView(other)) {
       return other._cursor === this._cursor
     }
 
@@ -56,14 +58,14 @@ export class CursorView<Element> implements Cursor<Element> {
   /**
    * 
    */
-  public setCursor(cursor: Cursor<Element>): void {
+  public setCursor(cursor: Wrappable): void {
     this._cursor = cursor
   }
 
   /**
    * 
    */
-  public hasCursor(cursor: Cursor<Element>): boolean {
+  public hasCursor(cursor: unknown): boolean {
     return this._cursor === cursor
   }
 }
@@ -71,6 +73,16 @@ export class CursorView<Element> implements Cursor<Element> {
 /**
  * 
  */
-export function createCursorView<Element>(cursor: Cursor<Element>): CursorView<Element> {
+export function isCursorView<Element>(candidate: unknown): candidate is CursorView<Element, never> {
+  return candidate != null && candidate.constructor === CursorView
+}
+
+/**
+ * 
+ */
+export function createCursorView<
+  Element, 
+  Wrappable extends Cursor<Element> = Cursor<Element>
+>(cursor: Wrappable): CursorView<Element, Wrappable> {
   return new CursorView(cursor)
 }

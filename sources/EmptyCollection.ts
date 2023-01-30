@@ -58,18 +58,25 @@ export class EmptyCollection<Element> implements Collection<Element> {
   /**
    * @see {@link Comparable.equals}
    */
-  public equals(other: any): boolean {
-    if (other == null) return false
+  public equals(other: unknown): boolean {
     if (other === this) return true
-
-    return other.constructor === EmptyCollection
+    return isEmptyCollecton(other)
   }
+}
+
+/**
+ * 
+ * @returns 
+ */
+export function isEmptyCollecton(candidate: unknown): candidate is EmptyCollection<unknown> {
+  return candidate != null && candidate.constructor === EmptyCollection
 }
 
 /**
  * 
  */
 export const EMPTY_COLLECTION_INSTANCE: EmptyCollection<any> = new EmptyCollection<any>()
+
 
 /**
  * 

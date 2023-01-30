@@ -2,6 +2,7 @@ import { mock } from 'jest-mock-extended'
 
 import { CursorView } from '../../sources/cursor/CursorView'
 import { createCursorView } from '../../sources/cursor/CursorView'
+import { isCursorView } from '../../sources/cursor/CursorView'
 import { Cursor } from '../../sources/cursor/Cursor'
 
 /**
@@ -174,6 +175,23 @@ describe('CursorView', function () {
 
             expect(view.equals(otherView)).toBeFalsy()
         })
+    })
+})
+
+/**
+ * 
+ */
+describe('isCursorView', function () {
+    /**
+     * 
+     */
+    it('returns true if the given value is a direct instance of CursorView', function () {
+        class Indirect extends CursorView<any> {}
+        
+        const cursor = mock<Cursor<number>>()
+
+        expect(isCursorView(new CursorView(cursor))).toBeTruthy()
+        expect(isCursorView(new Indirect(cursor))).toBeFalsy()
     })
 })
 

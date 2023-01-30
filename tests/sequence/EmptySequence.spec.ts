@@ -156,40 +156,6 @@ describe('EmptySequence', function () {
             const sequence = new EmptySequence<number>()
             expect(sequence.toString().indexOf(Sequence.stringify([])))
         })
-        
-        /**
-         * 
-         */
-        it('returns true when applied on itself', function () {
-            const sequence = new EmptySequence<number>()
-            expect(sequence.equals(sequence)).toBeTruthy()
-        })
-        
-        /**
-         * 
-         */
-        it('returns false for null', function () {
-            const sequence = new EmptySequence<number>()
-            expect(sequence.equals(null)).toBeFalsy()
-        })
-        
-        /**
-         * 
-         */
-        it('returns false for undefined', function () {
-            const sequence = new EmptySequence<number>()
-            expect(sequence.equals(undefined)).toBeFalsy()
-        })
-        
-        /**
-         * 
-         */
-        it('returns false for instances of other type', function () {
-            const sequence = new EmptySequence<number>()
-            expect(sequence.equals(new Date())).toBeFalsy()
-            expect(sequence.equals(15)).toBeFalsy()
-            expect(sequence.equals("test")).toBeFalsy()
-        })
     })
 })
 

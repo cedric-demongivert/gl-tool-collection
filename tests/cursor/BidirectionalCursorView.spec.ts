@@ -1,47 +1,15 @@
 import { mock } from 'jest-mock-extended'
 
-import { BidirectionalCursorView } from '../../sources/cursor/BidirectionalCursorView'
-import { createBidirectionalCursorView } from '../../sources/cursor/BidirectionalCursorView'
 import { BidirectionalCursor } from '../../sources/cursor/BidirectionalCursor'
+
+import { BidirectionalCursorView } from '../../sources/cursor/BidirectionalCursorView'
+import { isBidirectionalCursorView } from '../../sources/cursor/BidirectionalCursorView'
+import { createBidirectionalCursorView } from '../../sources/cursor/BidirectionalCursorView'
 
 /**
  * 
  */
 describe('BidirectionalCursorView', function () {
-    /**
-     * 
-     */
-    describe('#constructor', function () {
-        /**
-         * 
-         */
-        it('returns a view over the given cursor', function () {
-            const cursor = mock<BidirectionalCursor<number>>()
-            const view = new BidirectionalCursorView(cursor)
-
-            expect(view).toBeInstanceOf(BidirectionalCursorView)
-            expect(view.hasCursor(cursor)).toBeTruthy()
-        })
-    })
-
-    /**
-     * 
-     */
-    describe('#hasCursor', function () {
-        /**
-         * 
-         */
-        it('returns true if the view wraps the given cursor', function () {
-            const firstCursor = mock<BidirectionalCursor<number>>()
-            const secondCursor = mock<BidirectionalCursor<number>>()
-
-            const view: BidirectionalCursorView<number> = new BidirectionalCursorView(firstCursor)
-
-            expect(view.hasCursor(firstCursor)).toBeTruthy()
-            expect(view.hasCursor(secondCursor)).toBeFalsy()
-        })
-    })
-
     /**
      * 
      */
@@ -63,24 +31,6 @@ describe('BidirectionalCursorView', function () {
     /**
      * 
      */
-    describe('#forward', function () {
-        /**
-         * 
-         */
-        it('delegates the call to the underlying cursor', function () {
-            const cursor = mock<BidirectionalCursor<number>>()
-            const view: BidirectionalCursorView<number> = new BidirectionalCursorView(cursor)
-
-            expect(cursor.forward).not.toHaveBeenCalled()
-            view.forward(5)
-            expect(cursor.forward).toHaveBeenCalledTimes(1)
-            expect(cursor.forward).toHaveBeenCalledWith(5)
-        })
-    })
-
-    /**
-     * 
-     */
     describe('#backward', function () {
         /**
          * 
@@ -93,24 +43,6 @@ describe('BidirectionalCursorView', function () {
             view.backward(5)
             expect(cursor.backward).toHaveBeenCalledTimes(1)
             expect(cursor.backward).toHaveBeenCalledWith(5)
-        })
-    })
-
-    /**
-     * 
-     */
-    describe('#next', function () {
-        /**
-         * 
-         */
-        it('delegates the call to the underlying cursor', function () {
-            const cursor = mock<BidirectionalCursor<number>>()
-            const view: BidirectionalCursorView<number> = new BidirectionalCursorView(cursor)
-
-            expect(cursor.next).not.toHaveBeenCalled()
-            view.next()
-            expect(cursor.next).toHaveBeenCalledTimes(1)
-            expect(cursor.next).toHaveBeenCalledWith()
         })
     })
 
@@ -153,66 +85,6 @@ describe('BidirectionalCursorView', function () {
     /**
      * 
      */
-    describe('#get', function () {
-        /**
-         * 
-         */
-        it('delegates the call to the underlying cursor', function () {
-            const cursor = mock<BidirectionalCursor<number>>()
-            const view: BidirectionalCursorView<number> = new BidirectionalCursorView(cursor)
-
-            cursor.get.mockReturnValueOnce(25)
-
-            expect(cursor.get).not.toHaveBeenCalled()
-            expect(view.get()).toBe(25)
-            expect(cursor.get).toHaveBeenCalledTimes(1)
-            expect(cursor.get).toHaveBeenCalledWith()
-        })
-    })
-
-    /**
-     * 
-     */
-    describe('#isEnd', function () {
-        /**
-         * 
-         */
-        it('delegates the call to the underlying cursor', function () {
-            const cursor = mock<BidirectionalCursor<number>>()
-            const view: BidirectionalCursorView<number> = new BidirectionalCursorView(cursor)
-
-            cursor.isEnd.mockReturnValueOnce(true)
-
-            expect(cursor.isEnd).not.toHaveBeenCalled()
-            expect(view.isEnd()).toBeTruthy()
-            expect(cursor.isEnd).toHaveBeenCalledTimes(1)
-            expect(cursor.isEnd).toHaveBeenCalledWith()
-        })
-    })
-
-    /**
-     * 
-     */
-    describe('#isInside', function () {
-        /**
-         * 
-         */
-        it('delegates the call to the underlying cursor', function () {
-            const cursor = mock<BidirectionalCursor<number>>()
-            const view: BidirectionalCursorView<number> = new BidirectionalCursorView(cursor)
-
-            cursor.isInside.mockReturnValueOnce(true)
-
-            expect(cursor.isInside).not.toHaveBeenCalled()
-            expect(view.isInside()).toBeTruthy()
-            expect(cursor.isInside).toHaveBeenCalledTimes(1)
-            expect(cursor.isInside).toHaveBeenCalledWith()
-        })
-    })
-
-    /**
-     * 
-     */
     describe('#isStart', function () {
         /**
          * 
@@ -227,44 +99,6 @@ describe('BidirectionalCursorView', function () {
             expect(view.isStart()).toBeTruthy()
             expect(cursor.isStart).toHaveBeenCalledTimes(1)
             expect(cursor.isStart).toHaveBeenCalledWith()
-        })
-    })
-
-    /**
-     * 
-     */
-    describe('#view', function () {
-        /**
-         * 
-         */
-        it('returns itself', function () {
-            const cursor = mock<BidirectionalCursor<number>>()
-            const view: BidirectionalCursorView<number> = new BidirectionalCursorView(cursor)
-
-            expect(view.view()).toBe(view)
-        })
-    })
-
-    /**
-     * 
-     */
-    describe('#setCursor', function () {
-        /**
-         * 
-         */
-        it('updates the underlying cursor implementation', function () {
-            const firstCursor = mock<BidirectionalCursor<number>>()
-            const secondCursor = mock<BidirectionalCursor<number>>()
-
-            const view: BidirectionalCursorView<number> = new BidirectionalCursorView(firstCursor)
-
-            expect(view.equals(new BidirectionalCursorView(firstCursor))).toBeTruthy()
-            expect(view.equals(new BidirectionalCursorView(secondCursor))).toBeFalsy()
-
-            view.setCursor(secondCursor)
-
-            expect(view.equals(new BidirectionalCursorView(firstCursor))).toBeFalsy()
-            expect(view.equals(new BidirectionalCursorView(secondCursor))).toBeTruthy()
         })
     })
 
@@ -324,6 +158,23 @@ describe('BidirectionalCursorView', function () {
 
             expect(view.equals(otherView)).toBeFalsy()
         })
+    })
+})
+
+/**
+ * 
+ */
+describe('isBidirectionalCursorView', function () {
+    /**
+     * 
+     */
+    it('returns true if the given value is a direct instance of BidirectionalCursorView', function () {
+        class Indirect extends BidirectionalCursorView<any> {}
+        
+        const cursor = mock<BidirectionalCursor<number>>()
+
+        expect(isBidirectionalCursorView(new BidirectionalCursorView(cursor))).toBeTruthy()
+        expect(isBidirectionalCursorView(new Indirect(cursor))).toBeFalsy()
     })
 })
 

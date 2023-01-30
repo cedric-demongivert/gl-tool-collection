@@ -1,6 +1,6 @@
 import { mock } from 'jest-mock-extended'
 
-import { ForwardCursorView } from '../../sources/cursor/ForwardCursorView'
+import { ForwardCursorView, isForwardCursorView } from '../../sources/cursor/ForwardCursorView'
 import { createForwardCursorView } from '../../sources/cursor/ForwardCursorView'
 import { ForwardCursor } from '../../sources/cursor/ForwardCursor'
 
@@ -8,40 +8,6 @@ import { ForwardCursor } from '../../sources/cursor/ForwardCursor'
  * 
  */
 describe('ForwardCursorView', function () {
-    /**
-     * 
-     */
-    describe('#constructor', function () {
-        /**
-         * 
-         */
-        it('returns a view over the given cursor', function () {
-            const cursor = mock<ForwardCursor<number>>()
-            const view = new ForwardCursorView(cursor)
-
-            expect(view).toBeInstanceOf(ForwardCursorView)
-            expect(view.hasCursor(cursor)).toBeTruthy()
-        })
-    })
-
-    /**
-     * 
-     */
-    describe('#hasCursor', function () {
-        /**
-         * 
-         */
-        it('returns true if the view wraps the given cursor', function () {
-            const firstCursor = mock<ForwardCursor<number>>()
-            const secondCursor = mock<ForwardCursor<number>>()
-
-            const view: ForwardCursorView<number> = new ForwardCursorView(firstCursor)
-
-            expect(view.hasCursor(firstCursor)).toBeTruthy()
-            expect(view.hasCursor(secondCursor)).toBeFalsy()
-        })
-    })
-
     /**
      * 
      */
@@ -99,26 +65,6 @@ describe('ForwardCursorView', function () {
     /**
      * 
      */
-    describe('#get', function () {
-        /**
-         * 
-         */
-        it('delegates the call to the underlying cursor', function () {
-            const cursor = mock<ForwardCursor<number>>()
-            const view: ForwardCursorView<number> = new ForwardCursorView(cursor)
-
-            cursor.get.mockReturnValueOnce(25)
-
-            expect(cursor.get).not.toHaveBeenCalled()
-            expect(view.get()).toBe(25)
-            expect(cursor.get).toHaveBeenCalledTimes(1)
-            expect(cursor.get).toHaveBeenCalledWith()
-        })
-    })
-
-    /**
-     * 
-     */
     describe('#isEnd', function () {
         /**
          * 
@@ -153,44 +99,6 @@ describe('ForwardCursorView', function () {
             expect(view.isInside()).toBeTruthy()
             expect(cursor.isInside).toHaveBeenCalledTimes(1)
             expect(cursor.isInside).toHaveBeenCalledWith()
-        })
-    })
-
-    /**
-     * 
-     */
-    describe('#view', function () {
-        /**
-         * 
-         */
-        it('returns itself', function () {
-            const cursor = mock<ForwardCursor<number>>()
-            const view: ForwardCursorView<number> = new ForwardCursorView(cursor)
-
-            expect(view.view()).toBe(view)
-        })
-    })
-
-    /**
-     * 
-     */
-    describe('#setCursor', function () {
-        /**
-         * 
-         */
-        it('updates the underlying cursor implementation', function () {
-            const firstCursor = mock<ForwardCursor<number>>()
-            const secondCursor = mock<ForwardCursor<number>>()
-
-            const view: ForwardCursorView<number> = new ForwardCursorView(firstCursor)
-
-            expect(view.equals(new ForwardCursorView(firstCursor))).toBeTruthy()
-            expect(view.equals(new ForwardCursorView(secondCursor))).toBeFalsy()
-
-            view.setCursor(secondCursor)
-
-            expect(view.equals(new ForwardCursorView(firstCursor))).toBeFalsy()
-            expect(view.equals(new ForwardCursorView(secondCursor))).toBeTruthy()
         })
     })
 
@@ -250,6 +158,23 @@ describe('ForwardCursorView', function () {
 
             expect(view.equals(otherView)).toBeFalsy()
         })
+    })
+})
+
+/**
+ * 
+ */
+describe('isForwardCursorView', function () {
+    /**
+     * 
+     */
+    it('returns true if the given value is a direct instance of ForwardCursorView', function () {
+        class Indirect extends ForwardCursorView<any> {}
+        
+        const cursor = mock<ForwardCursor<number>>()
+
+        expect(isForwardCursorView(new ForwardCursorView(cursor))).toBeTruthy()
+        expect(isForwardCursorView(new Indirect(cursor))).toBeFalsy()
     })
 })
 

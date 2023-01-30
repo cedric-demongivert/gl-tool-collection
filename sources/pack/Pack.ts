@@ -14,11 +14,6 @@ import { Collection } from '../Collection'
  */
 export interface Pack<Element> extends List<Element>, ReallocableCollection {
   /**
-   * @see {@link Collection.isPack}
-   */
-  isPack(): true
-
-  /**
    * Allocate a new empty pack similar to this one with the given capacity.
    *
    * @param capacity - The capacity of the new pack to allocate.
@@ -42,13 +37,6 @@ export interface Pack<Element> extends List<Element>, ReallocableCollection {
  * 
  */
 export namespace Pack {
-  /**
-   * 
-   */
-  export function is<Element>(collection: Collection<Element>): collection is Pack<Element> {
-    return collection.isPack()
-  }
-
   /**
    * Instantiate a new pack that wrap an array of the given type of instance.
    *

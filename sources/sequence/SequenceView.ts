@@ -1,135 +1,92 @@
-import { Sequence } from '../sequence/Sequence'
 import { ForwardCursor } from '../cursor/ForwardCursor'
+import { CollectionView } from '../CollectionView'
+
+import { Sequence } from './Sequence'
 
 /**
 * A read-only view over a given sequence.
 */
-export class SequenceView<Element> implements Sequence<Element> {
-  /**
-   * The underlying sequence.
-   */
-  private _sequence: Sequence<Element>
-
-  /**
-   * @see {@link Sequence.size}
-   */
-  public get size(): number {
-    return this._sequence.size
-  }
-
-  /**
-   * Create a new view over an existing collection.
-   *
-   * @param collection - A collection to wrap.
-   */
-  public constructor(collection: Sequence<Element>) {
-    this._sequence = collection
-  }
-
+export class SequenceView<
+  Element,
+  Wrappable extends Sequence<Element> = Sequence<Element>
+> extends CollectionView<Element, Wrappable> 
+  implements Sequence<Element> 
+{
   /**
    * @see {@link Sequence.get}
    */
   public get(index: number): Element | undefined {
-    return this._sequence.get(index)
+    return this._collection.get(index)
   }
 
   /**
    * @see {@link Sequence.first}
    */
   public get first(): Element {
-    return this._sequence.first
+    return this._collection.first
   }
 
   /**
    * @see {@link Sequence.last}
    */
   public get last(): Element {
-    return this._sequence.last
-  }
-
-  /**
-   * @see {@link Sequence.has}
-   */
-  public has(value: Element): boolean {
-    return this._sequence.has(value)
+    return this._collection.last
   }
 
   /**
    * @see {@link Sequence.clone}
    */
-  public clone(): SequenceView<Element> {
-    return new SequenceView(this._sequence)
+  public clone(): SequenceView<Element, Wrappable> {
+    return new SequenceView(this._collection)
   }
 
   /**
    * @see {@link Sequence.indexOf}
    */
   public indexOf(element: Element): number {
-    return this._sequence.indexOf(element)
+    return this._collection.indexOf(element)
   }
 
   /**
   * @see {@link Sequence.indexOfInSubsequence}
   */
   public indexOfInSubsequence(element: Element, offset: number, size: number): number {
-    return this._sequence.indexOfInSubsequence(element, offset, size)
+    return this._collection.indexOfInSubsequence(element, offset, size)
   }
 
   /**
    * @see {@link Sequence.hasInSubsequence}
    */
   public hasInSubsequence(element: Element, offset: number, size: number): boolean {
-    return this._sequence.hasInSubsequence(element, offset, size)
-  }
-
-  /**
-   * @see {@link Sequence.view}
-   */
-  public view(): SequenceView<Element> {
-    return this
-  }
-
-  /**
-   * @see {@link Sequence.forward}
-   */
-  public forward(): ForwardCursor<Element> {
-    return this._sequence.forward().view()
+    return this._collection.hasInSubsequence(element, offset, size)
   }
 
   /**
    * @see {@link Sequence.equals}
    */
   public equals(other: any): boolean {
-    if (other == null) return false
     if (other === this) return true
 
-    if (other instanceof SequenceView) {
-      return this._sequence.equals(other._sequence)
+    if (isSequenceView(other)) {
+      return this._collection === other._collection
     }
 
     return false
   }
 
   /**
-  * @see {@link Sequence.values}
-  */
-  public values(): IterableIterator<Element> {
-    return this._sequence.values()
-  }
-
-  /**
-  * @see {@link Sequence[Symbol.iterator]}
-  */
-  public [Symbol.iterator](): IterableIterator<Element> {
-    return this._sequence.values()
-  }
-
-  /**
    * @see {@link Sequence.toString}
    */
   public toString(): string {
-    return this.constructor.name + ' (' + this._sequence.constructor.name + ') ' + Sequence.stringify(this)
+    return this.constructor.name + ' (' + this._collection.constructor.name + ') ' + Sequence.stringify(this)
   }
+}
+
+/**
+ * 
+ */
+export function isSequenceView<Element>(candidate: unknown): candidate is SequenceView<Element> {
+  return candidate != null && candidate.constructor === SequenceView
 }
 
 /**
@@ -139,6 +96,9 @@ export class SequenceView<Element> implements Sequence<Element> {
  *
  * @returns A view over the given collection.
  */
-export function createSequenceView<Element>(collection: Sequence<Element>): SequenceView<Element> {
-  return new SequenceView<Element>(collection)
+export function createSequenceView<
+  Element,
+  Wrappable extends Sequence<Element> = Sequence<Element>
+>(collection: Wrappable): SequenceView<Element, Wrappable> {
+  return new SequenceView(collection)
 }

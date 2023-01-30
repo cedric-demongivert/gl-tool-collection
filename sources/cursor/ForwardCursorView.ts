@@ -1,14 +1,13 @@
 import { ForwardCursor } from "./ForwardCursor"
+import { CursorView } from "./CursorView"
 
 /**
  * 
  */
-export class ForwardCursorView<Element> implements ForwardCursor<Element> {
-  /**
-   * 
-   */
-  private _cursor: ForwardCursor<Element>
-
+export class ForwardCursorView<
+  Element, 
+  Wrappable extends ForwardCursor<Element> = ForwardCursor<Element>
+> extends CursorView<Element, Wrappable> implements ForwardCursor<Element> {
   /**
    * @see {@link ForwardCursor.index}
    */
@@ -17,18 +16,9 @@ export class ForwardCursorView<Element> implements ForwardCursor<Element> {
   }
 
   /**
-   * Create a view over the given cursor.
-   * 
-   * @param cursor - A cursor instance to wrap.
-   */
-  public constructor(cursor: ForwardCursor<Element>) {
-    this._cursor = cursor
-  }
-
-  /**
    * @see {@link ForwardCursor.clone}
    */
-  public clone(): ForwardCursorView<Element> {
+  public clone(): ForwardCursorView<Element, Wrappable> {
     return new ForwardCursorView(this._cursor)
   }
 
@@ -36,10 +26,9 @@ export class ForwardCursorView<Element> implements ForwardCursor<Element> {
    * @see {@link ForwardCursor.equals}
    */
   public equals(other: unknown): boolean {
-    if (other == null) return false
     if (other === this) return true
 
-    if (other instanceof ForwardCursorView) {
+    if (isForwardCursorView(other)) {
       return other._cursor === this._cursor
     }
 
@@ -51,13 +40,6 @@ export class ForwardCursorView<Element> implements ForwardCursor<Element> {
    */
   public forward(count: number): void {
     this._cursor.forward(count)
-  }
-
-  /**
-   * @see {@link Cursor.get}
-   */
-  public get(): Element | undefined {
-    return this._cursor.get()
   }
 
   /**
@@ -80,32 +62,21 @@ export class ForwardCursorView<Element> implements ForwardCursor<Element> {
   public next(): void {
     this._cursor.next()
   }
-
-  /**
-   * 
-   */
-  public setCursor(cursor: ForwardCursor<Element>): void {
-    this._cursor = cursor
-  }
-
-  /**
-   * 
-   */
-  public hasCursor(cursor: ForwardCursor<Element>): boolean {
-    return this._cursor === cursor
-  }
-
-  /**
-   * @see {@link Cursor.view}
-   */
-  public view(): this {
-    return this
-  }
 }
 
 /**
  * 
  */
-export function createForwardCursorView<Element>(cursor: ForwardCursor<Element>): ForwardCursorView<Element> {
+export function isForwardCursorView<Element>(candidate: unknown): candidate is ForwardCursorView<Element, never> {
+  return candidate != null && candidate.constructor === ForwardCursorView
+}
+
+/**
+ * 
+ */
+export function createForwardCursorView<
+  Element,
+  Wrappable extends ForwardCursor<Element> = ForwardCursor<Element>
+>(cursor: Wrappable): ForwardCursorView<Element, Wrappable> {
   return new ForwardCursorView(cursor)
 }

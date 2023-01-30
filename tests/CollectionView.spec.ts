@@ -4,6 +4,7 @@ import { Collection } from "../sources/Collection"
 import { ForwardCursor } from '../sources/cursor'
 
 import { CollectionView } from "../sources/CollectionView"
+import { isCollectionView } from "../sources/CollectionView"
 import { createCollectionView } from "../sources/CollectionView"
 
 /**
@@ -246,6 +247,23 @@ describe('CollectionView', function () {
           
         expect(view.equals(new CollectionView(secondCollection))).toBeFalsy()
       })
+  })
+})
+
+/**
+ * 
+ */
+describe('isCollectionView', function () {
+  /**
+   * 
+   */
+  it('returns true if the given value is a direct instance of CollectionView', function () {
+      class Indirect extends CollectionView<any> {}
+      
+      const cursor = mock<Collection<number>>()
+
+      expect(isCollectionView(new CollectionView(cursor))).toBeTruthy()
+      expect(isCollectionView(new Indirect(cursor))).toBeFalsy()
   })
 })
 

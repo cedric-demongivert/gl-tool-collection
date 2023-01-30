@@ -1,7 +1,6 @@
 import { Comparator, equals, Factory } from '@cedric-demongivert/gl-tool-utils'
 
 import { quicksort } from '../algorithm'
-import { IsCollection } from '../IsCollection'
 
 import type { Pack } from './Pack'
 
@@ -28,11 +27,6 @@ export class ArrayPack<Element> implements Pack<Element> {
   /**
    * 
    */
-  private readonly _view: Sequence<Element>
-
-  /**
-   * 
-   */
   public readonly defaultValue: Factory<Element>
 
   /**
@@ -45,50 +39,7 @@ export class ArrayPack<Element> implements Pack<Element> {
   public constructor(elements: Array<Element>, defaultValue: Factory<Element>, size: number = elements.length) {
     this._elements = elements
     this._size = size
-    this._view = Sequence.view(this)
     this.defaultValue = defaultValue
-  }
-
-  /**
-   * @see {@link Collection[IsCollection.SYMBOL]}
-   */
-  public [IsCollection.SYMBOL](): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isSequence}
-   */
-  public isSequence(): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isPack}
-   */
-  public isPack(): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isList}
-   */
-  public isList(): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isGroup}
-   */
-  public isGroup(): false {
-    return false
-  }
-
-  /**
-   * @see {@link Collection.isSet}
-   */
-  public isSet(): false {
-    return false
   }
 
   /**
@@ -448,11 +399,11 @@ export class ArrayPack<Element> implements Pack<Element> {
     const toCopySizeOrCapacity: number = toCopy.size < elements.length ? toCopy.size : elements.length
 
     for (let index = 0; index < toCopySizeOrCapacity; ++index) {
-      elements[index] = toCopy.get(index)
+      elements[index] = toCopy.get(index)!
     }
 
     while (elements.length < toCopy.size) {
-      elements.push(toCopy.get(elements.length))
+      elements.push(toCopy.get(elements.length)!)
     }
 
     this._size = toCopy.size
@@ -466,11 +417,11 @@ export class ArrayPack<Element> implements Pack<Element> {
     const toCopySizeOrCapacity: number = size < elements.length ? size : elements.length
 
     for (let index = 0; index < toCopySizeOrCapacity; ++index) {
-      elements[index] = toCopy.get(offset + index)
+      elements[index] = toCopy.get(offset + index)!
     }
 
     while (elements.length < toCopy.size) {
-      elements.push(toCopy.get(offset + elements.length))
+      elements.push(toCopy.get(offset + elements.length)!)
     }
 
     this._size = size
@@ -486,11 +437,11 @@ export class ArrayPack<Element> implements Pack<Element> {
     const endOrCapacity: number = end < elements.length ? end : elements.length
 
     for (let index = offset; index < endOrCapacity; ++index) {
-      elements[index] = toConcat.get(index - offset)
+      elements[index] = toConcat.get(index - offset)!
     }
 
     while (elements.length < end) {
-      elements.push(toConcat.get(elements.length - offset))
+      elements.push(toConcat.get(elements.length - offset)!)
     }
 
     this._size = end
@@ -520,21 +471,21 @@ export class ArrayPack<Element> implements Pack<Element> {
    * @see {@link Pack.allocate}
    */
   public allocate(capacity: number): ArrayPack<Element> {
-    return ArrayPack.allocate(capacity, this.defaultValue)
+    return createArrayPack(capacity, this.defaultValue)
   }
 
   /**
    * @see {@link Clonable.clone}
    */
   public clone(): ArrayPack<Element> {
-    return ArrayPack.copy(this, this.defaultValue)
+    return createArrayPackFromSequence(this, this.defaultValue)
   }
 
   /**
    * @see {@link Collection.view}
    */
   public view(): Sequence<Element> {
-    return this._view
+    return Sequence.view(this)
   }
 
   /**
@@ -596,91 +547,86 @@ export class ArrayPack<Element> implements Pack<Element> {
 }
 
 /**
+ * Return an empty array pack of the given capacity.
+ *
+ * @param capacity - Capacity of the pack to allocate.
+ * @param defaultValue - The default value to use.
+ *
+ * @returns An empty array pack of the given capacity.
+ */
+export function createArrayPack<Element>(capacity: number, defaultValue: Factory<Element>): ArrayPack<Element> {
+  const result: Array<Element> = []
+
+  /**
+   * @see {@link https://v8.dev/blog/elements-kinds?fbclid=IwAR337wb3oxEpjz_5xVHL-Y14gUpVElementOztLSIikVVQLGN6qcKidEjMLJ4vO3M}
+   */
+  while (result.length != capacity) {
+    result.push(defaultValue())
+  }
+
+  return new ArrayPack(result, defaultValue, 0)
+}
+
+/**
  * 
  */
-export namespace ArrayPack {
+export namespace createArrayPack {
   /**
-   * Return an empty array pack of the given capacity.
-   *
-   * @param capacity - Capacity of the pack to allocate.
-   * @param defaultValue - The default value to use.
-   *
-   * @returns An empty array pack of the given capacity.
+   * @see {@link createArrayPack}
    */
-  export function allocate<Element>(capacity: number, defaultValue: Factory<Element>): ArrayPack<Element> {
-    const result: Array<Element> = []
+  export function withDefaultCapacity(defaultValue: Factory<Element>): ArrayPack<Element> {
+    return createArrayPack(32, defaultValue)
+  }
+}
 
-    /**
-     * @see {@link https://v8.dev/blog/elements-kinds?fbclid=IwAR337wb3oxEpjz_5xVHL-Y14gUpVElementOztLSIikVVQLGN6qcKidEjMLJ4vO3M}
-     */
-    while (result.length != capacity) {
-      result.push(defaultValue())
-    }
+/**
+ * Wrap an existing array as a pack.
+ *
+ * @param elements - Array to wrap.
+ * @param defaultValue - The default value to use.
+ * @param [size = elements.length] - Number of elements in the array to wrap.
+ *
+ * @returns The given array wrapped as a pack.
+ */
+export function createArrayPackFromArray<Element>(elements: Element[], defaultValue: Factory<Element>, size: number = elements.length): ArrayPack<Element> {
+  return new ArrayPack<Element>(elements, defaultValue, size)
+}
 
-    return new ArrayPack(result, defaultValue, 0)
+/**
+ * Return a copy of another sequence.
+ *
+ * @param toCopy - A sequence to copy.
+ * @param [capacity=toCopy.size] - Capacity of the copy.
+ *
+ * @returns A copy of the given sequence with the requested capacity.
+ */
+export function createArrayPackFromSequence<Element>(toCopy: Sequence<Element>, defaultValue: Factory<Element>, capacity: number = toCopy.size): ArrayPack<Element> {
+  const result: ArrayPack<Element> = createArrayPack(capacity, defaultValue)
+  result.copy(toCopy)
+  return result
+}
+
+/**
+ * 
+ */
+export function asArrayPack<Element>(defaultValue: Factory<Element>, ...elements: Element[]): ArrayPack<Element> {
+  const result: ArrayPack<Element> = createArrayPack(elements.length, defaultValue)
+  result.concatArray(elements)
+  return result
+}
+
+/**
+ * 
+ */
+export function createArrayPackFromIterator<Element>(defaultValue: Factory<Element>, elements: Iterator<Element>, capacity: number = 16): ArrayPack<Element> {
+  const result: ArrayPack<Element> = createArrayPack(capacity, defaultValue)
+
+  let iteratorResult = elements.next()
+
+  while (!iteratorResult.done) {
+    result.push(iteratorResult.value)
+    iteratorResult = elements.next()
   }
 
-  /**
-   * 
-   */
-  export namespace allocate {
-    /**
-     * @see {@link ArrayPack.allocate}
-     */
-    export function withDefaultCapacity(defaultValue: Factory<Element>): ArrayPack<Element> {
-      return allocate(32, defaultValue)
-    }
-  }
-
-  /**
-   * Wrap an existing array as a pack.
-   *
-   * @param elements - Array to wrap.
-   * @param defaultValue - The default value to use.
-   * @param [size = elements.length] - Number of elements in the array to wrap.
-   *
-   * @returns The given array wrapped as a pack.
-   */
-  export function wrap<Element>(elements: Element[], defaultValue: Factory<Element>, size: number = elements.length): ArrayPack<Element> {
-    return new ArrayPack<Element>(elements, defaultValue, size)
-  }
-
-  /**
-   * Return a copy of another sequence.
-   *
-   * @param toCopy - A sequence to copy.
-   * @param [capacity=toCopy.size] - Capacity of the copy.
-   *
-   * @returns A copy of the given sequence with the requested capacity.
-   */
-  export function copy<Element>(toCopy: Sequence<Element>, defaultValue: Factory<Element>, capacity: number = toCopy.size): ArrayPack<Element> {
-    const result: ArrayPack<Element> = ArrayPack.allocate(capacity, defaultValue)
-    result.copy(toCopy)
-    return result
-  }
-
-  /**
-   * 
-   */
-  export function of<Element>(defaultValue: Factory<Element>, ...elements: Element[]): ArrayPack<Element> {
-    const result: ArrayPack<Element> = ArrayPack.allocate(elements.length, defaultValue)
-    result.concatArray(elements)
-    return result
-  }
-
-  /**
-   * 
-   */
-  export function ofIterator<Element>(defaultValue: Factory<Element>, elements: Iterator<Element>, capacity: number = 16): ArrayPack<Element> {
-    const result: ArrayPack<Element> = ArrayPack.allocate(capacity, defaultValue)
-
-    let iteratorResult = elements.next()
-
-    while (!iteratorResult.done) {
-      result.push(iteratorResult.value)
-      iteratorResult = elements.next()
-    }
-
-    return result
-  }
+  return result
 }
