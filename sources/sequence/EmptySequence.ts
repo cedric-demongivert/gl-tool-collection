@@ -16,15 +16,15 @@ export class EmptySequence<Element> extends EmptyCollection<Element> implements 
   /**
    * @see {@link Sequence.last}
    */
-  public get last(): Element {
-    return undefined!
+  public get last(): undefined {
+    return undefined
   }
 
   /**
    * @see {@link Sequence.first}
    */
-  public get first(): Element {
-    return undefined!
+  public get first(): undefined {
+    return undefined
   }
 
   /**
@@ -47,28 +47,6 @@ export class EmptySequence<Element> extends EmptyCollection<Element> implements 
   public hasInSubsequence(element: Element, offset: number, size: number): false {
     return false
   }
-
-  /**
-   * @see {@link Sequence.equals}
-   */
-  public equals(other: any): boolean {
-    if (other === this) return true
-    return isEmptySequence(other)
-  }
-
-  /**
-   * @see {@link Sequence.toString}
-   */
-  public toString(): string {
-    return this.constructor.name + ' ' + Sequence.stringify(this)
-  }
-}
-
-/**
- * 
- */
-export function isEmptySequence(candidate: unknown): candidate is EmptySequence<unknown> {
-  return candidate != null && candidate.constructor === EmptySequence
 }
 
 /**

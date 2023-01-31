@@ -1,2 +1,2 @@
-export { bisect } from './bisect'
-export { quicksort } from './quicksort'
+export * from './bisect'
+export * from './quicksort'

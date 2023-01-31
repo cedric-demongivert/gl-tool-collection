@@ -1,11 +1,12 @@
 import { toString } from '@cedric-demongivert/gl-tool-utils'
 
 import { Collection } from '../Collection'
-import { ArrayView } from '../native/ArrayView'
 
 import { EMPTY_SEQUENCE_INSTANCE } from './EmptySequence'
 import { getEmptySequence } from './EmptySequence'
 import { createSequenceView } from './SequenceView'
+import { createSubsequence } from './Subsequence'
+import { createSequenceCursor } from './SequenceCursor'
 
 /**
  * A sequence is an ordered collection of elements in which repetitions are allowed; 
@@ -37,7 +38,7 @@ export interface Sequence<Element> extends Collection<Element> {
    *
    * @returns The last element of this sequence of elements if any.
    */
-  last: Element
+  last: Element | undefined 
 
   /**
    * Return the first element of this sequence of elements.
@@ -50,7 +51,7 @@ export interface Sequence<Element> extends Collection<Element> {
    *
    * @returns The first element of this sequence of elements.
    */
-  first: Element
+  first: Element | undefined 
 
   /**
    * Return the index of the first element equal to the given one in this sequence or a negative 
@@ -121,14 +122,19 @@ export namespace Sequence {
   export const empty = getEmptySequence
 
   /**
-   * @see {@link ArrayView.wrap}
-   */
-  export const array = ArrayView.wrap
-
-  /**
    * @see {@link createSequenceView}
    */
   export const view = createSequenceView
+
+  /**
+   * @see {@link createSubsequence}
+   */
+  export const subsequence = createSubsequence
+
+  /**
+   * @see {@link createSequenceCursor}
+   */
+  export const cursor = createSequenceCursor
 
   /**
    * 

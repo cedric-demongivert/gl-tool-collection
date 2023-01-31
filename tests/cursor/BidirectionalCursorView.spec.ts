@@ -3,7 +3,6 @@ import { mock } from 'jest-mock-extended'
 import { BidirectionalCursor } from '../../sources/cursor/BidirectionalCursor'
 
 import { BidirectionalCursorView } from '../../sources/cursor/BidirectionalCursorView'
-import { isBidirectionalCursorView } from '../../sources/cursor/BidirectionalCursorView'
 import { createBidirectionalCursorView } from '../../sources/cursor/BidirectionalCursorView'
 
 /**
@@ -100,81 +99,6 @@ describe('BidirectionalCursorView', function () {
             expect(cursor.isStart).toHaveBeenCalledTimes(1)
             expect(cursor.isStart).toHaveBeenCalledWith()
         })
-    })
-
-    /**
-     * 
-     */
-    describe('#equals', function () {
-        /**
-         * 
-         */
-        it('returns true if the given value is a view over the same cursor', function () {
-            const cursor = mock<BidirectionalCursor<number>>()
-            const view: BidirectionalCursorView<number> = new BidirectionalCursorView(cursor)
-
-            expect(view.equals(new BidirectionalCursorView(cursor))).toBeTruthy()
-        })
-
-        /**
-         * 
-         */
-        it('returns true if the given value is the same instance', function () {
-            const cursor = mock<BidirectionalCursor<number>>()
-            const view = new BidirectionalCursorView(cursor)
-
-            expect(view.equals(view)).toBeTruthy()
-        })
-
-        /**
-         * 
-         */
-        it('returns false if the given value is null or undefined', function () {
-            const cursor = mock<BidirectionalCursor<number>>()
-            const view = new BidirectionalCursorView(cursor)
-
-            expect(view.equals(null)).toBeFalsy()
-            expect(view.equals(undefined)).toBeFalsy()
-        })
-
-        /**
-         * 
-         */
-        it('returns false if the given value is not an instance of empty cursor', function () {
-            const cursor = mock<BidirectionalCursor<number>>()
-            const view = new BidirectionalCursorView(cursor)
-
-            expect(view.equals(5)).toBeFalsy()
-            expect(view.equals("test")).toBeFalsy()
-            expect(view.equals(new Date())).toBeFalsy()
-        })
-
-        /**
-         * 
-         */
-        it('returns false if the given value is a view over another cursor', function () {
-            const view = new BidirectionalCursorView(mock<BidirectionalCursor<number>>())
-            const otherView = new BidirectionalCursorView(mock<BidirectionalCursor<number>>())
-
-            expect(view.equals(otherView)).toBeFalsy()
-        })
-    })
-})
-
-/**
- * 
- */
-describe('isBidirectionalCursorView', function () {
-    /**
-     * 
-     */
-    it('returns true if the given value is a direct instance of BidirectionalCursorView', function () {
-        class Indirect extends BidirectionalCursorView<any> {}
-        
-        const cursor = mock<BidirectionalCursor<number>>()
-
-        expect(isBidirectionalCursorView(new BidirectionalCursorView(cursor))).toBeTruthy()
-        expect(isBidirectionalCursorView(new Indirect(cursor))).toBeFalsy()
     })
 })
 

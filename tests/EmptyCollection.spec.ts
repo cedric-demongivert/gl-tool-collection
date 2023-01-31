@@ -1,5 +1,5 @@
 import { ForwardCursor } from "../sources/cursor"
-import { EmptyCollection, isEmptyCollecton } from "../sources/EmptyCollection"
+import { EmptyCollection } from "../sources/EmptyCollection"
 import { EMPTY_COLLECTION_INSTANCE } from "../sources/EmptyCollection"
 import { getEmptyCollection } from "../sources/EmptyCollection"
 
@@ -143,30 +143,22 @@ describe('EmptyCollection', function () {
             expect(sequence.equals(15)).toBeFalsy()
             expect(sequence.equals("test")).toBeFalsy()
         })
+      
+        /**
+         * 
+         */
+        it('returns false if the given collection was not created by the same constructor', function () {
+          class OtherEmptyCollection extends EmptyCollection<unknown> {}
+  
+          const emptyCollection = new EmptyCollection()
+          const otherEmptyCollection = new OtherEmptyCollection()
+            
+          expect(emptyCollection.equals(otherEmptyCollection)).toBeFalsy()
+          expect(emptyCollection.equals(new EmptyCollection())).toBeTruthy()
+          expect(otherEmptyCollection.equals(new OtherEmptyCollection())).toBeTruthy()
+        })
     })
 
-})
-
-/**
- * 
- */
-describe('isEmptyCollection', function () {
-    /**
-     * 
-     */
-    it('returns true if the given value is a direct instance of EmptyCollection', function () {
-        class Indirect extends EmptyCollection<unknown> {}
-        
-        expect(isEmptyCollecton(new EmptyCollection())).toBeTruthy()
-        expect(isEmptyCollecton(new Indirect())).toBeFalsy()
-    })
-
-    /**
-     * 
-     */
-    it('returns false if the given value is null', function () {
-        expect(isEmptyCollecton(null)).toBeFalsy()
-    })
 })
 
 /**

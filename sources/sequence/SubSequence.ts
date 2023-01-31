@@ -1,39 +1,33 @@
-import { Sequence } from '../Sequence'
+import { Sequence } from '.'
 
 import { SequenceCursor } from './SequenceCursor'
 
 /** 
  * 
  */
-export class SubSequence<Output> implements Sequence<Output> {
+export class Subsequence<Output> implements Sequence<Output> {
   /**
    * The parent sequence.
    */
   public parent: Sequence<Output>
 
   /**
-   * The index of the origin of this subsequence in the parent sequence (inclusive).
+   * The index of the origin of this Subsequence in the parent sequence (inclusive).
    */
   public from: number
 
   /**
-   * The index of the termination of this subsequence in the parent sequence (exclusive).
+   * The index of the termination of this Subsequence in the parent sequence (exclusive).
    */
   public to: number
 
   /**
    * 
    */
-  private _view: Sequence<Output>
-
-  /**
-   * 
-   */
-  public constructor(sequence: Sequence<Output>) {
+  public constructor(sequence: Sequence<Output>, from: number, to: number) {
     this.parent = sequence
-    this.from = 0
-    this.to = sequence.size
-    this._view = Sequence.view(this)
+    this.from = from
+    this.to = to
   }
 
   /**
@@ -46,22 +40,22 @@ export class SubSequence<Output> implements Sequence<Output> {
   /**
    * @see {@link Sequence.get}
    */
-  public get(index: number): Output {
+  public get(index: number): Output | undefined {
     return this.parent.get(index - this.from)
   }
 
   /**
    * @see {@link Sequence.last}
    */
-  public get last(): Output {
-    return this.parent.get(this.to - 1)
+  public get last(): Output | undefined  {
+    return this.to === this.from ? undefined : this.parent.get(this.to - 1)
   }
 
   /**
    * @see {@link Sequence.first}
    */
-  public get first(): Output {
-    return this.parent.get(this.from)
+  public get first(): Output | undefined  {
+    return this.to === this.from ? undefined : this.parent.get(this.from)
   }
 
   /**
@@ -95,19 +89,15 @@ export class SubSequence<Output> implements Sequence<Output> {
   /**
    * @see {@link Clonable.clone}
    */
-  public clone(): SubSequence<Output> {
-    const result: SubSequence<Output> = new SubSequence<Output>(this.parent)
-    result.from = this.from
-    result.to = this.to
-
-    return result
+  public clone(): Subsequence<Output> {
+    return new Subsequence<Output>(this.parent, this.from, this.to)
   }
 
   /**
    * @see {@link Collection.view}
    */
   public view(): Sequence<Output> {
-    return this._view
+    return Sequence.view(this)
   }
 
   /**
@@ -122,7 +112,7 @@ export class SubSequence<Output> implements Sequence<Output> {
    */
   public * values(): IterableIterator<Output> {
     for (let index = this.from, length = this.to; index < length; ++index) {
-      yield this.parent.get(index)
+      yield this.parent.get(index)!
     }
   }
 
@@ -140,7 +130,7 @@ export class SubSequence<Output> implements Sequence<Output> {
     if (other == null) return false
     if (other === this) return true
 
-    if (other instanceof SubSequence) {
+    if (other instanceof Subsequence) {
       return other.parent.equals(this.parent) &&
         other.from === this.from &&
         other.to === this.to
@@ -150,3 +140,17 @@ export class SubSequence<Output> implements Sequence<Output> {
   }
 }
 
+
+/**
+ * 
+ */
+export function isSubsequence(candidate: unknown): candidate is Subsequence<unknown> {
+  return candidate != null && candidate.constructor === Subsequence
+}
+
+/**
+ * 
+ */
+export function createSubsequence<Element>(collection: Sequence<Element>, from: number, to: number): Subsequence<Element> {
+  return new Subsequence(collection, from, to)
+}

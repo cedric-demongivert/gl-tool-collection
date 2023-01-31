@@ -1,3 +1,4 @@
+import { areEquallyConstructed } from "../areEquallyConstructed"
 import { RandomAccessCursor } from "./RandomAccessCursor"
 
 /**
@@ -86,9 +87,8 @@ export class EmptyRandomAccessCursor<Element> implements RandomAccessCursor<Elem
    */
   public equals(other: unknown): boolean {
     if (other === this) return true
-    if (other == null) return false
 
-    return other instanceof EmptyRandomAccessCursor
+    return areEquallyConstructed(other, this)
   }
 }
 

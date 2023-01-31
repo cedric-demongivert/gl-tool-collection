@@ -1,5 +1,6 @@
 import { Clearable, Comparator, Factory } from '@cedric-demongivert/gl-tool-utils'
-import { Sequence, Pack } from '../sequence'
+import { Sequence } from '../sequence/Sequence'
+import { Pack } from '../pack/Pack'
 
 import { PackHeap } from './PackHeap'
 
@@ -55,17 +56,6 @@ export interface Heap<Element> extends Sequence<Element>, Clearable {
  * 
  */
 export namespace Heap {
-  /**
-   * Return true if the given collection is a sequence.
-   *
-   * @param collection - A collection to assert.
-   *
-   * @returns True if the given collection is a sequence.
-   */
-  /*export function is<Element>(collection: Markable): collection is Heap<Element> {
-    return collection.is(MARK)
-  }*/
-
   /**
    * 
    */

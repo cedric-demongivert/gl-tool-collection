@@ -6,7 +6,7 @@ import { Sequence } from "../../sources/sequence/Sequence"
 /**
  * 
  */
-describe('EmptySequence', function () {
+describe('sequence/EmptySequence', function () {
     /**
      * 
      */
@@ -162,7 +162,7 @@ describe('EmptySequence', function () {
 /**
  * 
  */
-describe('getEmptySequence', function () {
+describe('sequence/getEmptySequence', function () {
     /**
      * 
      */

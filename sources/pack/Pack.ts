@@ -1,13 +1,22 @@
 import { Sequence } from '../sequence/Sequence'
-import { List } from '../sequence/List'
+import { List } from '../list/List'
 
 import { ReallocableCollection } from '../ReallocableCollection'
 
-import { BufferPack } from './BufferPack'
-import { ArrayPack } from './ArrayPack'
-import { InstancePack } from './InstancePack'
+import { createUint8Pack } from './BufferPack'
+import { createUint16Pack } from './BufferPack'
+import { createUint32Pack } from './BufferPack'
+import { createInt8Pack } from './BufferPack'
+import { createInt16Pack } from './BufferPack'
+import { createInt32Pack } from './BufferPack'
+import { createFloat32Pack } from './BufferPack'
+import { createFloat64Pack } from './BufferPack'
+import { createUnsignedPackUpTo } from './BufferPack'
+import { createSignedPackUpTo } from './BufferPack'
+import { createArrayPack } from './ArrayPack'
+import { createInstancePack } from './InstancePack'
+
 import { CircularPack } from './CircularPack'
-import { Collection } from '../Collection'
 
 /**
  * A pack is a re-allocable mutable sequence of values.
@@ -23,12 +32,12 @@ export interface Pack<Element> extends List<Element>, ReallocableCollection {
   allocate(capacity: number): Pack<Element>
 
   /**
-   * @see {@link Collection.clone}
+   * @see {@link List.clone}
    */
   clone(): Pack<Element>
 
   /**
-   * @see {@link Collection.view}
+   * @see {@link List.view}
    */
   view(): Sequence<Element>
 }
@@ -50,64 +59,65 @@ export namespace Pack {
   }
 
   /**
-   * @see {@link ArrayPack.allocate}
+   * @see {@link createArrayPack}
    */
-  export const any = ArrayPack.allocate
+  export const any = createArrayPack
 
   /**
-   * @see {@link BufferPack.uint8}
+   * @see {@link createUint8Pack}
    */
-  export const uint8 = BufferPack.uint8
+  export const uint8 = createUint8Pack
 
   /**
-   * @see {@link BufferPack.uint16}
+   * @see {@link createUint16Pack}
    */
-  export const uint16 = BufferPack.uint16
+  export const uint16 = createUint16Pack
 
   /**
-   * @see {@link BufferPack.uint32}
+   * @see {@link createUint32Pack}
    */
-  export const uint32 = BufferPack.uint32
+  export const uint32 = createUint32Pack
 
   /**
-   * @see {@link BufferPack.int8}
+   * @see {@link createInt8Pack}
    */
-  export const int8 = BufferPack.int8
+  export const int8 = createInt8Pack
 
   /**
-   * @see {@link BufferPack.int16}
+   * @see {@link createInt16Pack}
    */
-  export const int16 = BufferPack.int16
+  export const int16 = createInt16Pack
 
   /**
-   * @see {@link BufferPack.int32}
+   * @see {@link createInt32Pack}
    */
-  export const int32 = BufferPack.int32
+  export const int32 = createInt32Pack
 
   /**
-   * @see {@link BufferPack.float32}
+   * @see {@link createFloat32Pack}
    */
-  export const float32 = BufferPack.float32
+  export const float32 = createFloat32Pack
 
   /**
-   * @see {@link BufferPack.float64}
+   * @see {@link createFloat64Pack}
    */
-  export const float64 = BufferPack.float64
+  export const float64 = createFloat64Pack
 
   /**
-   * @see {@link BufferPack.unsignedUpTo}
+   * @see {@link createUnsignedPackUpTo}
    */
-  export const unsignedUpTo = BufferPack.unsignedUpTo
+  export const unsignedUpTo = createUnsignedPackUpTo
+
 
   /**
-   * @see {@link BufferPack.signedUpTo}
+   * @see {@link createSignedPackUpTo}
    */
-  export const signedUpTo = BufferPack.signedUpTo
+  export const signedUpTo = createSignedPackUpTo
 
   /**
-   * @see {@link InstancePack.allocate}
+   * @see {@link createInstancePack}
    */
-  export const instance = InstancePack.allocate
+  export const instance = createInstancePack
 
   /**
    * @see {@link InstancePack.circular}

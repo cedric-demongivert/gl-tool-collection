@@ -1,7 +1,7 @@
 import { Clearable, Comparator } from '@cedric-demongivert/gl-tool-utils'
 import { Collection } from '../Collection'
 
-import { Sequence } from './Sequence'
+import { Sequence } from '../sequence/Sequence'
 
 /**
  * A mutable sequence of elements.
@@ -34,7 +34,7 @@ export interface List<Element> extends Sequence<Element>, Clearable {
    *
    * @returns The removed value of the sequence, if any.
    */
-  pop(): Element
+  pop(): Element | undefined
 
   /**
    * Remove the first value of the sequence, if any, and return it.
@@ -44,7 +44,7 @@ export interface List<Element> extends Sequence<Element>, Clearable {
    *
    * @returns The removed value of the sequence, if any.
    */
-  shift(): Element
+  shift(): Element | undefined
 
   /**
    * Swap two elements of the sequence.

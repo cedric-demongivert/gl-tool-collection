@@ -2,20 +2,21 @@ import { toString } from '@cedric-demongivert/gl-tool-utils'
 
 import { Collection } from '../Collection'
 
-import { EmptyGroup } from './EmptyGroup'
-import { GroupView } from './GroupView'
+import { EMPTY_GROUP_INSTANCE } from './EmptyGroup'
+import { getEmptyGroup } from './EmptyGroup'
+import { createGroupView } from './GroupView'
 
 /**
  * A group is a read-only, unordered collection that does not accept duplicates.
  */
 export interface Group<Element> extends Collection<Element> {
   /**
-   * @see {@link Collection.isGroup}
+   * @see {@link Collection.view}
    */
-  isGroup(): true
+  view(): Group<Element>
 
   /**
-   * @see {@link Clonable.clone}
+   * @see {@link Collection.clone}
    */
   clone(): Group<Element>
 }
@@ -24,13 +25,6 @@ export interface Group<Element> extends Collection<Element> {
  * 
  */
 export namespace Group {
-  /**
-   * 
-   */
-  export function is<Element>(collection: Collection<Element>): collection is Group<Element> {
-    return collection.isGroup()
-  }
-
   /**
    * 
    */
@@ -54,17 +48,17 @@ export namespace Group {
   }
 
   /**
-   * @see {@link EmptyGroup.INSTANCE}
+   * @see {@link EMPTY_GROUP_INSTANCE}
    */
-  export const EMPTY = EmptyGroup.INSTANCE
+  export const EMPTY = EMPTY_GROUP_INSTANCE
 
   /**
-   * @see {@link EmptyGroup.get}
+   * @see {@link getEmptyGroup}
    */
-  export const empty = EmptyGroup.get
+  export const empty = getEmptyGroup
 
   /**
-   * @see {@link GroupView.wrap}
+   * @see {@link createGroupView}
    */
-  export const view = GroupView.wrap
+  export const view = createGroupView
 }

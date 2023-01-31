@@ -16,19 +16,6 @@ export class BidirectionalCursorView<
   }
 
   /**
-   * 
-   */
-  public equals(other: unknown): boolean {
-    if (other === this) return true
-
-    if (isBidirectionalCursorView(other)) {
-      return other._cursor === this._cursor
-    }
-
-    return false
-  }
-
-  /**
    * @see {@link BidirectionalCursor.at}
    */
   public at(index: number): void {
@@ -56,14 +43,6 @@ export class BidirectionalCursorView<
     return this._cursor.previous()
   }
 }
-
-/**
- * 
- */
-export function isBidirectionalCursorView<Element>(candidate: unknown): candidate is BidirectionalCursorView<Element> {
-  return candidate != null && candidate.constructor === BidirectionalCursorView
-}
-
 /**
  * 
  */

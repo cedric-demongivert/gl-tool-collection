@@ -226,6 +226,20 @@ describe('EmptyRandomAccessCursor', function () {
             expect(cursor.equals("test")).toBeFalsy()
             expect(cursor.equals(new Date())).toBeFalsy()
         })
+
+        /**
+         * 
+         */
+        it('returns false if the given value was not created by the same constructor', function () {
+            class OtherEmptyCursor extends EmptyRandomAccessCursor<unknown> {}
+
+            const cursor = new EmptyRandomAccessCursor()
+            const otherCursor = new OtherEmptyCursor()
+
+            expect(cursor.equals(otherCursor)).toBeFalsy()
+            expect(cursor.equals(new EmptyRandomAccessCursor())).toBeTruthy()
+            expect(otherCursor.equals(new OtherEmptyCursor())).toBeTruthy()
+        })
     })
 })
 

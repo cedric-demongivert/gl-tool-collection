@@ -1,13 +1,13 @@
 import { Comparator, equals } from '@cedric-demongivert/gl-tool-utils'
 
-import { quicksort } from '../algorithm'
-import { IsCollection } from '../IsCollection'
-import { Buffer, UnsignedIntegerBuffer, IntegerBuffer } from '../native'
-
-import type { Pack } from './Pack'
-
+import { quicksort } from '../algorithm/quicksort'
+import { Buffer } from '../native/Buffer'
+import { UnsignedIntegerBuffer } from '../native/UnsignedIntegerBuffer'
+import { IntegerBuffer } from '../native/IntegerBuffer'
 import { Sequence } from '../sequence/Sequence'
 import { SequenceCursor } from '../sequence/SequenceCursor'
+
+import type { Pack } from './Pack'
 
 /**
  * A wrapper for handling javascript ArrayBuffer instances as gl-tool Packs.
@@ -24,11 +24,6 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   private _size: number
 
   /**
-   * 
-   */
-  private _view: Sequence<number>
-
-  /**
    * Wrap an existing buffer into a new pack instance.
    *
    * @param elements - The buffer to wrap; the resulting pack will have the capacity of the given buffer.
@@ -37,49 +32,6 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   public constructor(elements: Wrapped, size: number = 0) {
     this._elements = elements
     this._size = size
-    this._view = Sequence.view(this)
-  }
-
-  /**
-   * @see {@link Collection[IsCollection.SYMBOL]}
-   */
-  public [IsCollection.SYMBOL](): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isSequence}
-   */
-  public isSequence(): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isPack}
-   */
-  public isPack(): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isList}
-   */
-  public isList(): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isGroup}
-   */
-  public isGroup(): false {
-    return false
-  }
-
-  /**
-   * @see {@link Collection.isSet}
-   */
-  public isSet(): false {
-    return false
   }
 
   /**
@@ -97,14 +49,14 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see {@link Collection.size}
+   * @see {@link Pack.size}
    */
   public get size(): number {
     return this._size
   }
 
   /**
-   * @see {@link List.size}
+   * @see {@link Pack.size}
    */
   public set size(value: number) {
     if (value > this._elements.length) {
@@ -119,21 +71,21 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see {@link StaticCollection.capacity}
+   * @see {@link Pack.capacity}
    */
   public get capacity(): number {
     return this._elements.length
   }
 
   /**
-   * @see {@link List.defaultValue}
+   * @see {@link Pack.defaultValue}
    */
   public defaultValue(): 0 {
     return 0
   }
 
   /**
-   * @see {@link ReallocableCollection.reallocate}
+   * @see {@link Pack.reallocate}
    */
   public reallocate(capacity: number): void {
     const old: any = this._elements
@@ -148,21 +100,21 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see {@link ReallocableCollection.fit}
+   * @see {@link Pack.fit}
    */
   public fit(): void {
     this.reallocate(this._size)
   }
 
   /**
-   * @see {@link Sequence.get}
+   * @see {@link Pack.get}
    */
-  public get(index: number): number {
+  public get(index: number): number | undefined {
     return this._elements[index]
   }
 
   /**
-   * @see {@link List.fill}
+   * @see {@link Pack.fill}
    */
   public fill(element: number): void {
     for (let index = 0, size = this._size; index < size; ++index) {
@@ -171,23 +123,25 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see {@link Sequence.last}
+   * @see {@link Pack.last}
    */
-  public get last(): number {
-    return this._elements[Math.max(this._size - 1, 0)]
+  public get last(): number | undefined {
+    return this._size === 0 ? undefined : this._elements[Math.max(this._size - 1, 0)]
   }
 
   /**
-   * @see {@link Sequence.first}
+   * @see {@link Pack.first}
    */
-  public get first(): number {
-    return this._elements[0]
+  public get first(): number | undefined {
+    return this._size === 0 ? undefined : this._elements[0]
   }
 
   /**
-   * @see {@link List.pop}
+   * @see {@link Pack.pop}
    */
-  public pop(): number {
+  public pop(): number | undefined {
+    if (this._size < 1) return undefined
+
     const last: number = this._size - 1
     const value: number = this._elements[last]
     this.delete(last)
@@ -195,9 +149,11 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see {@link List.shift}
+   * @see {@link Pack.shift}
    */
-  public shift(): number {
+  public shift(): number | undefined {
+    if (this._size < 1) return undefined
+
     const value: number = this._elements[0]
     this.delete(0)
     return value
@@ -218,7 +174,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see {@link List.swap}
+   * @see {@link Pack.swap}
    */
   public swap(first: number, second: number): void {
     const tmp: number = this._elements[first]
@@ -227,7 +183,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see {@link List.set}
+   * @see {@link Pack.set}
    */
   public set(index: number, value: number): void {
     if (index >= this._size) this.size = index + 1
@@ -235,7 +191,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see {@link List.setMany}
+   * @see {@link Pack.setMany}
    */
   public setMany(from: number, count: number, value: number): void {
     const to: number = from + count
@@ -252,7 +208,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see {@link List.insert}
+   * @see {@link Pack.insert}
    */
   public insert(index: number, value: number): void {
     if (index >= this._size) {
@@ -269,7 +225,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see {@link List.push}
+   * @see {@link Pack.push}
    */
   public push(value: number): void {
     const index: number = this._size
@@ -279,7 +235,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see {@link List.unshift}
+   * @see {@link Pack.unshift}
    */
   public unshift(value: number): void {
     this.size += 1
@@ -292,7 +248,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see {@link List.delete}
+   * @see {@link Pack.delete}
    */
   public delete(index: number): void {
     for (let cursor = index, size = this._size - 1; cursor < size; ++cursor) {
@@ -303,7 +259,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see {@link List.deleteMany}
+   * @see {@link Pack.deleteMany}
    */
   public deleteMany(from: number, size: number): void {
     const toMove: number = this._size - from - size
@@ -317,14 +273,14 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see {@link List.empty}
+   * @see {@link Pack.empty}
    */
   public empty(index: number): void {
     this.set(index, 0)
   }
 
   /**
-   * @see {@link List.emptyMany}
+   * @see {@link Pack.emptyMany}
    */
   public emptyMany(from: number, size: number): void {
     for (let cursor = 0; cursor < size; ++cursor) {
@@ -333,7 +289,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see {@link List.warp}
+   * @see {@link Pack.warp}
    */
   public warp(index: number): void {
     this._elements[index] = this._elements[this._size - 1]
@@ -341,7 +297,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see {@link List.warpMany}
+   * @see {@link Pack.warpMany}
    */
   public warpMany(from: number, count: number): void {
     const size: number = this._size
@@ -360,14 +316,14 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see {@link Collection.has}
+   * @see {@link Pack.has}
    */
   public has(element: number): boolean {
     return this.indexOf(element) >= 0
   }
 
   /**
-   * @see {@link Sequence.indexOf}
+   * @see {@link Pack.indexOf}
    */
   public indexOf(element: number): number {
     for (let index = 0, length = this._size; index < length; ++index) {
@@ -380,14 +336,14 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see {@link Sequence.hasInSubsequence}
+   * @see {@link Pack.hasInSubsequence}
    */
   public hasInSubsequence(element: number, offset: number, size: number): boolean {
     return this.indexOfInSubsequence(element, offset, size) >= 0
   }
 
   /**
-   * @see {@link Sequence.indexOfInSubsequence}
+   * @see {@link Pack.indexOfInSubsequence}
    */
   public indexOfInSubsequence(element: number, offset: number, size: number): number {
     for (let index = offset, length = offset + size; index < length; ++index) {
@@ -400,7 +356,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see {@link List.copy}
+   * @see {@link Pack.copy}
    */
   public copy(toCopy: Sequence<number>): void {
     this.size = toCopy.size
@@ -408,12 +364,12 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
     const elements: Wrapped = this._elements
 
     for (let index = 0, length = toCopy.size; index < length; ++index) {
-      elements[index] = toCopy.get(index)
+      elements[index] = toCopy.get(index)!
     }
   }
 
   /**
-   * @see {@link List.subCopy}
+   * @see {@link Pack.subCopy}
    */
   public subCopy(toCopy: Sequence<number>, offset: number = 0, size: number = toCopy.size - offset): void {
     this.size = size
@@ -421,13 +377,13 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
     const elements: Wrapped = this._elements
 
     for (let index = 0; index < size; ++index) {
-      elements[index] = toCopy.get(offset + index)
+      elements[index] = toCopy.get(offset + index)!
     }
   }
 
 
   /**
-   * @see {@link Sequence.concat}
+   * @see {@link Pack.concat}
    */
   public concat(toConcat: Sequence<number>): void {
     const toConcatSize: number = toConcat.size
@@ -437,12 +393,12 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
     }
 
     for (let index = 0; index < toConcatSize; ++index) {
-      this.push(toConcat.get(index))
+      this.push(toConcat.get(index)!)
     }
   }
 
   /**
-   * @see {@link Sequence.concat}
+   * @see {@link Pack.concatArray}
    */
   public concatArray(toConcat: number[]): void {
     if (this.capacity < this.size + toConcat.length) {
@@ -462,7 +418,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see {@link Clonable.clone}
+   * @see {@link Pack.clone}
    */
   public clone(): BufferPack<Wrapped> {
     const result: BufferPack<Wrapped> = this.allocate(this._elements.length)
@@ -473,28 +429,28 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see {@link Clearable.clear}
+   * @see {@link Pack.clear}
    */
   public clear(): void {
     this._size = 0
   }
 
   /**
-   * @see {@link Collection.view}
+   * @see {@link Pack.view}
    */
   public view(): Sequence<number> {
-    return this._view
+    return Sequence.view(this)
   }
 
   /**
-   * @see {@link Collection.forward}
+   * @see {@link Pack.forward}
    */
   public forward(): SequenceCursor<number> {
     return new SequenceCursor(this, 0)
   }
 
   /**
-   * @see {@link Collection.values}
+   * @see {@link Pack.values}
    */
   public * values(): IterableIterator<number> {
     for (let index = 0; index < this._size; ++index) {
@@ -503,14 +459,14 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see {@link Collection[Symbol.iterator]}
+   * @see {@link Pack[Symbol.iterator]}
    */
   public [Symbol.iterator](): IterableIterator<number> {
     return this.values()
   }
 
   /**
-   * @see {@link Collection.equals}
+   * @see {@link Pack.equals}
    */
   public equals(other: any): boolean {
     if (other == null) return false
@@ -530,190 +486,195 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
   }
 
   /**
-   * @see {@link Object.toString}
+   * @see {@link Pack.toString}
    */
   public toString(): string {
     return this.constructor.name + ' (' + this._elements.constructor.name + ') ' + Sequence.stringify(this)
   }
 }
 
-export namespace BufferPack {
-  /**
-   * 
-   */
-  export function wrap<Wrapped extends Buffer>(toWrap: Wrapped, size: number = toWrap.length): BufferPack<Wrapped> {
-    return new BufferPack(toWrap, size)
-  }
+/**
+ * 
+ */
+export function createPackFromBuffer<Wrapped extends Buffer>(toWrap: Wrapped, size: number = toWrap.length): BufferPack<Wrapped> {
+  return new BufferPack(toWrap, size)
+}
 
-  /**
-   * Instantiate a new pack that wraps an unsigned byte buffer of the given capacity.
-   *
-   * @param capacity - Capacity of the buffer to allocate.
-   *
-   * @returns A new pack that wrap a unsigned byte buffer of the given capacity.
-   */
-  export function uint8(capacity: number): BufferPack<Uint8Array> {
-    return new BufferPack<Uint8Array>(new Uint8Array(capacity))
-  }
+/**
+ * Instantiate a new pack that wraps an unsigned byte buffer of the given capacity.
+ *
+ * @param capacity - Capacity of the buffer to allocate.
+ *
+ * @returns A new pack that wrap a unsigned byte buffer of the given capacity.
+ */
+export function createUint8Pack(capacity: number): BufferPack<Uint8Array> {
+  return new BufferPack<Uint8Array>(new Uint8Array(capacity))
+}
 
-  /**
-   * Instantiate a new pack that wraps an unsigned short buffer of the given capacity.
-   *
-   * @param capacity - Capacity of the buffer to allocate.
-   *
-   * @returns A new pack that wrap a unsigned short buffer of the given capacity.
-   */
-  export function uint16(capacity: number): BufferPack<Uint16Array> {
-    return new BufferPack<Uint16Array>(new Uint16Array(capacity))
-  }
+/**
+ * Instantiate a new pack that wraps an unsigned short buffer of the given capacity.
+ *
+ * @param capacity - Capacity of the buffer to allocate.
+ *
+ * @returns A new pack that wrap a unsigned short buffer of the given capacity.
+ */
+export function createUint16Pack(capacity: number): BufferPack<Uint16Array> {
+  return new BufferPack<Uint16Array>(new Uint16Array(capacity))
+}
 
-  /**
-   * Instantiate a new pack that wraps an unsigned integer buffer of the given capacity.
-   *
-   * @param capacity - Capacity of the buffer to allocate.
-   *
-   * @returns A new pack that wrap a unsigned integer buffer of the given capacity.
-   */
-  export function uint32(capacity: number): BufferPack<Uint32Array> {
-    return new BufferPack<Uint32Array>(new Uint32Array(capacity))
-  }
+/**
+ * Instantiate a new pack that wraps an unsigned integer buffer of the given capacity.
+ *
+ * @param capacity - Capacity of the buffer to allocate.
+ *
+ * @returns A new pack that wrap a unsigned integer buffer of the given capacity.
+ */
+export function createUint32Pack(capacity: number): BufferPack<Uint32Array> {
+  return new BufferPack<Uint32Array>(new Uint32Array(capacity))
+}
 
-  /**
-   * Instantiate a new pack that wraps a byte buffer of the given capacity.
-   *
-   * @param capacity - Capacity of the buffer to allocate.
-   *
-   * @returns A new pack that wrap a byte buffer of the given capacity.
-   */
-  export function int8(capacity: number): BufferPack<Int8Array> {
-    return new BufferPack<Int8Array>(new Int8Array(capacity))
-  }
+/**
+ * Instantiate a new pack that wraps a byte buffer of the given capacity.
+ *
+ * @param capacity - Capacity of the buffer to allocate.
+ *
+ * @returns A new pack that wrap a byte buffer of the given capacity.
+ */
+export function createInt8Pack(capacity: number): BufferPack<Int8Array> {
+  return new BufferPack<Int8Array>(new Int8Array(capacity))
+}
 
-  /**
-   * Instantiate a new pack that wraps a short buffer of the given capacity.
-   *
-   * @param capacity - Capacity of the buffer to allocate.
-   *
-   * @returns A new pack that wrap a short buffer of the given capacity.
-   */
-  export function int16(capacity: number): BufferPack<Int16Array> {
-    return new BufferPack<Int16Array>(new Int16Array(capacity))
-  }
+/**
+ * Instantiate a new pack that wraps a short buffer of the given capacity.
+ *
+ * @param capacity - Capacity of the buffer to allocate.
+ *
+ * @returns A new pack that wrap a short buffer of the given capacity.
+ */
+export function createInt16Pack(capacity: number): BufferPack<Int16Array> {
+  return new BufferPack<Int16Array>(new Int16Array(capacity))
+}
 
-  /**
-   * Instantiate a new pack that wraps an integer buffer of the given capacity.
-   *
-   * @param capacity - Capacity of the buffer to allocate.
-   *
-   * @returns A new pack that wrap a integer buffer of the given capacity.
-   */
-  export function int32(capacity: number): BufferPack<Int32Array> {
-    return new BufferPack<Int32Array>(new Int32Array(capacity))
-  }
+/**
+ * Instantiate a new pack that wraps an integer buffer of the given capacity.
+ *
+ * @param capacity - Capacity of the buffer to allocate.
+ *
+ * @returns A new pack that wrap a integer buffer of the given capacity.
+ */
+export function createInt32Pack(capacity: number): BufferPack<Int32Array> {
+  return new BufferPack<Int32Array>(new Int32Array(capacity))
+}
 
-  /**
-   * Instantiate a new pack that wraps a float buffer of the given capacity.
-   *
-   * @param capacity - Capacity of the buffer to allocate.
-   *
-   * @returns A new pack that wrap a float buffer of the given capacity.
-   */
-  export function float32(capacity: number): BufferPack<Float32Array> {
-    return new BufferPack<Float32Array>(new Float32Array(capacity))
-  }
+/**
+ * Instantiate a new pack that wraps a float buffer of the given capacity.
+ *
+ * @param capacity - Capacity of the buffer to allocate.
+ *
+ * @returns A new pack that wrap a float buffer of the given capacity.
+ */
+export function createFloat32Pack(capacity: number): BufferPack<Float32Array> {
+  return new BufferPack<Float32Array>(new Float32Array(capacity))
+}
 
-  /**
-   * Instantiate a new pack that wraps a double buffer of the given capacity.
-   *
-   * @param capacity - Capacity of the buffer to allocate.
-   *
-   * @returns A new pack that wrap a double buffer of the given capacity.
-   */
-  export function float64(capacity: number): BufferPack<Float64Array> {
-    return new BufferPack<Float64Array>(new Float64Array(capacity))
-  }
+/**
+ * Instantiate a new pack that wraps a double buffer of the given capacity.
+ *
+ * @param capacity - Capacity of the buffer to allocate.
+ *
+ * @returns A new pack that wrap a double buffer of the given capacity.
+ */
+export function createFloat64Pack(capacity: number): BufferPack<Float64Array> {
+  return new BufferPack<Float64Array>(new Float64Array(capacity))
+}
 
-  /**
-   * Instantiate a new pack that wraps an unsigned integer buffer that can store
-   * values in range [0, maximum] and that is of the given capacity.
-   *
-   * @param maximum - Maximum value that can be stored.
-   * @param capacity - Capacity of the buffer to allocate.
-   *
-   * @returns A new pack that wrap a unsigned integer buffer that can store values
-   *         in range [0, maximum] and that is of the given capacity.
-   */
-  export function unsignedUpTo(maximum: number, capacity: number): BufferPack<UnsignedIntegerBuffer> {
-    return new BufferPack(UnsignedIntegerBuffer.upTo(maximum, capacity))
-  }
+/**
+ * Instantiate a new pack that wraps an unsigned integer buffer that can store
+ * values in range [0, maximum] and that is of the given capacity.
+ *
+ * @param maximum - Maximum value that can be stored.
+ * @param capacity - Capacity of the buffer to allocate.
+ *
+ * @returns A new pack that wrap a unsigned integer buffer that can store values
+ *         in range [0, maximum] and that is of the given capacity.
+ */
+export function createUnsignedPackUpTo(maximum: number, capacity: number): BufferPack<UnsignedIntegerBuffer> {
+  return new BufferPack(UnsignedIntegerBuffer.upTo(maximum, capacity))
+}
 
-  /**
-   * Instantiate a new pack that wrap a signed integer buffer that can store
-   * values in range [-maximum, maximum] and that is of the given capacity.
-   *
-   * @param maximum - Maximum value that can be stored.
-   * @param capacity - Capacity of the buffer to allocate.
-   *
-   * @returns A new pack that wrap a signed integer buffer that can store values
-   *         in range [-maximum, maximum] and that is of the given capacity.
-   */
-  export function signedUpTo(maximum: number, capacity: number): BufferPack<IntegerBuffer> {
-    return new BufferPack(IntegerBuffer.upTo(maximum, capacity))
-  }
+/**
+ * Instantiate a new pack that wrap a signed integer buffer that can store
+ * values in range [-maximum, maximum] and that is of the given capacity.
+ *
+ * @param maximum - Maximum value that can be stored.
+ * @param capacity - Capacity of the buffer to allocate.
+ *
+ * @returns A new pack that wrap a signed integer buffer that can store values
+ *         in range [-maximum, maximum] and that is of the given capacity.
+ */
+export function createSignedPackUpTo(maximum: number, capacity: number): BufferPack<IntegerBuffer> {
+  return new BufferPack(IntegerBuffer.upTo(maximum, capacity))
+}
 
-  /**
-   * 
-   */
-  export function ofUint8(...values: number[]): BufferPack<Uint8Array> {
-    return new BufferPack<Uint8Array>(new Uint8Array(values), values.length)
-  }
+/**
+ * 
+ */
+export function asUint8Pack(...values: number[]): BufferPack<Uint8Array> {
+  return new BufferPack<Uint8Array>(new Uint8Array(values), values.length)
+}
 
-  /**
-   * 
-   */
-  export function ofUint16(...values: number[]): BufferPack<Uint16Array> {
-    return new BufferPack<Uint16Array>(new Uint16Array(values), values.length)
-  }
+/**
+ * 
+ */
+export function asUint16Pack(...values: number[]): BufferPack<Uint16Array> {
+  return new BufferPack<Uint16Array>(new Uint16Array(values), values.length)
+}
 
-  /**
-   * 
-   */
-  export function ofUint32(...values: number[]): BufferPack<Uint32Array> {
-    return new BufferPack<Uint32Array>(new Uint32Array(values), values.length)
-  }
+/**
+ * 
+ */
+export function asUint32Pack(...values: number[]): BufferPack<Uint32Array> {
+  return new BufferPack<Uint32Array>(new Uint32Array(values), values.length)
+}
 
-  /**
-   * 
-   */
-  export function ofInt8(...values: number[]): BufferPack<Int8Array> {
-    return new BufferPack<Int8Array>(new Int8Array(values), values.length)
-  }
+/**
+ * 
+ */
+export function asInt8Pack(...values: number[]): BufferPack<Int8Array> {
+  return new BufferPack<Int8Array>(new Int8Array(values), values.length)
+}
 
-  /**
-   * 
-   */
-  export function ofInt16(...values: number[]): BufferPack<Int16Array> {
-    return new BufferPack<Int16Array>(new Int16Array(values), values.length)
-  }
+/**
+ * 
+ */
+export function asInt16Pack(...values: number[]): BufferPack<Int16Array> {
+  return new BufferPack<Int16Array>(new Int16Array(values), values.length)
+}
 
-  /**
-   *
-   */
-  export function ofInt32(...values: number[]): BufferPack<Int32Array> {
-    return new BufferPack<Int32Array>(new Int32Array(values), values.length)
-  }
+/**
+ *
+ */
+export function asInt32Pack(...values: number[]): BufferPack<Int32Array> {
+  return new BufferPack<Int32Array>(new Int32Array(values), values.length)
+}
 
-  /**
-   * 
-   */
-  export function ofFloat32(...values: number[]): BufferPack<Float32Array> {
-    return new BufferPack<Float32Array>(new Float32Array(values), values.length)
-  }
+/**
+ * 
+ */
+export function asFloat32Pack(...values: number[]): BufferPack<Float32Array> {
+  return new BufferPack<Float32Array>(new Float32Array(values), values.length)
+}
 
-  /**
-   * 
-   */
-  export function ofFloat64(...values: number[]): BufferPack<Float64Array> {
-    return new BufferPack<Float64Array>(new Float64Array(values), values.length)
-  }
+/**
+ * 
+ */
+export function asFloat64Pack(...values: number[]): BufferPack<Float64Array> {
+  return new BufferPack<Float64Array>(new Float64Array(values), values.length)
+}
+
+/**
+ * 
+ */
+export function isBufferPack(candidate: unknown): candidate is BufferPack<never> {
+  return candidate != null && candidate.constructor === BufferPack
 }

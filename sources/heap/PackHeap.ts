@@ -4,10 +4,9 @@ import { ReallocableCollection } from '../ReallocableCollection'
 
 import { Sequence } from '../sequence/Sequence'
 import { Pack } from '../pack/Pack'
-import { Heap } from './Heap'
+import { ForwardCursor } from '../cursor/ForwardCursor'
 
-import { ForwardCursor } from '../cursor'
-import { IsCollection } from '../IsCollection'
+import { Heap } from './Heap'
 
 /**
  * An object that uses a Pack instance as a Heap.
@@ -25,11 +24,6 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   private _comparator: Comparator<Element, Element>
 
   /**
-   *  
-   */
-  private readonly _view: Sequence<Element>
-
-  /**
    * Instantiate a new empty heap.
    *
    * @param elements - Pack to use as a heap.
@@ -38,56 +32,15 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   public constructor(elements: Pack<Element>, comparator: Comparator<Element, Element>) {
     this._comparator = comparator
     this._elements = elements
-    this._view = Sequence.view(this)
-  }
-
-  /**
-   * @see {@link Collection[IsCollection.SYMBOL]}
-   */
-  public [IsCollection.SYMBOL](): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isSequence}
-   */
-  public isSequence(): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isPack}
-   */
-  public isPack(): false {
-    return false
-  }
-
-  /**
-   * @see {@link Collection.isList}
-   */
-  public isList(): false {
-    return false
-  }
-
-  /**
-   * @see {@link Collection.isGroup}
-   */
-  public isGroup(): false {
-    return false
-  }
-
-  /**
-   * @see {@link Collection.isSet}
-   */
-  public isSet(): false {
-    return false
   }
 
   /**
    * @see {@link Heap.next}
    */
-  public next(): Element {
-    const result: Element = this._elements.get(0)
+  public next(): Element | undefined {
+    if (this.size < 1) return undefined
+
+    const result: Element = this._elements.get(0)!
     this.delete(0)
     return result
   }
@@ -114,7 +67,7 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
     let cell: number = index
     let parent: number = (cell - 1) >> 1
 
-    while (cell > 0 && comparator(elements.get(cell), elements.get(parent)) > 0) {
+    while (cell > 0 && comparator(elements.get(cell)!, elements.get(parent)!) > 0) {
       elements.swap(cell, parent)
       cell = parent
       parent = (cell - 1) >> 1
@@ -139,15 +92,15 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
     let next: number = (cell << 1) + 1
 
     while (next < size) {
-      if (next + 1 < size && comparator(elements.get(cell), elements.get(next + 1)) < 0) {
-        if (comparator(elements.get(next), elements.get(next + 1)) < 0) {
+      if (next + 1 < size && comparator(elements.get(cell)!, elements.get(next + 1)!) < 0) {
+        if (comparator(elements.get(next)!, elements.get(next + 1)!) < 0) {
           elements.swap(cell, next + 1)
           cell = next + 1
         } else {
           elements.swap(cell, next)
           cell = next
         }
-      } else if (comparator(elements.get(cell), elements.get(next)) < 0) {
+      } else if (comparator(elements.get(cell)!, elements.get(next)!) < 0) {
         elements.swap(cell, next)
         cell = next
       } else {
@@ -178,13 +131,13 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
    */
   public compare(left: number, right: number): number {
     const elements: Pack<Element> = this._elements
-    return this._comparator(elements.get(left), elements.get(right))
+    return this._comparator(elements.get(left)!, elements.get(right)!)
   }
 
   /**
    * @see {@link Sequence.get}
    */
-  public get(index: number): Element {
+  public get(index: number): Element | undefined {
     return this._elements.get(index)
   }
 
@@ -219,14 +172,14 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   /**
    * @see {@link Sequence.first}
    */
-  public get first(): Element {
+  public get first(): Element | undefined {
     return this._elements.first
   }
 
   /**
    * @see {@link Sequence.last}
    */
-  public get last(): Element {
+  public get last(): Element | undefined {
     return this._elements.last
   }
 
@@ -290,7 +243,7 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
    * @see {@link Collection.view}
    */
   public view(): Sequence<Element> {
-    return this._view
+    return Sequence.view(this)
   }
 
   /**

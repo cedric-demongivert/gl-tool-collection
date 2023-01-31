@@ -1,16 +1,25 @@
 import { Comparator, equals, Factory } from '@cedric-demongivert/gl-tool-utils'
 
-import { Duplicator } from '../allocator'
-import { quicksort } from '../algorithm'
+import { Duplicator } from '../allocator/Duplicator'
+import { quicksort } from '../algorithm/quicksort'
 
-import type { Pack } from './Pack'
 
 import { Sequence } from '../sequence/Sequence'
 import { SequenceCursor } from '../sequence/SequenceCursor'
-import { ArrayPack } from './ArrayPack'
-import { BufferPack } from './BufferPack'
-import { InstancePack } from './InstancePack'
-import { IsCollection } from '../IsCollection'
+import { createArrayPack } from './ArrayPack'
+import { createUint8Pack } from './BufferPack'
+import { createUint16Pack } from './BufferPack'
+import { createUint32Pack } from './BufferPack'
+import { createInt8Pack } from './BufferPack'
+import { createInt16Pack } from './BufferPack'
+import { createInt32Pack } from './BufferPack'
+import { createFloat32Pack } from './BufferPack'
+import { createFloat64Pack } from './BufferPack'
+import { createUnsignedPackUpTo } from './BufferPack'
+import { createSignedPackUpTo } from './BufferPack'
+import { createInstancePack } from './InstancePack'
+
+import type { Pack } from './Pack'
 
 /**
  * 
@@ -63,48 +72,6 @@ export class CircularPack<Element> implements Pack<Element> {
     this._start = offset
     this._size = size
     this._view = Sequence.view(this)
-  }
-
-  /**
-   * @see {@link Collection[IsCollection.SYMBOL]}
-   */
-  public [IsCollection.SYMBOL](): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isSequence}
-   */
-  public isSequence(): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isPack}
-   */
-  public isPack(): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isList}
-   */
-  public isList(): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isGroup}
-   */
-  public isGroup(): false {
-    return false
-  }
-
-  /**
-   * @see {@link Collection.isSet}
-   */
-  public isSet(): false {
-    return false
   }
 
   /**
@@ -178,11 +145,11 @@ export class CircularPack<Element> implements Pack<Element> {
     const roots: number = gcd(elements.capacity, safeOffset)
 
     for (let start = 0; start < roots; ++start) {
-      let temporary: Element = elements.get(start)
+      let temporary: Element = elements.get(start)!
       let index = (start + safeOffset) % elements.capacity
 
       while (index != start) {
-        const swap: Element = elements.get(index)
+        const swap: Element = elements.get(index)!
         elements.set(index, temporary)
         temporary = swap
         index = (start + safeOffset) % elements.capacity
@@ -204,14 +171,14 @@ export class CircularPack<Element> implements Pack<Element> {
   /**
    * @see {@link Sequence.first}
    */
-  public get first(): Element {
+  public get first(): Element | undefined {
     return this._elements.get(this._start)
   }
 
   /**
    * @see {@link Sequence.last}
    */
-  public get last(): Element {
+  public get last(): Element | undefined {
     return this._elements.get((this._start + this._size) % this._elements.capacity)
   }
 
@@ -225,7 +192,7 @@ export class CircularPack<Element> implements Pack<Element> {
   /**
    * @see {@link Sequence.get}
    */
-  public get(index: number): Element {
+  public get(index: number): Element | undefined {
     return this._elements.get((this._start + index) % this._elements.capacity)
   }
 
@@ -241,10 +208,12 @@ export class CircularPack<Element> implements Pack<Element> {
   /**
    * @see {@link List.pop}
    */
-  public pop(): Element {
+  public pop(): Element | undefined {
+    if (this._size < 1) return undefined
+
     const last: number = this._size - 1
 
-    const result: Element = this.get(last)
+    const result: Element = this.get(last)!
     this.delete(last)
 
     return result
@@ -253,8 +222,10 @@ export class CircularPack<Element> implements Pack<Element> {
   /**
    * @see {@link List.shift}
    */
-  public shift(): Element {
-    const result: Element = this.get(0)
+  public shift(): Element | undefined {
+    if (this._size < 1) return undefined
+
+    const result: Element = this.get(0)!
     this.delete(0)
 
     return result
@@ -344,7 +315,7 @@ export class CircularPack<Element> implements Pack<Element> {
       }
 
       for (let cursor = this._size - 1; cursor > index; --cursor) {
-        this.set(cursor, this.get(cursor - 1))
+        this.set(cursor, this.get(cursor - 1)!)
       }
 
       this.set(index, value)
@@ -389,7 +360,7 @@ export class CircularPack<Element> implements Pack<Element> {
    */
   public delete(index: number): void {
     for (let toMove = index; toMove > 0; --toMove) {
-      this.set(toMove, this.get(toMove - 1))
+      this.set(toMove, this.get(toMove - 1)!)
     }
 
     this._start = (this._start + 1) % this._elements.capacity
@@ -403,7 +374,7 @@ export class CircularPack<Element> implements Pack<Element> {
     const end: number = from + size
 
     for (let cursor = 0; cursor < from; ++cursor) {
-      this.set(end - cursor - 1, this.get(from - cursor - 1))
+      this.set(end - cursor - 1, this.get(from - cursor - 1)!)
     }
 
     this._start = (this._start + size) % this._elements.capacity
@@ -414,7 +385,7 @@ export class CircularPack<Element> implements Pack<Element> {
    * @see {@link List.warp}
    */
   public warp(index: number): void {
-    this.set(index, this.get(0))
+    this.set(index, this.get(0)!)
 
     this._start = (this._start + 1) % this._elements.capacity
     this._size -= 1
@@ -427,7 +398,7 @@ export class CircularPack<Element> implements Pack<Element> {
     count = Math.min(this._size - start, count)
 
     for (let index = 0; index < count; ++index) {
-      this.set(index + start, this.get(index))
+      this.set(index + start, this.get(index)!)
     }
 
     this._start = (this._start + count) % this._elements.capacity
@@ -485,7 +456,7 @@ export class CircularPack<Element> implements Pack<Element> {
    */
   public concat(toConcat: Sequence<Element>): void {
     for (let index = 0, size = toConcat.size; index < size; ++index) {
-      this.push(toConcat.get(index))
+      this.push(toConcat.get(index)!)
     }
   }
 
@@ -509,7 +480,7 @@ export class CircularPack<Element> implements Pack<Element> {
     this.clear()
 
     for (let index = 0, length = toCopy.size; index < length; ++index) {
-      this.push(toCopy.get(index))
+      this.push(toCopy.get(index)!)
     }
   }
 
@@ -524,7 +495,7 @@ export class CircularPack<Element> implements Pack<Element> {
     this.clear()
 
     for (let index = 0; index < size; ++index) {
-      this.push(toCopy.get(offset + index))
+      this.push(toCopy.get(offset + index)!)
     }
   }
 
@@ -559,7 +530,7 @@ export class CircularPack<Element> implements Pack<Element> {
    */
   public * values(): IterableIterator<Element> {
     for (let index = 0, length = this._size; index < length; ++index) {
-      yield this._elements.get((this._start + index) % this._elements.capacity)
+      yield this._elements.get((this._start + index) % this._elements.capacity)!
     }
   }
 
@@ -599,156 +570,151 @@ export class CircularPack<Element> implements Pack<Element> {
 }
 
 /**
- * 
+ * Return a circular buffer that wraps the given pack.
+ *
+ * @param pack - An existing pack instance to wrap.
+ *
+ * @returns A circular buffer that wraps the given pack.
  */
-export namespace CircularPack {
-  /**
-   * Return a circular buffer that wraps the given pack.
-   *
-   * @param pack - An existing pack instance to wrap.
-   *
-   * @returns A circular buffer that wraps the given pack.
-   */
-  export function fromPack<Element>(pack: Pack<Element>): CircularPack<Element> {
-    return new CircularPack<Element>(pack)
-  }
+export function asCircularPack<Element>(pack: Pack<Element>): CircularPack<Element> {
+  return new CircularPack<Element>(pack)
+}
 
-  /**
-   * Instantiate a new circular buffer that wrap a pack of the given type of instance.
-   *
-   * @param capacity - Capacity of the pack to allocate.
-   *
-   * @returns A new buffer that wrap a pack of the given type of instance.
-   */
-  export function any<Element>(capacity: number, defaultValue: Factory<Element>): CircularPack<Element> {
-    return new CircularPack(ArrayPack.allocate(capacity, defaultValue))
-  }
+/**
+ * Instantiate a new circular buffer that wrap a pack of the given type of instance.
+ *
+ * @param capacity - Capacity of the pack to allocate.
+ *
+ * @returns A new buffer that wrap a pack of the given type of instance.
+ */
+export function createArrayCircularPack<Element>(capacity: number, defaultValue: Factory<Element>): CircularPack<Element> {
+  return new CircularPack(createArrayPack(capacity, defaultValue))
+}
 
-  /**
-   * Instantiate a new circular buffer that wrap a unsigned byte pack of the given capacity.
-   *
-   * @param capacity - Capacity of the pack to allocate.
-   *
-   * @returns A new circular buffer that wrap a unsigned byte pack of the given capacity.
-   */
-  export function uint8(capacity: number): CircularPack<number> {
-    return new CircularPack<number>(BufferPack.uint8(capacity))
-  }
+/**
+ * Instantiate a new circular buffer that wrap a unsigned byte pack of the given capacity.
+ *
+ * @param capacity - Capacity of the pack to allocate.
+ *
+ * @returns A new circular buffer that wrap a unsigned byte pack of the given capacity.
+ */
+export function createUint8CircularPack(capacity: number): CircularPack<number> {
+  return new CircularPack<number>(createUint8Pack(capacity))
+}
 
-  /**
-   * Instantiate a new circular buffer that wrap a unsigned short pack of the given capacity.
-   *
-   * @param capacity - Capacity of the pack to allocate.
-   *
-   * @returns A new circular buffer that wrap a unsigned short pack of the given capacity.
-   */
-  export function uint16(capacity: number): CircularPack<number> {
-    return new CircularPack<number>(BufferPack.uint16(capacity))
-  }
+/**
+ * Instantiate a new circular buffer that wrap a unsigned short pack of the given capacity.
+ *
+ * @param capacity - Capacity of the pack to allocate.
+ *
+ * @returns A new circular buffer that wrap a unsigned short pack of the given capacity.
+ */
+export function createUint16CircularPack(capacity: number): CircularPack<number> {
+  return new CircularPack<number>(createUint16Pack(capacity))
+}
 
-  /**
-   * Instantiate a new circular buffer that wrap a unsigned integer pack of the given capacity.
-   *
-   * @param capacity - Capacity of the pack to allocate.
-   *
-   * @returns A new circular buffer that wrap a unsigned integer pack of the given capacity.
-   */
-  export function uint32(capacity: number): CircularPack<number> {
-    return new CircularPack<number>(BufferPack.uint32(capacity))
-  }
+/**
+ * Instantiate a new circular buffer that wrap a unsigned integer pack of the given capacity.
+ *
+ * @param capacity - Capacity of the pack to allocate.
+ *
+ * @returns A new circular buffer that wrap a unsigned integer pack of the given capacity.
+ */
+export function createUint32CircularPack(capacity: number): CircularPack<number> {
+  return new CircularPack<number>(createUint32Pack(capacity))
+}
 
-  /**
-   * Instantiate a new circular buffer that wrap a byte pack of the given capacity.
-   *
-   * @param capacity - Capacity of the pack to allocate.
-   *
-   * @returns A new circular buffer that wrap a byte pack of the given capacity.
-   */
-  export function int8(capacity: number): CircularPack<number> {
-    return new CircularPack<number>(BufferPack.int8(capacity))
-  }
+/**
+ * Instantiate a new circular buffer that wrap a byte pack of the given capacity.
+ *
+ * @param capacity - Capacity of the pack to allocate.
+ *
+ * @returns A new circular buffer that wrap a byte pack of the given capacity.
+ */
+export function createInt8CircularPack(capacity: number): CircularPack<number> {
+  return new CircularPack<number>(createInt8Pack(capacity))
+}
 
-  /**
-   * Instantiate a new circular buffer that wrap a short pack of the given capacity.
-   *
-   * @param capacity - Capacity of the pack to allocate.
-   *
-   * @returns A new circular buffer that wrap a short pack of the given capacity.
-   */
-  export function int16(capacity: number): CircularPack<number> {
-    return new CircularPack<number>(BufferPack.int16(capacity))
-  }
+/**
+ * Instantiate a new circular buffer that wrap a short pack of the given capacity.
+ *
+ * @param capacity - Capacity of the pack to allocate.
+ *
+ * @returns A new circular buffer that wrap a short pack of the given capacity.
+ */
+export function createInt16CircularPack(capacity: number): CircularPack<number> {
+  return new CircularPack<number>(createInt16Pack(capacity))
+}
 
-  /**
-   * Instantiate a new circular buffer that wrap a integer pack of the given capacity.
-   *
-   * @param capacity - Capacity of the pack to allocate.
-   *
-   * @returns A new circular buffer that wrap a integer pack of the given capacity.
-   */
-  export function int32(capacity: number): CircularPack<number> {
-    return new CircularPack<number>(BufferPack.int32(capacity))
-  }
+/**
+ * Instantiate a new circular buffer that wrap a integer pack of the given capacity.
+ *
+ * @param capacity - Capacity of the pack to allocate.
+ *
+ * @returns A new circular buffer that wrap a integer pack of the given capacity.
+ */
+export function createInt32CircularPack(capacity: number): CircularPack<number> {
+  return new CircularPack<number>(createInt32Pack(capacity))
+}
 
-  /**
-   * Instantiate a new circular buffer that wrap a float pack of the given capacity.
-   *
-   * @param capacity - Capacity of the pack to allocate.
-   *
-   * @returns A new circular buffer that wrap a float pack of the given capacity.
-   */
-  export function float32(capacity: number): CircularPack<number> {
-    return new CircularPack<number>(BufferPack.float32(capacity))
-  }
+/**
+ * Instantiate a new circular buffer that wrap a float pack of the given capacity.
+ *
+ * @param capacity - Capacity of the pack to allocate.
+ *
+ * @returns A new circular buffer that wrap a float pack of the given capacity.
+ */
+export function createFloat32CircularPack(capacity: number): CircularPack<number> {
+  return new CircularPack<number>(createFloat32Pack(capacity))
+}
 
-  /**
-   * Instantiate a new circular buffer that wrap a double pack of the given capacity.
-   *
-   * @param capacity - Capacity of the pack to allocate.
-   *
-   * @returns A new circular buffer that wrap a double pack of the given capacity.
-   */
-  export function float64(capacity: number): CircularPack<number> {
-    return new CircularPack<number>(BufferPack.float64(capacity))
-  }
+/**
+ * Instantiate a new circular buffer that wrap a double pack of the given capacity.
+ *
+ * @param capacity - Capacity of the pack to allocate.
+ *
+ * @returns A new circular buffer that wrap a double pack of the given capacity.
+ */
+export function createFloat64CircularPack(capacity: number): CircularPack<number> {
+  return new CircularPack<number>(createFloat64Pack(capacity))
+}
 
-  /**
-   * Instantiate a new circular buffer that wrap an instance pack of the given capacity.
-   *
-   * @param allocator - Capacity of the pack to allocate.
-   * @param capacity - Capacity of the pack to allocate.
-   *
-   * @returns A new circular buffer that wrap an instance pack of the given capacity.
-   */
-  export function instance<Element>(allocator: Duplicator<Element>, capacity: number): CircularPack<Element> {
-    return new CircularPack<Element>(InstancePack.allocate(allocator, capacity))
-  }
+/**
+ * Instantiate a new circular buffer that wrap an instance pack of the given capacity.
+ *
+ * @param allocator - Capacity of the pack to allocate.
+ * @param capacity - Capacity of the pack to allocate.
+ *
+ * @returns A new circular buffer that wrap an instance pack of the given capacity.
+ */
+export function createInstanceCircularPack<Element>(allocator: Duplicator<Element>, capacity: number): CircularPack<Element> {
+  return new CircularPack<Element>(createInstancePack(allocator, capacity))
+}
 
-  /**
-   * Instantiate a new pack that wrap a unsigned integer pack that can store
-   * values in range [0, maximum] and that is of the given capacity.
-   *
-   * @param maximum - Maximum value that can be stored.
-   * @param capacity - Capacity of the pack to allocate.
-   *
-   * @returns A new pack that wrap a unsigned integer pack that can store values
-   *         in range [0, maximum] and that is of the given capacity.
-   */
-  export function unsignedUpTo(maximum: number, capacity: number): CircularPack<number> {
-    return new CircularPack<number>(BufferPack.unsignedUpTo(maximum, capacity))
-  }
+/**
+ * Instantiate a new pack that wrap a unsigned integer pack that can store
+ * values in range [0, maximum] and that is of the given capacity.
+ *
+ * @param maximum - Maximum value that can be stored.
+ * @param capacity - Capacity of the pack to allocate.
+ *
+ * @returns A new pack that wrap a unsigned integer pack that can store values
+ *         in range [0, maximum] and that is of the given capacity.
+ */
+export function createUnsignedCircularPackUpTo(maximum: number, capacity: number): CircularPack<number> {
+  return new CircularPack<number>(createUnsignedPackUpTo(maximum, capacity))
+}
 
-  /**
-   * Instantiate a new circular buffer that wrap a signed integer pack that can store
-   * values in range [-maximum, maximum] and that is of the given capacity.
-   *
-   * @param maximum - Maximum value that can be stored.
-   * @param capacity - Capacity of the pack to allocate.
-   *
-   * @returns A new circular buffer that wrap a signed integer pack that can store values
-   *         in range [-maximum, maximum] and that is of the given capacity.
-   */
-  export function signedUpTo(maximum: number, capacity: number): CircularPack<number> {
-    return new CircularPack<number>(BufferPack.signedUpTo(maximum, capacity))
-  }
+/**
+ * Instantiate a new circular buffer that wrap a signed integer pack that can store
+ * values in range [-maximum, maximum] and that is of the given capacity.
+ *
+ * @param maximum - Maximum value that can be stored.
+ * @param capacity - Capacity of the pack to allocate.
+ *
+ * @returns A new circular buffer that wrap a signed integer pack that can store values
+ *         in range [-maximum, maximum] and that is of the given capacity.
+ */
+export function createSignedCircularPackUpTo(maximum: number, capacity: number): CircularPack<number> {
+  return new CircularPack<number>(createSignedPackUpTo(maximum, capacity))
 }

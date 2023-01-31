@@ -1,6 +1,5 @@
 export * from './EmptySequence'
-export * from './List'
 export * from './Sequence'
 export * from './SequenceCursor'
 export * from './SequenceView'
-export * from './SubSequence'
+export * from './Subsequence'

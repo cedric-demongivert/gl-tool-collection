@@ -2,7 +2,6 @@ import { mock } from 'jest-mock-extended'
 
 import { CursorView } from '../../sources/cursor/CursorView'
 import { createCursorView } from '../../sources/cursor/CursorView'
-import { isCursorView } from '../../sources/cursor/CursorView'
 import { Cursor } from '../../sources/cursor/Cursor'
 
 /**
@@ -157,7 +156,7 @@ describe('CursorView', function () {
         /**
          * 
          */
-        it('returns false if the given value is not an instance of empty cursor', function () {
+        it('returns false if the given value is not a view over a cursor', function () {
             const cursor = mock<Cursor<number>>()
             const view = new CursorView(cursor)
 
@@ -175,23 +174,21 @@ describe('CursorView', function () {
 
             expect(view.equals(otherView)).toBeFalsy()
         })
-    })
-})
 
-/**
- * 
- */
-describe('isCursorView', function () {
-    /**
-     * 
-     */
-    it('returns true if the given value is a direct instance of CursorView', function () {
-        class Indirect extends CursorView<any> {}
-        
-        const cursor = mock<Cursor<number>>()
+        /**
+         * 
+         */
+        it('returns false if the given view was not created by the same constructor', function () {
+            class OtherCursorView extends CursorView<unknown> {}
 
-        expect(isCursorView(new CursorView(cursor))).toBeTruthy()
-        expect(isCursorView(new Indirect(cursor))).toBeFalsy()
+            const cursor = mock<Cursor<number>>()
+            const view = new CursorView(cursor)
+            const otherView = new OtherCursorView(cursor)
+
+            expect(view.equals(otherView)).toBeFalsy()
+            expect(view.equals(new CursorView(cursor))).toBeTruthy()
+            expect(otherView.equals(new OtherCursorView(cursor))).toBeTruthy()
+        })
     })
 })
 

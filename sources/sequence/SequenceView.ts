@@ -1,4 +1,3 @@
-import { ForwardCursor } from '../cursor/ForwardCursor'
 import { CollectionView } from '../CollectionView'
 
 import { Sequence } from './Sequence'
@@ -22,14 +21,14 @@ export class SequenceView<
   /**
    * @see {@link Sequence.first}
    */
-  public get first(): Element {
+  public get first(): Element | undefined {
     return this._collection.first
   }
 
   /**
    * @see {@link Sequence.last}
    */
-  public get last(): Element {
+  public get last(): Element | undefined {
     return this._collection.last
   }
 
@@ -60,33 +59,6 @@ export class SequenceView<
   public hasInSubsequence(element: Element, offset: number, size: number): boolean {
     return this._collection.hasInSubsequence(element, offset, size)
   }
-
-  /**
-   * @see {@link Sequence.equals}
-   */
-  public equals(other: any): boolean {
-    if (other === this) return true
-
-    if (isSequenceView(other)) {
-      return this._collection === other._collection
-    }
-
-    return false
-  }
-
-  /**
-   * @see {@link Sequence.toString}
-   */
-  public toString(): string {
-    return this.constructor.name + ' (' + this._collection.constructor.name + ') ' + Sequence.stringify(this)
-  }
-}
-
-/**
- * 
- */
-export function isSequenceView<Element>(candidate: unknown): candidate is SequenceView<Element> {
-  return candidate != null && candidate.constructor === SequenceView
 }
 
 /**

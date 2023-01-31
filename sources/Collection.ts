@@ -55,6 +55,11 @@ export interface Collection<Element> extends Iterable<Element>, Comparable, Clon
    * @returns A read-only instance of the collection. 
    */
   view(): Collection<Element>
+
+  /**
+   * @returns A string representation of the collection.
+   */
+  stringify(): string
 }
 
 /**

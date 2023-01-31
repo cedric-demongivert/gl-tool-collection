@@ -1,6 +1,7 @@
 import { ForwardCursor } from './cursor/ForwardCursor'
 
 import { Collection } from './Collection'
+import { areEquallyConstructed } from './areEquallyConstructed'
 
 /**
  * An empty collection, e.g., a collection of zero elements.
@@ -60,17 +61,23 @@ export class EmptyCollection<Element> implements Collection<Element> {
    */
   public equals(other: unknown): boolean {
     if (other === this) return true
-    return isEmptyCollecton(other)
+
+    return areEquallyConstructed(other, this)
+  }
+
+  /**
+   * 
+   */
+  public stringify(): string {
+    return EMPTY_COLLECTION_STRING
   }
 }
 
 /**
  * 
- * @returns 
  */
-export function isEmptyCollecton(candidate: unknown): candidate is EmptyCollection<unknown> {
-  return candidate != null && candidate.constructor === EmptyCollection
-}
+export const EMPTY_COLLECTION_STRING: string = '[]'
+
 
 /**
  * 

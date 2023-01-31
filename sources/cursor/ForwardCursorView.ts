@@ -23,19 +23,6 @@ export class ForwardCursorView<
   }
 
   /**
-   * @see {@link ForwardCursor.equals}
-   */
-  public equals(other: unknown): boolean {
-    if (other === this) return true
-
-    if (isForwardCursorView(other)) {
-      return other._cursor === this._cursor
-    }
-
-    return false
-  }
-
-  /**
    * @see {@link ForwardCursor.forward}
    */
   public forward(count: number): void {
@@ -62,13 +49,6 @@ export class ForwardCursorView<
   public next(): void {
     this._cursor.next()
   }
-}
-
-/**
- * 
- */
-export function isForwardCursorView<Element>(candidate: unknown): candidate is ForwardCursorView<Element, never> {
-  return candidate != null && candidate.constructor === ForwardCursorView
 }
 
 /**

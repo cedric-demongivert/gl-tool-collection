@@ -9,7 +9,7 @@ import { Sequence } from "../../sources/sequence/Sequence"
 /**
  * 
  */
-describe('SequenceView', function () {
+describe('sequence/SequenceView', function () {
     /**
      * 
      */
@@ -217,7 +217,7 @@ describe('SequenceView', function () {
 /**
  * 
  */
-describe('isSequenceView', function () {
+describe('sequence/isSequenceView', function () {
     /**
      * 
      */
@@ -233,7 +233,7 @@ describe('isSequenceView', function () {
 /**
  * 
  */
-describe('createSequenceView', function () {
+describe('sequence/createSequenceView', function () {
     /**
      * 
      */

@@ -1,11 +1,10 @@
 import { Comparator, equals, Factory } from '@cedric-demongivert/gl-tool-utils'
 
-import { quicksort } from '../algorithm'
-
-import type { Pack } from './Pack'
-
 import { Sequence } from '../sequence/Sequence'
 import { SequenceCursor } from '../sequence/SequenceCursor'
+import { quicksort } from '../algorithm/quicksort'
+
+import type { Pack } from './Pack'
 
 
 /**
@@ -115,7 +114,9 @@ export class ArrayPack<Element> implements Pack<Element> {
   /**
    * @see {@link List.pop}
    */
-  public pop(): Element {
+  public pop(): Element | undefined {
+    if (this._size < 1) return undefined
+
     this._size -= 1
     return this._elements[this._size]
   }
@@ -148,7 +149,9 @@ export class ArrayPack<Element> implements Pack<Element> {
   /**
    * @see {@link List.shift}
    */
-  public shift(): Element {
+  public shift(): Element | undefined {
+    if (this._size < 1) return undefined
+
     const value: Element = this._elements[0]
     this.delete(0)
     return value
@@ -588,7 +591,7 @@ export namespace createArrayPack {
  *
  * @returns The given array wrapped as a pack.
  */
-export function createArrayPackFromArray<Element>(elements: Element[], defaultValue: Factory<Element>, size: number = elements.length): ArrayPack<Element> {
+export function wrapAsArrayPack<Element>(elements: Element[], defaultValue: Factory<Element>, size: number = elements.length): ArrayPack<Element> {
   return new ArrayPack<Element>(elements, defaultValue, size)
 }
 
@@ -609,15 +612,6 @@ export function createArrayPackFromSequence<Element>(toCopy: Sequence<Element>, 
 /**
  * 
  */
-export function asArrayPack<Element>(defaultValue: Factory<Element>, ...elements: Element[]): ArrayPack<Element> {
-  const result: ArrayPack<Element> = createArrayPack(elements.length, defaultValue)
-  result.concatArray(elements)
-  return result
-}
-
-/**
- * 
- */
 export function createArrayPackFromIterator<Element>(defaultValue: Factory<Element>, elements: Iterator<Element>, capacity: number = 16): ArrayPack<Element> {
   const result: ArrayPack<Element> = createArrayPack(capacity, defaultValue)
 
@@ -628,5 +622,14 @@ export function createArrayPackFromIterator<Element>(defaultValue: Factory<Eleme
     iteratorResult = elements.next()
   }
 
+  return result
+}
+
+/**
+ * 
+ */
+export function createArrayPackFromValues<Element>(defaultValue: Factory<Element>, ...elements: Element[]): ArrayPack<Element> {
+  const result: ArrayPack<Element> = createArrayPack(elements.length, defaultValue)
+  result.concatArray(elements)
   return result
 }

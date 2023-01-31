@@ -1,6 +1,7 @@
 import { ForwardCursor } from './cursor/ForwardCursor'
 
 import { Collection } from './Collection'
+import { areEquallyConstructed } from './areEquallyConstructed'
 
 /**
  * A read-only view over another collection.
@@ -87,22 +88,29 @@ export class CollectionView<
   /**
    * @see {@link Comparable.equals}
    */
-  public equals(other: any): boolean {
+  public equals(other: unknown): boolean {
     if (other === this) return true
 
-    if (isCollectionView(other)) {
+    if (areEquallyConstructed(other, this)) {
       return other._collection === this._collection
     }
 
     return false
   }
-}
-
-/**
- * 
- */
-export function isCollectionView<Element>(candidate: unknown): candidate is CollectionView<Element, never> {
-  return candidate != null && candidate.constructor === CollectionView
+  
+  /**
+   * @see {@link Collection.stringify}
+   */
+  public stringify(): string {
+    return this._collection.stringify()
+  }
+  
+  /**
+   * @see {@link Object.toString}
+   */
+  public toString(): string {
+    return this.constructor.name + ' (' + this._collection.constructor.name + ') ' + this._collection.stringify()
+  }
 }
 
 /**

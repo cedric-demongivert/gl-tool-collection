@@ -1,13 +1,12 @@
-import { Comparator, equals, Factory } from '@cedric-demongivert/gl-tool-utils'
+import { Comparator, equals } from '@cedric-demongivert/gl-tool-utils'
 
-import { quicksort } from '../algorithm'
-import { Duplicator } from '../allocator'
-import { IsCollection } from '../IsCollection'
-
-import type { Pack } from './Pack'
-
+import { quicksort } from '../algorithm/quicksort'
+import { Duplicator } from '../allocator/Duplicator'
 import { Sequence } from '../sequence/Sequence'
 import { SequenceCursor } from '../sequence/SequenceCursor'
+
+
+import type { Pack } from './Pack'
 
 
 /**
@@ -29,11 +28,6 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
    * 
    */
-  private readonly _view: Sequence<Element>
-
-  /**
-   * 
-   */
   public readonly duplicator: Duplicator<Element>
 
   /**
@@ -41,7 +35,6 @@ export class InstancePack<Element> implements Pack<Element> {
    */
   public constructor(duplicator: Duplicator<Element>, capacity: number = 8) {
     this._size = 0
-    this._view = Sequence.view(this)
     this.duplicator = duplicator
 
     const elements: Element[] = []
@@ -51,48 +44,6 @@ export class InstancePack<Element> implements Pack<Element> {
     }
 
     this._elements = elements
-  }
-
-  /**
-   * @see {@link Collection[IsCollection.SYMBOL]}
-   */
-  public [IsCollection.SYMBOL](): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isSequence}
-   */
-  public isSequence(): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isPack}
-   */
-  public isPack(): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isList}
-   */
-  public isList(): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isGroup}
-   */
-  public isGroup(): false {
-    return false
-  }
-
-  /**
-   * @see {@link Collection.isSet}
-   */
-  public isSet(): false {
-    return false
   }
 
   /**
@@ -187,7 +138,9 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
    * @see {@link List.pop}
    */
-  public pop(): Element {
+  public pop(): Element | undefined {
+    if (this._size < 1) return undefined
+
     const elements: Element[] = this._elements
 
     this._size -= 1
@@ -228,7 +181,9 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
    * @see {@link List.shift}
    */
-  public shift(): Element {
+  public shift(): Element | undefined {
+    if (this._size < 1) return undefined
+
     const elements: Element[] = this._elements
 
     const value: Element = elements[0]
@@ -511,11 +466,11 @@ export class InstancePack<Element> implements Pack<Element> {
 
     for (let index = 0; index < toCopySizeOrCapacity; ++index) {
       duplicator.free(elements[index])
-      elements[index] = duplicator.copy(toCopy.get(index))
+      elements[index] = duplicator.copy(toCopy.get(index)!)
     }
 
     while (elements.length < toCopy.size) {
-      elements.push(duplicator.copy(toCopy.get(elements.length)))
+      elements.push(duplicator.copy(toCopy.get(elements.length)!))
     }
 
     this._size = toCopy.size
@@ -531,11 +486,11 @@ export class InstancePack<Element> implements Pack<Element> {
 
     for (let index = 0; index < toCopySizeOrCapacity; ++index) {
       duplicator.free(elements[index])
-      elements[index] = duplicator.copy(toCopy.get(offset + index))
+      elements[index] = duplicator.copy(toCopy.get(offset + index)!)
     }
 
     while (elements.length < toCopy.size) {
-      elements.push(duplicator.copy(toCopy.get(offset + elements.length)))
+      elements.push(duplicator.copy(toCopy.get(offset + elements.length)!))
     }
 
     this._size = size
@@ -553,11 +508,11 @@ export class InstancePack<Element> implements Pack<Element> {
 
     for (let index = offset; index < endOrCapacity; ++index) {
       duplicator.free(elements[index])
-      elements[index] = duplicator.copy(toConcat.get(index - offset))
+      elements[index] = duplicator.copy(toConcat.get(index - offset)!)
     }
 
     while (elements.length < end) {
-      elements.push(duplicator.copy(toConcat.get(elements.length - offset)))
+      elements.push(duplicator.copy(toConcat.get(elements.length - offset)!))
     }
 
     this._size = end
@@ -589,21 +544,21 @@ export class InstancePack<Element> implements Pack<Element> {
    * @see {@link Pack.allocate}
    */
   public allocate(capacity: number): InstancePack<Element> {
-    return InstancePack.allocate(this.duplicator, capacity)
+    return createInstancePack(this.duplicator, capacity)
   }
 
   /**
    * @see {@link Clonable.clone}
    */
   public clone(): InstancePack<Element> {
-    return InstancePack.copy(this, this.duplicator)
+    return createInstancePackFromSequence(this, this.duplicator)
   }
 
   /**
    * @see {@link Collection.view}
    */
   public view(): Sequence<Element> {
-    return this._view
+    return Sequence.view(this)
   }
 
   /**
@@ -667,62 +622,57 @@ export class InstancePack<Element> implements Pack<Element> {
 /**
  * 
  */
-export namespace InstancePack {
+export function createInstancePack<Element>(duplicator: Duplicator<Element>, capacity: number): InstancePack<Element> {
+  return new InstancePack(duplicator, capacity)
+}
+
+/**
+ * 
+ */
+export namespace createInstancePack {
   /**
-   * 
+   * @see {@link InstancePack.allocate}
    */
-  export function allocate<Element>(duplicator: Duplicator<Element>, capacity: number): InstancePack<Element> {
-    return new InstancePack(duplicator, capacity)
+  export function withDefaultCapacity(duplicator: Duplicator<Element>): InstancePack<Element> {
+    return createInstancePack(duplicator, 32)
+  }
+}
+
+/**
+ * Return a copy of another sequence.
+ *
+ * @param toCopy - A sequence to copy.
+ * @param [capacity=toCopy.size] - Capacity of the copy.
+ *
+ * @returns A copy of the given sequence with the requested capacity.
+ */
+export function createInstancePackFromSequence<Element>(toCopy: Sequence<Element>, duplicator: Duplicator<Element>, capacity: number = toCopy.size): InstancePack<Element> {
+  const result: InstancePack<Element> = createInstancePack(duplicator, capacity)
+  result.copy(toCopy)
+  return result
+}
+
+/**
+ * 
+ */
+export function asInstancePack<Element>(duplicator: Duplicator<Element>, ...elements: Element[]): InstancePack<Element> {
+  const result: InstancePack<Element> = createInstancePack(duplicator, elements.length)
+  result.concatArray(elements)
+  return result
+}
+
+/**
+ * 
+ */
+export function createInstancePackFromIterator<Element>(duplicator: Duplicator<Element>, elements: Iterator<Element>, capacity: number = 16): InstancePack<Element> {
+  const result: InstancePack<Element> = createInstancePack(duplicator, capacity)
+
+  let iteratorResult = elements.next()
+
+  while (!iteratorResult.done) {
+    result.push(iteratorResult.value)
+    iteratorResult = elements.next()
   }
 
-  /**
-   * 
-   */
-  export namespace allocate {
-    /**
-     * @see {@link InstancePack.allocate}
-     */
-    export function withDefaultCapacity(duplicator: Duplicator<Element>): InstancePack<Element> {
-      return allocate(duplicator, 32)
-    }
-  }
-
-  /**
-   * Return a copy of another sequence.
-   *
-   * @param toCopy - A sequence to copy.
-   * @param [capacity=toCopy.size] - Capacity of the copy.
-   *
-   * @returns A copy of the given sequence with the requested capacity.
-   */
-  export function copy<Element>(toCopy: Sequence<Element>, duplicator: Duplicator<Element>, capacity: number = toCopy.size): InstancePack<Element> {
-    const result: InstancePack<Element> = InstancePack.allocate(duplicator, capacity)
-    result.copy(toCopy)
-    return result
-  }
-
-  /**
-   * 
-   */
-  export function of<Element>(duplicator: Duplicator<Element>, ...elements: Element[]): InstancePack<Element> {
-    const result: InstancePack<Element> = InstancePack.allocate(duplicator, elements.length)
-    result.concatArray(elements)
-    return result
-  }
-
-  /**
-   * 
-   */
-  export function ofIterator<Element>(duplicator: Duplicator<Element>, elements: Iterator<Element>, capacity: number = 16): InstancePack<Element> {
-    const result: InstancePack<Element> = InstancePack.allocate(duplicator, capacity)
-
-    let iteratorResult = elements.next()
-
-    while (!iteratorResult.done) {
-      result.push(iteratorResult.value)
-      iteratorResult = elements.next()
-    }
-
-    return result
-  }
+  return result
 }

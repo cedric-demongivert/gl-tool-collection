@@ -52,7 +52,7 @@ export class FactoryAllocator<Product extends Clearable> implements Allocator<Pr
    */
   public allocate(): Product {
     if (this._instances.size > 0) {
-      return this._instances.pop()
+      return this._instances.pop()!
     } else {
       return this.factory()
     }

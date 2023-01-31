@@ -1,3 +1,5 @@
+import { areEquallyConstructed } from "../areEquallyConstructed"
+
 import { Cursor } from "./Cursor"
 
 /**
@@ -34,7 +36,7 @@ export class CursorView<
   public equals(other: unknown): boolean {
     if (other === this) return true
 
-    if (isCursorView(other)) {
+    if (areEquallyConstructed(other, this)) {
       return other._cursor === this._cursor
     }
 
@@ -68,13 +70,6 @@ export class CursorView<
   public hasCursor(cursor: unknown): boolean {
     return this._cursor === cursor
   }
-}
-
-/**
- * 
- */
-export function isCursorView<Element>(candidate: unknown): candidate is CursorView<Element, never> {
-  return candidate != null && candidate.constructor === CursorView
 }
 
 /**

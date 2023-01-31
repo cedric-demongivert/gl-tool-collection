@@ -1,13 +1,13 @@
 import { Comparator } from '@cedric-demongivert/gl-tool-utils'
-import { zeros } from '../../sources/generators/zeros'
-import { BufferPack } from '../../sources/sequence/BufferPack'
+import { zeroes } from '../../sources/generator/zeroes'
+import { BufferPack } from '../../sources/pack/BufferPack'
 
 import '../matchers'
 
 /**
  * 
  */
-describe('sequence/BufferPack', function () {
+describe('pack/BufferPack', function () {
   /**
    * 
    */
@@ -36,7 +36,7 @@ describe('sequence/BufferPack', function () {
      * 
      */
     it('reduces the capacity', function () {
-      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeros(12)]), 4)
+      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeroes(12)]), 4)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
       expect(pack.capacity).toBe(16)
@@ -78,7 +78,7 @@ describe('sequence/BufferPack', function () {
      * 
      */
     it('reduces the capacity to the size', function () {
-      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeros(12)]), 4)
+      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeroes(12)]), 4)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
       expect(pack.capacity).toBe(16)
@@ -99,20 +99,20 @@ describe('sequence/BufferPack', function () {
      */
     it('returns the number of elements', function () {
       expect(BufferPack.ofUint32(0, 1, 2, 3).size).toBe(4)
-      expect(BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeros(12)]), 4).size).toBe(4)
+      expect(BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeroes(12)]), 4).size).toBe(4)
     })
 
     /**
      * 
      */
     it('updates the number of elements', function () {
-      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeros(12)]), 4)
+      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeroes(12)]), 4)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
 
       pack.size = 8
 
-      expect(pack).toEqualSequence(0, 1, 2, 3, ...zeros(4))
+      expect(pack).toEqualSequence(0, 1, 2, 3, ...zeroes(4))
     })
 
     /**
@@ -137,7 +137,7 @@ describe('sequence/BufferPack', function () {
      * 
      */
     it('does not updates the capacity', function () {
-      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeros(12)]), 4)
+      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeroes(12)]), 4)
 
       expect(pack.capacity).toBe(16)
 
@@ -188,7 +188,7 @@ describe('sequence/BufferPack', function () {
      * 
      */
     it('does not updates the capacity', function () {
-      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeros(12)]), 4)
+      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeroes(12)]), 4)
 
       expect(pack.capacity).toBe(16)
 
@@ -239,7 +239,7 @@ describe('sequence/BufferPack', function () {
      * 
      */
     it('does not update the capacity', function () {
-      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeros(12)]), 4)
+      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeroes(12)]), 4)
 
       expect(pack.capacity).toBe(16)
 
@@ -450,7 +450,7 @@ describe('sequence/BufferPack', function () {
      * 
      */
     it('inserts an element', function () {
-      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeros(4)]), 4)
+      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeroes(4)]), 4)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
 
@@ -463,7 +463,7 @@ describe('sequence/BufferPack', function () {
      * 
      */
     it('defines an element', function () {
-      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeros(4)]), 4)
+      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeroes(4)]), 4)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
 
@@ -476,7 +476,7 @@ describe('sequence/BufferPack', function () {
      * 
      */
     it('does not update the capacity when the insertion does not overflow', function () {
-      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeros(4)]), 4)
+      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeroes(4)]), 4)
 
       expect(pack.capacity).toBe(8)
 
@@ -507,7 +507,7 @@ describe('sequence/BufferPack', function () {
      * 
      */
     it('add an element at the end', function () {
-      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeros(4)]), 4)
+      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeroes(4)]), 4)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
 
@@ -520,7 +520,7 @@ describe('sequence/BufferPack', function () {
      * 
      */
     it('does not update the capacity if the insertion does not overflow', function () {
-      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeros(4)]), 4)
+      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeroes(4)]), 4)
 
       expect(pack.capacity).toBe(8)
 
@@ -551,7 +551,7 @@ describe('sequence/BufferPack', function () {
      * 
      */
     it('add an element at the start', function () {
-      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeros(4)]), 4)
+      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeroes(4)]), 4)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
 
@@ -564,7 +564,7 @@ describe('sequence/BufferPack', function () {
      * 
      */
     it('does not update the capacity if the insertion does not overflow', function () {
-      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeros(4)]), 4)
+      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeroes(4)]), 4)
 
       expect(pack.capacity).toBe(8)
 
@@ -750,7 +750,7 @@ describe('sequence/BufferPack', function () {
      * 
      */
     it('push a sequence', function () {
-      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeros(12)]), 4)
+      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeroes(12)]), 4)
       const rest: BufferPack<Uint32Array> = BufferPack.ofUint32(4, 5, 6, 7)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
@@ -766,7 +766,7 @@ describe('sequence/BufferPack', function () {
      * 
      */
     it('does not update the capacity when the insertion does not overflow', function () {
-      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeros(12)]), 4)
+      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeroes(12)]), 4)
       const rest: BufferPack<Uint32Array> = BufferPack.ofUint32(4, 5, 6, 7)
 
       expect(pack.capacity).toBe(16)
@@ -803,7 +803,7 @@ describe('sequence/BufferPack', function () {
      * 
      */
     it('push an array', function () {
-      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeros(12)]), 4)
+      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeroes(12)]), 4)
 
       expect(pack).toEqualSequence(0, 1, 2, 3)
 
@@ -816,7 +816,7 @@ describe('sequence/BufferPack', function () {
      * 
      */
     it('does not update the capacity when the insertion does not overflow', function () {
-      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeros(12)]), 4)
+      const pack: BufferPack<Uint32Array> = BufferPack.wrap(new Uint32Array([0, 1, 2, 3, ...zeroes(12)]), 4)
 
       expect(pack.capacity).toBe(16)
 
