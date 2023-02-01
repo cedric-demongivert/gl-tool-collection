@@ -1,6 +1,6 @@
 export { BitSet } from './BitSet'
 export { IdentifierSet } from './IdentifierSet'
-export { NativeSet } from './NativeSet'
+export { NativeSet } from '../native/NativeSet'
 export { OrderedSet } from './OrderedSet'
 export { PackSet } from './PackSet'
 export { PackSparseDenseSet } from './PackSparseDenseSet'

@@ -3,7 +3,7 @@ import { zeroes } from '../../sources/generator/zeroes'
 /**
  * 
  */
-describe('zeroes', function () {
+describe('generator/zeroes', function () {
     /**
      * 
      */

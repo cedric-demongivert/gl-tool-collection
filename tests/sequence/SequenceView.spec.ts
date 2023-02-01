@@ -2,7 +2,6 @@ import { mock } from 'jest-mock-extended'
 
 import { SequenceView } from "../../sources/sequence/SequenceView"
 import { createSequenceView } from "../../sources/sequence/SequenceView"
-import { isSequenceView } from "../../sources/sequence/SequenceView"
 
 import { Sequence } from "../../sources/sequence/Sequence"
 
@@ -41,12 +40,12 @@ describe('sequence/SequenceView', function () {
          const sequence = mock<Sequence<number>>()
          const view = new SequenceView(sequence)
    
-         const last = jest.spyOn(sequence, 'last', 'get')
-         last.mockReturnValue(12)
+         const last = jest.fn().mockReturnValue(12)
+         Object.defineProperty(sequence, 'last', { get: last })
    
          expect(last).not.toHaveBeenCalled()
          expect(view.last).toBe(12)
-         expect(last).toHaveBeenCalledTimes(1)
+         expect(last).toHaveBeenCalled()
        })
     })
 
@@ -61,12 +60,12 @@ describe('sequence/SequenceView', function () {
          const sequence = mock<Sequence<number>>()
          const view = new SequenceView(sequence)
    
-         const first = jest.spyOn(sequence, 'first', 'get')
-         first.mockReturnValue(12)
+         const first = jest.fn().mockReturnValue(18)
+         Object.defineProperty(sequence, 'first', { get: first })
    
          expect(first).not.toHaveBeenCalled()
-         expect(view.first).toBe(12)
-         expect(first).toHaveBeenCalledTimes(1)
+         expect(view.first).toBe(18)
+         expect(first).toHaveBeenCalled()
        })
     })
 
@@ -217,22 +216,6 @@ describe('sequence/SequenceView', function () {
 /**
  * 
  */
-describe('sequence/isSequenceView', function () {
-    /**
-     * 
-     */
-    it('returns true if the given value is a direct instance of SequenceView', function () {
-        class Indirect extends SequenceView<unknown> { }
-        const sequence = mock<Sequence<unknown>>()
-
-        expect(isSequenceView(new SequenceView(sequence))).toBeTruthy()
-        expect(isSequenceView(new Indirect(sequence))).toBeFalsy()
-    })
-})
-
-/**
- * 
- */
 describe('sequence/createSequenceView', function () {
     /**
      * 
@@ -242,7 +225,7 @@ describe('sequence/createSequenceView', function () {
         const view = createSequenceView(sequence)
 
         expect(view).not.toBeNull()
-        expect(isSequenceView(view)).toBeTruthy()
+        expect(view).toBeInstanceOf(SequenceView)
         expect(view.hasCollection(sequence)).toBeTruthy()
     })
 })

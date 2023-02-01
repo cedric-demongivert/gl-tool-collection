@@ -1,4 +1,7 @@
 import { areEquallyConstructed } from "../areEquallyConstructed"
+import { BidirectionalCursor } from "./BidirectionalCursor"
+import { Cursor } from "./Cursor"
+import { ForwardCursor } from "./ForwardCursor"
 import { RandomAccessCursor } from "./RandomAccessCursor"
 
 /**
@@ -102,4 +105,40 @@ export const EMPTY_RANDOM_ACCESS_CURSOR_INSTANCE: EmptyRandomAccessCursor<any> =
  */
 export function getEmptyRandomAccessCursor<Element>(): EmptyRandomAccessCursor<Element> {
   return EMPTY_RANDOM_ACCESS_CURSOR_INSTANCE
+}
+
+/**
+ * 
+ */
+export const EMPTY_BIDIRECTIONAL_CURSOR: BidirectionalCursor<any> = EMPTY_RANDOM_ACCESS_CURSOR_INSTANCE
+
+/**
+ * 
+ */
+export function getEmptyBidirectionalCursor<Element>(): BidirectionalCursor<Element> {
+  return EMPTY_BIDIRECTIONAL_CURSOR
+}
+
+/**
+ * 
+ */
+export const EMPTY_FORWARD_CURSOR_INSTANCE: ForwardCursor<any> = EMPTY_RANDOM_ACCESS_CURSOR_INSTANCE
+
+/**
+ * 
+ */
+export function getEmptyForwardCursor<Element>(): ForwardCursor<Element> {
+  return EMPTY_FORWARD_CURSOR_INSTANCE
+}
+
+/**
+ * 
+ */
+export const EMPTY_CURSOR_INSTANCE: Cursor<any> = EMPTY_RANDOM_ACCESS_CURSOR_INSTANCE
+
+/**
+ * 
+ */
+export function getEmptyCursor<Element>(): Cursor<Element> {
+  return EMPTY_CURSOR_INSTANCE
 }

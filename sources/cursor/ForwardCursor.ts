@@ -1,6 +1,7 @@
 import { Cursor } from './Cursor'
 
-import { EMPTY_RANDOM_ACCESS_CURSOR_INSTANCE } from './EmptyRandomAccessCursor'
+import { EMPTY_FORWARD_CURSOR_INSTANCE } from './EmptyRandomAccessCursor'
+import { getEmptyForwardCursor } from './EmptyRandomAccessCursor'
 import { createForwardCursorView } from './ForwardCursorView'
 
 /**
@@ -44,11 +45,6 @@ export interface ForwardCursor<Element> extends Cursor<Element> {
    * Moves this cursor to the next available element or to the end of its underlying sequence.
    */
   next(): void
-
-  /**
-   * @see {@link Cursor.view}
-   */
-  view(): ForwardCursor<Element>
 }
 
 /**
@@ -56,16 +52,14 @@ export interface ForwardCursor<Element> extends Cursor<Element> {
  */
 export namespace ForwardCursor {
   /**
-   * 
+   * @see {@link EMPTY_FORWARD_CURSOR_INSTANCE}
    */
-  export const EMPTY: ForwardCursor<any> = EMPTY_RANDOM_ACCESS_CURSOR_INSTANCE
+  export const EMPTY: ForwardCursor<any> = EMPTY_FORWARD_CURSOR_INSTANCE
 
   /**
-   * 
+   * @see {@link getEmptyForwardCursor}
    */
-  export function empty<T>(): ForwardCursor<T> {
-    return EMPTY
-  }
+  export const empty = getEmptyForwardCursor
 
   /**
    * @see {@link createForwardCursorView}

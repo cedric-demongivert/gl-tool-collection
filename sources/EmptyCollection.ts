@@ -76,7 +76,7 @@ export class EmptyCollection<Element> implements Collection<Element> {
 /**
  * 
  */
-export const EMPTY_COLLECTION_STRING: string = '[]'
+export const EMPTY_COLLECTION_STRING: string = '∅'
 
 
 /**

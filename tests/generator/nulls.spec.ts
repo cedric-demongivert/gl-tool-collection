@@ -3,7 +3,7 @@ import { nulls } from '../../sources/generator/nulls'
 /**
  * 
  */
-describe('nulls', function () {
+describe('generator/nulls', function () {
     /**
      * 
      */

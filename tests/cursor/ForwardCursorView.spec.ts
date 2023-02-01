@@ -62,6 +62,27 @@ describe('ForwardCursorView', function () {
         })
     })
 
+    
+    /**
+     * 
+     */
+    describe('#index', function () {
+        /**
+         * 
+         */
+        it('delegates the call to the underlying cursor', function () {
+            const cursor = mock<ForwardCursor<number>>()
+            const view: ForwardCursorView<number> = new ForwardCursorView(cursor)
+
+            const cursorIndex = jest.fn().mockReturnValue(12)
+            Object.defineProperty(cursor, 'index', { get: cursorIndex })
+
+            expect(cursorIndex).not.toHaveBeenCalled()
+            expect(view.index).toBe(12)
+            expect(cursorIndex).toHaveBeenCalled()
+        })
+    })
+
     /**
      * 
      */

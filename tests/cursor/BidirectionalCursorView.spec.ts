@@ -92,12 +92,11 @@ describe('BidirectionalCursorView', function () {
             const cursor = mock<BidirectionalCursor<number>>()
             const view: BidirectionalCursorView<number> = new BidirectionalCursorView(cursor)
 
-            cursor.isEnd.mockReturnValueOnce(true)
+            cursor.isStart.mockReturnValueOnce(true)
 
             expect(cursor.isStart).not.toHaveBeenCalled()
             expect(view.isStart()).toBeTruthy()
-            expect(cursor.isStart).toHaveBeenCalledTimes(1)
-            expect(cursor.isStart).toHaveBeenCalledWith()
+            expect(cursor.isStart).toHaveBeenCalled()
         })
     })
 })

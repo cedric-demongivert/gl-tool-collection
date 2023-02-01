@@ -3,7 +3,7 @@ import { range } from '../../sources/generator/range'
 /**
  * 
  */
-describe('range', function () {
+describe('generator/range', function () {
     /**
      * 
      */
@@ -29,5 +29,18 @@ describe('range', function () {
         expect([...range(5, 1, 2)]).toEqual([2, 3, 4])
         expect([...range(2, 1, 1)]).toEqual([1])
         expect([...range(0, 1, 2)]).toEqual([])
+    })
+    
+    /**
+     * 
+     */
+    it('iterates indefinitely by default', function () {
+        let iterator = range()
+
+        for (let index = 0; index < 100; ++index) {
+            const result = iterator.next()
+            expect(result.value).toBe(index)
+            expect(result.done).toBeFalsy()
+        }
     })
 })

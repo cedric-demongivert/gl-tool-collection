@@ -117,6 +117,13 @@ export class Subsequence<Output> implements Sequence<Output> {
   }
 
   /**
+   * @see {@link Sequence.stringify}
+   */
+  public stringify(): string {
+    return Sequence.stringify(this)
+  }
+
+  /**
    * @see {@link Collection[Symbol.iterator]}
    */
   public [Symbol.iterator](): IterableIterator<Output> {

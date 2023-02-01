@@ -1,6 +1,7 @@
 import { ForwardCursor } from './ForwardCursor'
 import { createBidirectionalCursorView } from './BidirectionalCursorView'
-import { EMPTY_RANDOM_ACCESS_CURSOR_INSTANCE } from './EmptyRandomAccessCursor'
+import { EMPTY_BIDIRECTIONAL_CURSOR } from './EmptyRandomAccessCursor'
+import { getEmptyBidirectionalCursor } from './EmptyRandomAccessCursor'
 
 /**
 * A cursor over a sequence of values that can move from an element to its consecutive or preceding one.
@@ -42,11 +43,6 @@ export interface BidirectionalCursor<Element> extends ForwardCursor<Element> {
    * @returns This cursor instance for chaining purposes.
    */
   previous(): void
-
-  /**
-   * @see {@link ForwardCursor.view}
-   */
-  view(): BidirectionalCursor<Element>
 }
 
 /**
@@ -54,16 +50,14 @@ export interface BidirectionalCursor<Element> extends ForwardCursor<Element> {
  */
 export namespace BidirectionalCursor {
   /**
-   * 
+   * @see {@link EMPTY_BIDIRECTIONAL_CURSOR}
    */
-  export const EMPTY: BidirectionalCursor<any> = EMPTY_RANDOM_ACCESS_CURSOR_INSTANCE
+  export const EMPTY: BidirectionalCursor<any> = EMPTY_BIDIRECTIONAL_CURSOR
 
   /**
-   * 
+   * @see {@link getEmptyBidirectionalCursor}
    */
-  export function empty<T>(): BidirectionalCursor<T> {
-    return EMPTY
-  }
+  export const empty = getEmptyBidirectionalCursor
 
   /**
    * @see {@link createBidirectionalCursorView}

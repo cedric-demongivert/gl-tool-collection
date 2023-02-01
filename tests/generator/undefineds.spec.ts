@@ -3,7 +3,7 @@ import { undefineds } from '../../sources/generator/undefineds'
 /**
  * 
  */
-describe('undefineds', function () {
+describe('generator/undefineds', function () {
     /**
      * 
      */

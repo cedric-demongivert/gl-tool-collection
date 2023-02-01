@@ -1,6 +1,5 @@
 import { Sequence } from '../sequence/Sequence'
-import { ForwardCursor } from '../cursor'
-import { IsCollection } from '../IsCollection'
+import { ForwardCursor } from '../cursor/ForwardCursor'
 import { SequenceCursor } from '../sequence/SequenceCursor'
 
 /**
@@ -26,48 +25,6 @@ export class ArrayView<Element> implements Sequence<Element> {
    */
   public constructor(array: Array<Element>) {
     this._array = array
-  }
-
-  /**
-   * @see {@link Collection[IsCollection.SYMBOL]}
-   */
-  public [IsCollection.SYMBOL](): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isSequence}
-   */
-  public isSequence(): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isPack}
-   */
-  public isPack(): false {
-    return false
-  }
-
-  /**
-   * @see {@link Collection.isList}
-   */
-  public isList(): false {
-    return false
-  }
-
-  /**
-   * @see {@link Collection.isGroup}
-   */
-  public isGroup(): false {
-    return false
-  }
-
-  /**
-   * @see {@link Collection.isSet}
-   */
-  public isSet(): false {
-    return false
   }
 
   /**

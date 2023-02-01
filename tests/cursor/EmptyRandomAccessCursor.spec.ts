@@ -1,6 +1,12 @@
 import { EmptyRandomAccessCursor } from '../../sources/cursor/EmptyRandomAccessCursor'
 import { getEmptyRandomAccessCursor } from '../../sources/cursor/EmptyRandomAccessCursor'
 import { EMPTY_RANDOM_ACCESS_CURSOR_INSTANCE } from '../../sources/cursor/EmptyRandomAccessCursor'
+import { getEmptyCursor } from '../../sources/cursor/EmptyRandomAccessCursor'
+import { EMPTY_CURSOR_INSTANCE } from '../../sources/cursor/EmptyRandomAccessCursor'
+import { getEmptyForwardCursor } from '../../sources/cursor/EmptyRandomAccessCursor'
+import { EMPTY_FORWARD_CURSOR_INSTANCE } from '../../sources/cursor/EmptyRandomAccessCursor'
+import { getEmptyBidirectionalCursor } from '../../sources/cursor/EmptyRandomAccessCursor'
+import { EMPTY_BIDIRECTIONAL_CURSOR } from '../../sources/cursor/EmptyRandomAccessCursor'
 
 /**
  * 
@@ -252,5 +258,41 @@ describe('getEmptyRandomAccessCursor', function () {
      */
     it('returns the singleton instance', function () {
         expect(getEmptyRandomAccessCursor()).toBe(EMPTY_RANDOM_ACCESS_CURSOR_INSTANCE)
+    })
+})
+
+/**
+ * 
+ */
+describe('getEmptyCursor', function () {
+    /**
+     * 
+     */
+    it('returns the singleton instance', function () {
+        expect(getEmptyCursor()).toBe(EMPTY_CURSOR_INSTANCE)
+    })
+})
+
+/**
+ * 
+ */
+describe('getEmptyForwardCursor', function () {
+    /**
+     * 
+     */
+    it('returns the singleton instance', function () {
+        expect(getEmptyForwardCursor()).toBe(EMPTY_FORWARD_CURSOR_INSTANCE)
+    })
+})
+
+/**
+ * 
+ */
+describe('getEmptyBidirectionalCursor', function () {
+    /**
+     * 
+     */
+    it('returns the singleton instance', function () {
+        expect(getEmptyBidirectionalCursor()).toBe(EMPTY_BIDIRECTIONAL_CURSOR)
     })
 })

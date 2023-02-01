@@ -1,7 +1,6 @@
-import { Set as GLToolSet } from './Set'
-import { Group } from './Group'
-import { ForwardCursor, NativeCursor } from '../cursor'
-import { IsCollection } from '../IsCollection'
+import { Set as GLToolSet } from '../set/Set'
+import { Group } from '../group/Group'
+import { ForwardCursor, NativeCursor } from '../cursor/Cursor'
 
 /**
  * 

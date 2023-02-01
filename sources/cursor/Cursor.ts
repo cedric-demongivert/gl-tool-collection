@@ -1,6 +1,7 @@
 import { Clonable, Comparable } from '@cedric-demongivert/gl-tool-utils'
 
-import { EMPTY_RANDOM_ACCESS_CURSOR_INSTANCE } from './EmptyRandomAccessCursor'
+import { EMPTY_CURSOR_INSTANCE } from './EmptyRandomAccessCursor'
+import { getEmptyCursor } from './EmptyRandomAccessCursor'
 import { createCursorView } from './CursorView'
 import { NativeCursor } from '../native/NativeCursor'
 
@@ -35,16 +36,14 @@ export interface Cursor<Element> extends Comparable, Clonable {
  */
 export namespace Cursor {
   /**
-   * 
+   * @see {@link EMPTY_CURSOR_INSTANCE}
    */
-  export const EMPTY: Cursor<any> = EMPTY_RANDOM_ACCESS_CURSOR_INSTANCE
+  export const EMPTY: Cursor<any> = EMPTY_CURSOR_INSTANCE
 
   /**
-   * 
+   * @see {@link getEmptyCursor}
    */
-  export function empty<T>(): Cursor<T> {
-    return EMPTY
-  }
+  export const empty = getEmptyCursor
 
   /**
    * @see {@link createCursorView}

@@ -555,6 +555,13 @@ export class InstancePack<Element> implements Pack<Element> {
   }
 
   /**
+   * @see {@link Pack.stringify}
+   */
+  public stringify(): string {
+    return Sequence.stringify(this)
+  }
+
+  /**
    * @see {@link Collection.view}
    */
   public view(): Sequence<Element> {

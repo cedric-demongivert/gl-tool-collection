@@ -1,4 +1,5 @@
 import { Comparator } from '@cedric-demongivert/gl-tool-utils'
+
 import { List } from '../list/List'
 
 /**

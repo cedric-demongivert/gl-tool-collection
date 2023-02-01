@@ -240,6 +240,13 @@ export class PackHeap<Element> implements ReallocableCollection, Heap<Element>, 
   }
 
   /**
+   * @see {@link Heap.stringify}
+   */
+  public stringify(): string {
+    return Sequence.stringify(this)
+  }
+
+  /**
    * @see {@link Collection.view}
    */
   public view(): Sequence<Element> {

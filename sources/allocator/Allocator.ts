@@ -31,7 +31,7 @@ export interface Allocator<Product> extends Clearable {
  */
 export namespace Allocator {
   /**
-   *
+   * @see {@link createFactoryAllocator}
    */
   export const fromFactory = createFactoryAllocator
 }

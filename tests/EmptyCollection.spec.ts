@@ -1,6 +1,7 @@
 import { ForwardCursor } from "../sources/cursor"
 import { EmptyCollection } from "../sources/EmptyCollection"
 import { EMPTY_COLLECTION_INSTANCE } from "../sources/EmptyCollection"
+import { EMPTY_COLLECTION_STRING } from '../sources/EmptyCollection'
 import { getEmptyCollection } from "../sources/EmptyCollection"
 
 /**
@@ -159,6 +160,20 @@ describe('EmptyCollection', function () {
         })
     })
 
+
+    /**
+     * 
+     */
+    describe('#stringify', function () {
+        /**
+        * 
+        */
+        it('returns the empty collection symbol', function () {
+            const empty = new EmptyCollection()
+
+            expect(empty.stringify()).toBe(EMPTY_COLLECTION_STRING)
+        })
+    })
 })
 
 /**

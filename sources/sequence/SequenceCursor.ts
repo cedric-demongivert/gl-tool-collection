@@ -1,3 +1,5 @@
+import { areEquallyConstructed } from '../areEquallyConstructed'
+import { Cursor } from '../cursor'
 import { RandomAccessCursor } from '../cursor/RandomAccessCursor'
 
 import { Sequence } from './Sequence'
@@ -107,8 +109,8 @@ export class SequenceCursor<Element> implements RandomAccessCursor<Element>
   /**
    * @see {@link RandomAccessCursor.view}
    */
-  public view(): RandomAccessCursor<Element> {
-    return RandomAccessCursor.view(this)
+  public view(): Cursor<Element> {
+    return Cursor.view(this)
   }
 
   /**
@@ -125,7 +127,7 @@ export class SequenceCursor<Element> implements RandomAccessCursor<Element>
   public equals(other: any): boolean {
     if (other === this) return true
 
-    if (isSequenceCursor(other)) {
+    if (areEquallyConstructed(other, this)) {
       return (
         other.sequence === this.sequence &&
         other.index === this.index
@@ -134,13 +136,6 @@ export class SequenceCursor<Element> implements RandomAccessCursor<Element>
 
     return false
   }
-}
-
-/**
- * 
- */
-export function isSequenceCursor<Element>(candidate: unknown): candidate is SequenceCursor<Element> {
-  return candidate != null && candidate.constructor === SequenceCursor
 }
 
 /**

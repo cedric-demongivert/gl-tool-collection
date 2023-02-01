@@ -1,6 +1,6 @@
 import { EmptyCollection } from '../EmptyCollection'
 
-import { Sequence } from './Sequence'
+import type { Sequence } from './Sequence'
 
 /**
  * An empty sequence, e.g., a sequence of zero elements.

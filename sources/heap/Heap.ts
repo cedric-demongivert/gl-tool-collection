@@ -44,7 +44,7 @@ export interface Heap<Element> extends Sequence<Element>, Clearable {
    *
    * @returns The greatest element of the heap.
    */
-  next(): Element
+  next(): Element | undefined
 
   /**
    * @see {@link Collection.clone}

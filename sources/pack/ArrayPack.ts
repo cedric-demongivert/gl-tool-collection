@@ -451,7 +451,7 @@ export class ArrayPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see {@link List.concatArray}
+   * @see {@link Pack.concatArray}
    */
   public concatArray(toConcat: Array<Element>): void {
     const elements: Array<Element> = this._elements
@@ -478,24 +478,31 @@ export class ArrayPack<Element> implements Pack<Element> {
   }
 
   /**
-   * @see {@link Clonable.clone}
+   * @see {@link Pack.clone}
    */
   public clone(): ArrayPack<Element> {
     return createArrayPackFromSequence(this, this.defaultValue)
   }
 
   /**
-   * @see {@link Collection.view}
+   * @see {@link Pack.view}
    */
   public view(): Sequence<Element> {
     return Sequence.view(this)
   }
 
   /**
-   * @see {@link Collection.forward}
+   * @see {@link Pack.forward}
    */
   public forward(): SequenceCursor<Element> {
     return new SequenceCursor(this, 0)
+  }
+
+  /**
+   * @see {@link Pack.stringify}
+   */
+  public stringify(): string {
+    return Sequence.stringify(this)
   }
 
   /**

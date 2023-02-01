@@ -28,6 +28,26 @@ describe('CollectionView', function () {
   /**
    * 
    */
+  describe('#get size', function () {
+    /**
+     * 
+     */
+    it('returns the underlying collection size', function () {
+      const collection = mock<Collection<number>>()
+      const view = new CollectionView(collection)
+
+      const collectionSize = jest.fn().mockReturnValue(15)
+      Object.defineProperty(collection, 'size', { get: collectionSize })
+  
+      expect(collectionSize).not.toHaveBeenCalled()
+      expect(view.size).toBe(15)
+      expect(collectionSize).toHaveBeenCalled()
+    })
+  })
+
+  /**
+   * 
+   */
   describe('#has', function () {
     /**
      * 
@@ -48,20 +68,62 @@ describe('CollectionView', function () {
   /**
    * 
    */
-  describe('#forward', function () {
+  describe('#stringify', function () {
     /**
      * 
      */
     it('delegates the computation to the underlying implementation', function () {
       const collection = mock<Collection<number>>()
-      const cursor = mock<ForwardCursor<number>>()
       const view = new CollectionView(collection)
+  
+      collection.stringify.mockReturnValue('[]')
+  
+      expect(collection.stringify).not.toHaveBeenCalled()
+      expect(view.stringify()).toBe('[]')
+      expect(collection.stringify).toHaveBeenCalled()
+    })
+  })
+
+  /**
+   * 
+   */
+  describe('#toString', function () {
+    /**
+     * 
+     */
+    it('returns a string of the form "constructor (underlying constructor) data"', function () {
+      const collection = mock<Collection<number>>()
+      const view = new CollectionView(collection)
+  
+      collection.stringify.mockReturnValue('[]')
+  
+      expect(view.toString()).toBe('CollectionView (Object) []')
+    })
+  })
+
+  /**
+   * 
+   */
+  describe('#forward', function () {
+    /**
+     * 
+     */
+    it('returns a view over the underlying forward cursor', function () {
+      const collection = mock<Collection<number>>()
+      const cursor = mock<ForwardCursor<number>>()
+      const cursorView = mock<ForwardCursor<number>>()
+      const view = new CollectionView(collection)
+
+      cursor.view.mockReturnValue(cursorView)
+      cursorView.view.mockReturnValue(cursorView)
 
       collection.forward.mockReturnValue(cursor)
 
       expect(collection.forward).not.toHaveBeenCalled()
-      expect(view.forward()).toBe(cursor)
-      expect(collection.forward).toHaveBeenCalledTimes(1)
+      expect(cursor.view).not.toHaveBeenCalled()
+      expect(view.forward()).toBe(cursorView)
+      expect(collection.forward).toHaveBeenCalled()
+      expect(cursor.view).toHaveBeenCalled()
     })
   })
 

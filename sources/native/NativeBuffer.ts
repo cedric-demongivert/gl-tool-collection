@@ -4,7 +4,7 @@ import { IntegerBuffer } from './IntegerBuffer'
 /**
   * 
   */
-export type Buffer = UnsignedIntegerBuffer | IntegerBuffer | FloatBuffer
+export type NativeBuffer = UnsignedIntegerBuffer | IntegerBuffer | FloatBuffer
 
 /**
   * 
@@ -73,7 +73,7 @@ export namespace Buffer {
    *
    * @returns A reallocation of the given buffer.
    */
-  export function reallocate<T extends Buffer>(buffer: T, capacity: number): T {
+  export function reallocate<T extends NativeBuffer>(buffer: T, capacity: number): T {
     const result: T = new (buffer.constructor as Buffer.Allocator<T>)(capacity)
     return result
   }

@@ -1,7 +1,7 @@
 import { Comparator, equals } from '@cedric-demongivert/gl-tool-utils'
 
 import { quicksort } from '../algorithm/quicksort'
-import { Buffer } from '../native/Buffer'
+import { NativeBuffer } from '../native/NativeBuffer'
 import { UnsignedIntegerBuffer } from '../native/UnsignedIntegerBuffer'
 import { IntegerBuffer } from '../native/IntegerBuffer'
 import { Sequence } from '../sequence/Sequence'
@@ -12,7 +12,7 @@ import type { Pack } from './Pack'
 /**
  * A wrapper for handling javascript ArrayBuffer instances as gl-tool Packs.
  */
-export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
+export class BufferPack<Wrapped extends NativeBuffer> implements Pack<number> {
   /**
    * Wrapped buffer.
    */
@@ -205,6 +205,13 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
     for (let cursor = from; cursor < to; ++cursor) {
       elements[cursor] = value
     }
+  }
+
+  /**
+   * @see {@link Pack.stringify}
+   */
+  public stringify(): string {
+    return Sequence.stringify(this)
   }
 
   /**
@@ -496,7 +503,7 @@ export class BufferPack<Wrapped extends Buffer> implements Pack<number> {
 /**
  * 
  */
-export function createPackFromBuffer<Wrapped extends Buffer>(toWrap: Wrapped, size: number = toWrap.length): BufferPack<Wrapped> {
+export function createPackFromBuffer<Wrapped extends NativeBuffer>(toWrap: Wrapped, size: number = toWrap.length): BufferPack<Wrapped> {
   return new BufferPack(toWrap, size)
 }
 
