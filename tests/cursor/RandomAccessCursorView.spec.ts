@@ -39,6 +39,6 @@ describe('createRandomAccessCursorView', function () {
         const cursor = mock<RandomAccessCursor<number>>()
         const view = createRandomAccessCursorView(cursor)
 
-        expect(view.hasCursor(cursor)).toBeTruthy()
+        expect(view.isOver(cursor)).toBeTruthy()
     })
 })

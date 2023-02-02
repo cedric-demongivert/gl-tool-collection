@@ -135,6 +135,6 @@ describe('createForwardCursorView', function () {
         const cursor = mock<ForwardCursor<number>>()
         const view = createForwardCursorView(cursor)
 
-        expect(view.hasCursor(cursor)).toBeTruthy()
+        expect(view.isOver(cursor)).toBeTruthy()
     })
 })

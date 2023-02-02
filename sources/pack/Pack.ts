@@ -21,7 +21,12 @@ import { CircularPack } from './CircularPack'
 /**
  * A pack is a re-allocable mutable sequence of values.
  */
-export interface Pack<Element> extends List<Element>, ReallocableCollection {
+export interface Pack<Element> extends List<Element> {
+  /**
+   * @returns The maximum number of elements that this collection can store with its current memory allocation.
+   */
+  readonly capacity: number
+
   /**
    * Allocate a new empty pack similar to this one with the given capacity.
    *
@@ -30,6 +35,22 @@ export interface Pack<Element> extends List<Element>, ReallocableCollection {
    * @returns A new empty pack similar to this one.
    */
   allocate(capacity: number): Pack<Element>
+
+  /**
+   * Update the capacity of this collection by reallocating it.
+   * 
+   * A reallocation may change the internal state of the collection notably if its previous 
+   * size exceeds its new capacity. The implementation used MUST discard all extra elements 
+   * during the operation.
+   *
+   * @param capacity - The new capacity to allocate.
+   */
+  reallocate(capacity: number): void
+
+  /**
+   * Reallocate this collection to match its capacity to the number of elements that it contains.
+   */
+  fit(): void
 
   /**
    * @see {@link List.clone}

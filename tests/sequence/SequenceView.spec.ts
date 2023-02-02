@@ -226,6 +226,6 @@ describe('sequence/createSequenceView', function () {
 
         expect(view).not.toBeNull()
         expect(view).toBeInstanceOf(SequenceView)
-        expect(view.hasCollection(sequence)).toBeTruthy()
+        expect(view.isOver(sequence)).toBeTruthy()
     })
 })

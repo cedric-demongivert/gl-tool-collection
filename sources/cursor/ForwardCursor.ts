@@ -45,6 +45,11 @@ export interface ForwardCursor<Element> extends Cursor<Element> {
    * Moves this cursor to the next available element or to the end of its underlying sequence.
    */
   next(): void
+
+  /**
+   * @see {@link Cursor.view}
+   */
+  view(): ForwardCursor<Element>
 }
 
 /**

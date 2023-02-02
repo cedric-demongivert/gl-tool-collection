@@ -1,6 +1,10 @@
 # Ignore everything.
 *
 
+# Except documentation.
+!documentation
+!documentation/**
+
 # Except sources.
 !sources
 !sources/**

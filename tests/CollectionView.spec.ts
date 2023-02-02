@@ -21,7 +21,7 @@ describe('CollectionView', function () {
       const collection = mock<Collection<number>>()
       const view = new CollectionView(collection)
   
-      expect(view.hasCollection(collection)).toBeTruthy()
+      expect(view.isOver(collection)).toBeTruthy()
     })
   })
 
@@ -212,33 +212,11 @@ describe('CollectionView', function () {
       const firstView = new CollectionView(firstCollection)
       const secondView = new CollectionView(secondCollection)
 
-      expect(firstView.hasCollection(firstCollection)).toBeTruthy()
-      expect(firstView.hasCollection(secondCollection)).toBeFalsy()
+      expect(firstView.isOver(firstCollection)).toBeTruthy()
+      expect(firstView.isOver(secondCollection)).toBeFalsy()
 
-      expect(secondView.hasCollection(firstCollection)).toBeFalsy()
-      expect(secondView.hasCollection(secondCollection)).toBeTruthy()
-    })
-  })
-
-  /**
-   * 
-   */
-  describe('#setCollection', function () {
-     /**
-     * 
-     */
-     it('updates the underlying collection', function () {
-      const firstCollection = mock<Collection<number>>()
-      const secondCollection = mock<Collection<number>>()
-      const view = new CollectionView(firstCollection)
-
-      expect(view.hasCollection(firstCollection)).toBeTruthy()
-      expect(view.hasCollection(secondCollection)).toBeFalsy()
-
-      view.setCollection(secondCollection)
-
-      expect(view.hasCollection(firstCollection)).toBeFalsy()
-      expect(view.hasCollection(secondCollection)).toBeTruthy()
+      expect(secondView.isOver(firstCollection)).toBeFalsy()
+      expect(secondView.isOver(secondCollection)).toBeTruthy()
     })
   })
 
@@ -337,6 +315,6 @@ describe('createCollectionView', function () {
     const collection = mock<Collection<number>>()
     const view = createCollectionView(collection)
 
-    expect(view.hasCollection(collection)).toBeTruthy()
+    expect(view.isOver(collection)).toBeTruthy()
   })
 })

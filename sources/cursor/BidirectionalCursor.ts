@@ -43,6 +43,11 @@ export interface BidirectionalCursor<Element> extends ForwardCursor<Element> {
    * @returns This cursor instance for chaining purposes.
    */
   previous(): void
+
+  /**
+   * @see {@link Cursor.view}
+   */
+  view(): BidirectionalCursor<Element>
 }
 
 /**

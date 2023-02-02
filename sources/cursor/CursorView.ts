@@ -12,7 +12,7 @@ export class CursorView<
   /**
    * 
    */
-  protected _cursor: Wrappable
+  protected readonly _cursor: Wrappable
 
   /**
    * Create a view over the given cursor.
@@ -60,14 +60,7 @@ export class CursorView<
   /**
    * 
    */
-  public setCursor(cursor: Wrappable): void {
-    this._cursor = cursor
-  }
-
-  /**
-   * 
-   */
-  public hasCursor(cursor: unknown): boolean {
+  public isOver(cursor: unknown): boolean {
     return this._cursor === cursor
   }
 }

@@ -13,7 +13,7 @@ export class CollectionView<
   /**
    * 
    */
-  protected _collection: Wrappable
+  protected readonly _collection: Wrappable
 
   /**
    * @see {@link Collection.size}
@@ -74,15 +74,8 @@ export class CollectionView<
   /**
    * 
    */
-  public hasCollection(collection: unknown): boolean {
+  public isOver(collection: unknown): boolean {
     return this._collection === collection
-  }
-
-  /**
-   * 
-   */
-  public setCollection(collection: Wrappable): void {
-    this._collection = collection
   }
 
   /**

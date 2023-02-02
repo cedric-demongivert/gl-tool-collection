@@ -112,6 +112,6 @@ describe('createBidirectionalCursorView', function () {
         const cursor = mock<BidirectionalCursor<number>>()
         const view = createBidirectionalCursorView(cursor)
 
-        expect(view.hasCursor(cursor)).toBeTruthy()
+        expect(view.isOver(cursor)).toBeTruthy()
     })
 })

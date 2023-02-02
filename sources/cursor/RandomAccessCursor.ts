@@ -10,6 +10,11 @@ export interface RandomAccessCursor<Element> extends BidirectionalCursor<Element
    * @see {@link Clonable.clone}
    */
   clone(): RandomAccessCursor<Element>
+
+  /**
+   * @see {@link Cursor.view}
+   */
+  view(): RandomAccessCursor<Element>
 }
 
 /**

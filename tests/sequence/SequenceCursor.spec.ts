@@ -1,6 +1,8 @@
 import { mock } from 'jest-mock-extended'
-import { SequenceCursor } from '../../sources/sequence/SequenceCursor'
+
 import { Sequence } from '../../sources/sequence/Sequence'
+import { SequenceCursor } from '../../sources/sequence/SequenceCursor'
+import { createSequenceCursor } from '../../sources/sequence/SequenceCursor'
 
 /**
  * 
@@ -104,7 +106,28 @@ describe('sequence/SequenceCursor', function () {
      * 
      */
     describe('#isStart', function () {
-       
+        /**
+         * 
+         */
+        it('returns false if the cursor is not at the start of the underlying sequence', function () {
+            const sequence = mock<Sequence<unknown>>()
+            Object.defineProperty(sequence, 'size', { get() { return 15 } })
+
+            expect(new SequenceCursor(sequence, 1).isStart()).toBeFalsy()
+            expect(new SequenceCursor(sequence, 5).isStart()).toBeFalsy()
+            expect(new SequenceCursor(sequence, 8).isStart()).toBeFalsy()
+        })
+
+        /**
+         * 
+         */
+        it('returns true if the cursor is at the start, or before the start, of the underlying sequence', function () {
+            const sequence = mock<Sequence<unknown>>()
+            Object.defineProperty(sequence, 'size', { get() { return 15 } })
+
+            expect(new SequenceCursor(sequence, 0).isStart()).toBeTruthy()
+            expect(new SequenceCursor(sequence, -5).isStart()).toBeTruthy()
+        })
     })
 
     /**
@@ -267,18 +290,11 @@ describe('sequence/SequenceCursor', function () {
        /**
          * 
          */
-        it('returns a view over the cursor', function () {
+        it('returns itself', function () {
             const sequence = mock<Sequence<unknown>>()
             const cursor = new SequenceCursor(sequence, 8)
-            const view = cursor.view()
 
-            expect(view.index).toBe(cursor.index)
-            cursor.at(32)
-            expect(view.index).toBe(cursor.index)
-            cursor.at(48)
-            expect(view.index).toBe(cursor.index)
-            expect(() => view.at(48)).toThrow()
-            expect(() => (view as any).index = 48).toThrow()
+            expect(cursor.view()).toBe(cursor)
         })
     })
 
@@ -396,4 +412,31 @@ describe('sequence/SequenceCursor', function () {
         expect(secondCursor.equals(new OtherSequenceCursor(sequence, 8))).toBeTruthy()
       })
     })
+})
+
+/**
+     * 
+     */
+describe('sequence/createSequenceCursor', function () {
+  /**
+   * 
+   */
+  it('creates a cursor at the start of the requested sequence by default', function () {
+      const sequence = mock<Sequence<unknown>>()
+      const cursor = createSequenceCursor(sequence)
+
+      expect(cursor.sequence).toBe(sequence)
+      expect(cursor.index).toBe(0)
+  })
+
+  /**
+   * 
+   */
+  it('allows to specify the starting index', function () {
+      const sequence = mock<Sequence<unknown>>()
+      const cursor = createSequenceCursor(sequence, 15)
+
+      expect(cursor.sequence).toBe(sequence)
+      expect(cursor.index).toBe(15)
+  })
 })

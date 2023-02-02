@@ -20,7 +20,7 @@ describe('CursorView', function () {
             const view: CursorView<number> = new CursorView(cursor)
 
             expect(view).toBeInstanceOf(CursorView)
-            expect(view.hasCursor(cursor)).toBeTruthy()
+            expect(view.isOver(cursor)).toBeTruthy()
         })
     })
 
@@ -37,8 +37,8 @@ describe('CursorView', function () {
 
             const view: CursorView<number> = new CursorView(firstCursor)
 
-            expect(view.hasCursor(firstCursor)).toBeTruthy()
-            expect(view.hasCursor(secondCursor)).toBeFalsy()
+            expect(view.isOver(firstCursor)).toBeTruthy()
+            expect(view.isOver(secondCursor)).toBeFalsy()
         })
     })
 
@@ -92,29 +92,6 @@ describe('CursorView', function () {
             const view: CursorView<number> = new CursorView(cursor)
 
             expect(view.view()).toBe(view)
-        })
-    })
-
-    /**
-     * 
-     */
-    describe('#setCursor', function () {
-        /**
-         * 
-         */
-        it('updates the underlying cursor implementation', function () {
-            const firstCursor = mock<Cursor<number>>()
-            const secondCursor = mock<Cursor<number>>()
-
-            const view: CursorView<number> = new CursorView(firstCursor)
-
-            expect(view.equals(new CursorView(firstCursor))).toBeTruthy()
-            expect(view.equals(new CursorView(secondCursor))).toBeFalsy()
-
-            view.setCursor(secondCursor)
-
-            expect(view.equals(new CursorView(firstCursor))).toBeFalsy()
-            expect(view.equals(new CursorView(secondCursor))).toBeTruthy()
         })
     })
 
@@ -203,6 +180,6 @@ describe('createCursorView', function () {
         const cursor = mock<Cursor<number>>()
         const view = createCursorView(cursor)
 
-        expect(view.hasCursor(cursor)).toBeTruthy()
+        expect(view.isOver(cursor)).toBeTruthy()
     })
 })
