@@ -49,6 +49,20 @@ export class ForwardCursorView<
   public next(): void {
     this._cursor.next()
   }
+
+  /**
+   * @see {@link ForwardCursor.values}
+   */
+  public values(): IterableIterator<Element> {
+    return this._cursor.values()
+  }
+
+  /**
+   * @see {@link ForwardCursor[Symbol.iterator]}
+   */
+  public [Symbol.iterator](): IterableIterator<Element> {
+    return this._cursor.values()
+  }
 }
 
 /**

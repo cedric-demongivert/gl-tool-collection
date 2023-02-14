@@ -1,3 +1,4 @@
+import { Comparator } from '@cedric-demongivert/gl-tool-utils'
 import { CollectionView } from '../CollectionView'
 
 import { Sequence } from './Sequence'
@@ -14,21 +15,21 @@ export class SequenceView<
   /**
    * @see {@link Sequence.get}
    */
-  public get(index: number): Element | undefined {
+  public get(index: number): Element {
     return this._collection.get(index)
   }
 
   /**
    * @see {@link Sequence.first}
    */
-  public get first(): Element | undefined {
+  public get first(): Element {
     return this._collection.first
   }
 
   /**
    * @see {@link Sequence.last}
    */
-  public get last(): Element | undefined {
+  public get last(): Element {
     return this._collection.last
   }
 
@@ -42,22 +43,25 @@ export class SequenceView<
   /**
    * @see {@link Sequence.indexOf}
    */
-  public indexOf(element: Element): number {
-    return this._collection.indexOf(element)
+  public indexOf<Key = Element>(
+    key: Key, 
+    comparator: Comparator<Key, Element> = Comparator.compareWithOperator, 
+    startOrEnd: number = 0, 
+    endOrStart: number = this.size
+  ): number {
+    return this._collection.indexOf(key, comparator, startOrEnd, endOrStart)
   }
 
   /**
-  * @see {@link Sequence.indexOfInSubsequence}
-  */
-  public indexOfInSubsequence(element: Element, offset: number, size: number): number {
-    return this._collection.indexOfInSubsequence(element, offset, size)
-  }
-
-  /**
-   * @see {@link Sequence.hasInSubsequence}
+   * @see {@link Sequence.has}
    */
-  public hasInSubsequence(element: Element, offset: number, size: number): boolean {
-    return this._collection.hasInSubsequence(element, offset, size)
+  public has<Key = Element>(
+    key: Key,
+    comparator: Comparator<Key, Element> = Comparator.compareWithOperator, 
+    startOrEnd: number = 0, 
+    endOrStart: number = this.size
+  ): boolean {
+    return this._collection.has(key, comparator, startOrEnd, endOrStart)
   }
 }
 

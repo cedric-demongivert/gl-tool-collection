@@ -1,21 +1,33 @@
 import { Comparator } from '@cedric-demongivert/gl-tool-utils'
+import { IllegalArgumentsError } from '../error/IllegalArgumentsError'
 
 import { List } from '../list/List'
+import { IllegalSubsequenceError } from '../sequence/error/IllegalSubsequenceError'
 
 /**
  * Quicksort the given sequence.
  *
  * @param sequence - A sequence to quicksort.
  * @param [comparator = Comparator.compareWithOperator] - A definition of the order to use.
- * @param [offset = 0] - Number of element to skip from the begining of the sequence.
- * @param [size = sequence.size - offset] - Number of element to sort.
+ * @param [startOrEnd = 0]
+ * @param [endOrStart = sequence.size] 
  */
 export function quicksort<Element>(
   sequence: List<Element>,
   comparator: Comparator<Element, Element> = Comparator.compareWithOperator,
-  offset: number = 0,
-  size: number = sequence.size - offset
-) { rquicksort(sequence, comparator, offset, offset + size - 1) }
+  startOrEnd: number = 0,
+  endOrStart: number = sequence.size
+) { 
+  const size = sequence.size
+  const start = startOrEnd < endOrStart ? startOrEnd : endOrStart
+  const end = startOrEnd < endOrStart ? endOrStart : startOrEnd
+
+  if (start < 0 || start > size || end > size) {
+    throw new IllegalArgumentsError({ startOrEnd, endOrStart }, new IllegalSubsequenceError(sequence, startOrEnd, endOrStart))
+  }
+  
+  rquicksort(sequence, comparator, start, end - 1) 
+}
 
 /**
  * 
@@ -39,7 +51,8 @@ function rquicksort<Element>(
 function partition<Element>(
   sequence: List<Element>,
   comparator: Comparator<Element, Element>,
-  left: number, right: number
+  left: number, 
+  right: number
 ): number {
   const pivot: Element = sequence.get((left + right) >>> 1)!
   let lower: number = left - 1

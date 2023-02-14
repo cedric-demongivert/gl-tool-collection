@@ -2,6 +2,7 @@ import { ForwardCursor } from './cursor/ForwardCursor'
 
 import { Collection } from './Collection'
 import { areEquallyConstructed } from './areEquallyConstructed'
+import { Comparator } from '@cedric-demongivert/gl-tool-utils'
 
 /**
  * An empty collection, e.g., a collection of zero elements.
@@ -17,7 +18,7 @@ export class EmptyCollection<Element> implements Collection<Element> {
   /**
    * @see {@link Collection.has}
    */
-  public has(element: Element): false {
+  public has<Key = Element>(key: Key, comparator: Comparator<Key, Element> = Comparator.compareWithOperator): false {
     return false
   }
 

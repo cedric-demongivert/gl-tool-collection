@@ -141,6 +141,26 @@ export class NativeCursor<Element> implements ForwardCursor<Element> {
   }
 
   /**
+   * @see {@link ForwardCursor.values}
+   */
+  public * values(): IterableIterator<Element> {
+    let result = this._iterator.next()
+
+    while (!result.done) {
+      const value = result.value
+      result = this._iterator.next()
+      yield value
+    }
+  }
+
+  /**
+   * @see {@link ForwardCursor[Symbol.iterator]}
+   */
+  public [Symbol.iterator](): IterableIterator<Element> {
+    return this.values()
+  }
+
+  /**
    * @see {@link Comparable.equals}
    */
   public equals(other: unknown): boolean {

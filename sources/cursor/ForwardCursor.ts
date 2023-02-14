@@ -7,7 +7,7 @@ import { createForwardCursorView } from './ForwardCursorView'
 /**
  * A cursor over a sequence of values that can only move from an element to its consecutive one.
  */
-export interface ForwardCursor<Element> extends Cursor<Element> {
+export interface ForwardCursor<Element> extends Cursor<Element>, Iterable<Element> {
   /**
    * Returns the location of this cursor into its underlying sequence.
    * 
@@ -50,6 +50,11 @@ export interface ForwardCursor<Element> extends Cursor<Element> {
    * @see {@link Cursor.view}
    */
   view(): ForwardCursor<Element>
+
+  /**
+   * 
+   */
+  values(): IterableIterator<Element>
 }
 
 /**

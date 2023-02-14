@@ -1,6 +1,16 @@
+
+import { Comparator } from '@cedric-demongivert/gl-tool-utils'
+
 import { EmptyCollection } from '../EmptyCollection'
 
-import type { Sequence } from './Sequence'
+import { IllegalArgumentsError } from '../error/IllegalArgumentsError'
+import { IllegalCallError } from '../error/IllegalCallError'
+import { EmptyCollectionError } from '../error/EmptyCollectionError'
+
+import { IllegalSequenceIndexError } from './error/IllegalSequenceIndexError'
+import { IllegalSubsequenceError } from './error/IllegalSubsequenceError'
+
+import { Sequence } from './Sequence'
 
 /**
  * An empty sequence, e.g., a sequence of zero elements.
@@ -9,42 +19,47 @@ export class EmptySequence<Element> extends EmptyCollection<Element> implements 
   /**
    * @see {@link Sequence.get}
    */
-  public get(index: number): undefined {
-    return undefined
+  public get(index: number): never {
+    throw new IllegalArgumentsError({ index }, new IllegalSequenceIndexError({ value: index, sequence: this }))
   }
 
   /**
    * @see {@link Sequence.last}
    */
-  public get last(): undefined {
-    return undefined
+  public get last(): never {
+    throw new IllegalCallError('get last', new EmptyCollectionError(this))
   }
 
   /**
    * @see {@link Sequence.first}
    */
-  public get first(): undefined {
-    return undefined
+  public get first(): never {
+    throw new IllegalCallError('get first', new EmptyCollectionError(this))
   }
 
   /**
    * @see {@link Sequence.indexOf}
    */
-  public indexOf(element: any): number {
+  public indexOf<Key = Element>(
+    key: Key, 
+    comparator: Comparator<Key, Element> = Comparator.compareWithOperator, 
+    startOrEnd: number = 0,
+    endOrStart: number = 0
+  ): -1 {
+    if (startOrEnd != endOrStart || startOrEnd != 0) throw new IllegalArgumentsError({ startOrEnd, endOrStart }, new IllegalSubsequenceError(this, startOrEnd, endOrStart))
     return -1
   }
 
   /**
-   * @see {@link Sequence.indexOfInSubsequence}
+   * @see {@link Sequence.has}
    */
-  public indexOfInSubsequence(element: Element, offset: number, size: number): number {
-    return -1
-  }
-
-  /**
-   * @see {@link Sequence.hasInSubsequence}
-   */
-  public hasInSubsequence(element: Element, offset: number, size: number): false {
+  public has<Key = Element>(
+    key: Key, 
+    comparator: Comparator<Key, Element> = Comparator.compareWithOperator, 
+    startOrEnd: number = 0,
+    endOrStart: number = 0
+  ): false {
+    if (startOrEnd != endOrStart || startOrEnd != 0) throw new IllegalArgumentsError({ startOrEnd, endOrStart }, new IllegalSubsequenceError(this, startOrEnd, endOrStart))
     return false
   }
 }

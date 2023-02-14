@@ -1,4 +1,5 @@
 import { mock } from 'jest-mock-extended'
+import { Comparator } from '@cedric-demongivert/gl-tool-utils'
 
 import { SequenceView } from "../../sources/sequence/SequenceView"
 import { createSequenceView } from "../../sources/sequence/SequenceView"
@@ -24,7 +25,6 @@ describe('sequence/SequenceView', function () {
    
          expect(sequence.get).not.toHaveBeenCalled()
          expect(view.get(23)).toBe(15)
-         expect(sequence.get).toHaveBeenCalledTimes(1)
          expect(sequence.get).toHaveBeenCalledWith(23)
        })
     })
@@ -79,120 +79,71 @@ describe('sequence/SequenceView', function () {
         it('delegates the computation to the underlying implementation', function () {
          const sequence = mock<Sequence<number>>()
          const view = new SequenceView(sequence)
+
+         const comparator: Comparator<unknown, unknown> = jest.fn()
    
          sequence.indexOf.mockReturnValue(3)
    
          expect(sequence.indexOf).not.toHaveBeenCalled()
-         expect(view.indexOf(6)).toBe(3)
-         expect(sequence.indexOf).toHaveBeenCalledTimes(1)
-         expect(sequence.indexOf).toHaveBeenCalledWith(6)
+         expect(view.indexOf(6, comparator, 5, 32)).toBe(3)
+         expect(sequence.indexOf).toHaveBeenCalledWith(6, comparator, 5, 32)
        })
+       
+       /**
+         * 
+         */
+       it('delegates default parameters', function () {
+        const sequence = mock<Sequence<number>>()
+        const view = new SequenceView(sequence)
+  
+        const size = jest.fn().mockReturnValue(12)
+        Object.defineProperty(sequence, 'size', { get: size })
+
+        sequence.indexOf.mockReturnValue(5)
+  
+        expect(sequence.indexOf).not.toHaveBeenCalled()
+        expect(view.indexOf(18)).toBe(5)
+        expect(sequence.indexOf).toHaveBeenCalledWith(18, Comparator.compareWithOperator, 0, 12)
+      })
     })
+
 
     /**
      * 
      */
-    describe('#indexOfInSubsequence', function () {
+    describe('#has', function () {
         /**
         * 
         */
         it('delegates the computation to the underlying implementation', function () {
-         const sequence = mock<Sequence<number>>()
-         const view = new SequenceView(sequence)
+            const sequence = mock<Sequence<number>>()
+            const view = new SequenceView(sequence)
    
-         sequence.indexOfInSubsequence.mockReturnValue(5)
+            const comparator: Comparator<unknown, unknown> = jest.fn()
+      
+            sequence.has.mockReturnValue(true)
+      
+            expect(sequence.has).not.toHaveBeenCalled()
+            expect(view.has(6, comparator, 5, 32)).toBe(true)
+            expect(sequence.has).toHaveBeenCalledWith(6, comparator, 5, 32)
+          })
+          
+          /**
+            * 
+            */
+          it('delegates default parameters', function () {
+           const sequence = mock<Sequence<number>>()
+           const view = new SequenceView(sequence)
+     
+           const size = jest.fn().mockReturnValue(12)
+           Object.defineProperty(sequence, 'size', { get: size })
    
-         expect(sequence.indexOfInSubsequence).not.toHaveBeenCalled()
-         expect(view.indexOfInSubsequence(18, 0, 9)).toBe(5)
-         expect(sequence.indexOfInSubsequence).toHaveBeenCalledTimes(1)
-         expect(sequence.indexOfInSubsequence).toHaveBeenCalledWith(18, 0, 9)
-       })
-    })
-
-    /**
-     * 
-     */
-    describe('#hasInSubsequence', function () {
-        /**
-        * 
-        */
-        it('delegates the computation to the underlying implementation', function () {
-            const sequence = mock<Sequence<number>>()
-            const view = new SequenceView(sequence)
-      
-            sequence.hasInSubsequence.mockReturnValue(true)
-      
-            expect(sequence.hasInSubsequence).not.toHaveBeenCalled()
-            expect(view.hasInSubsequence(18, 0, 9)).toBeTruthy()
-            expect(sequence.hasInSubsequence).toHaveBeenCalledTimes(1)
-            expect(sequence.hasInSubsequence).toHaveBeenCalledWith(18, 0, 9)
-        })
-    })
-
-    /**
-     * 
-     */
-    describe('#equals', function () {
-        /**
-         * 
-         */
-        it('returns true if the given instance is a view over the same sequence', function () {
-            const sequence = mock<Sequence<number>>()
-            const view = new SequenceView(sequence)
-
-            expect(view.equals(new SequenceView(sequence))).toBeTruthy()
-        })
-        
-        /**
-         * 
-         */
-        it('returns true when applied on itself', function () {
-            const sequence = mock<Sequence<number>>()
-            const view = new SequenceView(sequence)
-            expect(view.equals(view)).toBeTruthy()
-        })
-        
-        /**
-         * 
-         */
-        it('returns false for null', function () {
-            const sequence = mock<Sequence<number>>()
-            const view = new SequenceView(sequence)
-            expect(view.equals(null)).toBeFalsy()
-        })
-        
-        /**
-         * 
-         */
-        it('returns false for undefined', function () {
-            const sequence = mock<Sequence<number>>()
-            const view = new SequenceView(sequence)
-            expect(view.equals(undefined)).toBeFalsy()
-        })
-        
-        /**
-         * 
-         */
-        it('returns false for instances of other type', function () {
-            const sequence = mock<Sequence<number>>()
-            const view = new SequenceView(sequence)
-
-            expect(view.equals(new Date())).toBeFalsy()
-            expect(view.equals(15)).toBeFalsy()
-            expect(view.equals("test")).toBeFalsy()
-        })
-        
-        /**
-         * 
-         */
-        it('returns false for a view over another sequence', function () {
-            const firstSequence = mock<Sequence<number>>()
-            const secondSequence = mock<Sequence<number>>()
-            const firstView = new SequenceView(firstSequence)
-            const secondView = new SequenceView(secondSequence)
-
-            expect(firstView.equals(secondView)).toBeFalsy()
-        })
+           sequence.has.mockReturnValue(true)
+     
+           expect(sequence.has).not.toHaveBeenCalled()
+           expect(view.has(18)).toBe(true)
+           expect(sequence.has).toHaveBeenCalledWith(18, Comparator.compareWithOperator, 0, 12)
+         })
     })
 
     /**

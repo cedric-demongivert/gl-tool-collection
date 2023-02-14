@@ -1,100 +1,109 @@
-import { toString } from '@cedric-demongivert/gl-tool-utils'
-
+import { Comparator } from '@cedric-demongivert/gl-tool-utils'
 import { Collection } from '../Collection'
 
-import { EMPTY_SEQUENCE_INSTANCE } from './EmptySequence'
-import { getEmptySequence } from './EmptySequence'
-import { createSequenceView } from './SequenceView'
-import { createSubsequence } from './Subsequence'
-import { createSequenceCursor } from './SequenceCursor'
-
 /**
- * A sequence is an ordered collection of elements in which repetitions are allowed; 
- * it may contain a non-finite number of elements.
+ * An ordered collection of elements in which repetitions are allowed.
+ * 
+ * A sequence MAY contain a non-finite number of elements.
  */
 export interface Sequence<Element> extends Collection<Element> {
   /**
-   * Return the element at the given index in this sequence of elements.
+   * Returns the element at the given index in the sequence.
    *
-   * A sequence may not be randomly accessible. Randomly accessing elements of a 
-   * non randomly accessible sequence may result in poor performances.
-   *
-   * @param index - Index of the element to return in this sequence of elements.
-   *
-   * @returns The element at the given index in this sequence of elements.
-   *
+   * A sequence MAY not be randomly accessible. Randomly accessing elements of a 
+   * non randomly accessible sequence MAY result in poor performances. For more 
+   * information about this behavior, look at your sequence implementation. 
+   * 
    * @see {@link https://en.wikipedia.org/wiki/Random_access}
+   * 
+   * @throws {@link IllegalArgumentsError<IllegalSequenceIndexError>} (MUST) if the requested index is out of the bounds of the sequence.
+   * 
+   * @param index - Index of the element to return.
+   *
+   * @returns The element at the given index.
    */
-  get(index: number): Element | undefined
+  get(index: number): Element
 
   /**
-   * Return the last element of this sequence of elements.
+   * Returns the last element of the sequence.
    *
-   * A sequence may not be randomly accessible, and, in such cases, this 
-   * method may iterate over the entire collection to retrieve the last element.
+   * A sequence MAY not be randomly accessible, and, in such cases, this 
+   * method MAY iterate over the entire collection to retrieve the last 
+   * element. For more information about this behavior, look at your sequence 
+   * implementation.
+   * 
+   * @see {@link https://en.wikipedia.org/wiki/Random_access}
    *
-   * If this sequence does not have an ending element because it describes a 
-   * semi-finite or an infinite series, this method MUST return undefined.
+   * @throws {@link IllegalCallError<EmptyCollectionError>} (MUST) if the sequence is empty.
+   * @throws {@link IllegalCallError<InfiniteCollectionError>} (MUST) if the sequence does not have a last element.
    *
    * @returns The last element of this sequence of elements if any.
    */
-  last: Element | undefined 
+  last: Element
 
   /**
-   * Return the first element of this sequence of elements.
+   * Returns the first element of the sequence.
    *
-   * A sequence may not be randomly accessible, and, in such cases, this 
-   * method may iterate over the entire collection to retrieve the first element.
+   * A sequence MAY not be randomly accessible, and, in such cases, this 
+   * method MAY iterate over the entire collection to retrieve the first 
+   * element. For more information about this behavior, look at your sequence 
+   * implementation.
+   * 
+   * @see {@link https://en.wikipedia.org/wiki/Random_access}
    *
-   * If this sequence does not have an starting element because it describes a 
-   * semi-finite or an infinite series, this method MUST return undefined.
+   * @throws {@link IllegalCallError<EmptyCollectionError>} (MUST) if the sequence is empty.
    *
    * @returns The first element of this sequence of elements.
    */
-  first: Element | undefined 
+  first: Element 
 
   /**
-   * Return the index of the first element equal to the given one in this sequence or a negative 
-   * integer if the given value does not exist in this sequence of elements.
+   * Returns the index of the first element equal to the searched one or a negative 
+   * integer if the given value does not exist in the sequence.
    *
-   * A collection may not be randomly accessible, and, in such cases, this method may 
-   * use the iterator exposed by this collection to find the requested element. Randomly 
-   * accessing a non randomly accessible collection may result in poor performances.
+   * A sequence MAY not be randomly accessible. In such cases, this method MAY iterate 
+   * over the entire collection to retrieve the requested element. For more information 
+   * about this behavior, look at your sequence implementation.
+   * 
+   * This method allows searching for an element in a given subsequence. It MUST allow 
+   * defining the boundaries of a subsequence in any order.
+   * 
+   * By default, a sequence implementation MUST search from its first element to its
+   * last one by applying the {@link Comparator.compareWithOperator} comparator.
+   * 
+   * @throws {@link IllegalArgumentsError<IllegalSubsequenceError>} (MUST) if the requested subsequence is out of the bounds of the collection.
    *
-   * @param element - An element to search for.
+   * @param key - An element to search for.
+   * @param [comparator=Comparator.compareWithOperator] - A comparator to use to compare the requested element to any stored element.
+   * @param [startOrEnd=0] - Index of starting element (inclusive) or index of the last element (exclusive) of the subsequence to search.
+   * @param [endOrStart=this.size] - Index of starting element (inclusive) or index of the last element (exclusive) of the subsequence to search.
    *
-   * @returns Return the index of the first element equal to the given one in this sequence 
-   *          or a negative integer if the given value does not exist in this sequence of elements.
+   * @returns The index of the first element equal to the given one in this sequence or a negative integer if the given value does not exist in this sequence of elements.
    */
-  indexOf(element: Element): number
+  indexOf<Key = Element>(key: Key, comparator?: Comparator<Key, Element>, startOrEnd?: number, endOrStart?: number): number
 
   /**
-   * @see {@link Sequence.indexOf}
+   * @see {@link Collection.has}
    *
-   * Act like indexOf but only over the given subsequence of elements.
+   * A sequence MAY not be randomly accessible. In such cases, this method MAY iterate 
+   * over the entire collection to retrieve the requested element. For more information 
+   * about this behavior, look at your sequence implementation.
+   * 
+   * By default, a sequence implementation MUST search from its first element to its
+   * last one by applying the {@link Comparator.compareWithOperator} comparator.
+   * 
+   * This method MUST allow its user to define the boundaries of the subsequence to search in any order.
+   * 
+   * @throws {@link IllegalArgumentsError<IllegalSubsequenceError>} (MUST) if the requested subsequence is out of the bounds of the collection.
    *
-   * @param element - An element to search for.
-   * @param offset - Elements to skip from the begining of this sequence.
-   * @param size - Elements to search.
+   * @param key - An element to search for.
+   * @param [comparator=Comparator.compareWithOperator] - A comparator to use to compare the requested element to any stored element.
+   * @param [startOrEnd=0] - Index of starting element (inclusive) or index of the last element (exclusive) of the subsequence to search.
+   * @param [endOrStart=this.size] - Index of starting element (inclusive) or index of the last element (exclusive) of the subsequence to search.
    *
-   * @returns Return the index of the first element equal to the given one in the described
-   *         subsequence or a negative integer if the given value does not exist in the described 
-   *         subsequence of elements.
+   * @returns True if the requested element exists in the collection.
    */
-  indexOfInSubsequence(element: Element, offset: number, size: number): number
-
-  /**
-   * @see {@link Sequence.has}
-   *
-   * Act like has but only over the given subsequence of elements.
-   *
-   * @param element - An element to search for.
-   * @param offset - Elements to skip from the begining of this sequence.
-   * @param size - Elements to search.
-   *
-   * @returns True if the described subsequence contains the given element.
-   */
-  hasInSubsequence(element: Element, offset: number, size: number): boolean
+  has<Key = Element>(key: Key, comparator?: Comparator<Key, Element>, startOrEnd?: number, endOrStart?: number): boolean
 
   /**
    * @see {@link Collection.clone}
@@ -105,56 +114,4 @@ export interface Sequence<Element> extends Collection<Element> {
    * @see {@link Collection.view}
    */
   view(): Sequence<Element>
-}
-
-/**
- * 
- */
-export namespace Sequence {
-  /**
-   * @see {@link EMPTY_SEQUENCE_INSTANCE}
-   */
-  export const EMPTY = EMPTY_SEQUENCE_INSTANCE
-
-  /**
-   * @see {@link getEmptySequence}
-   */
-  export const empty = getEmptySequence
-
-  /**
-   * @see {@link createSequenceView}
-   */
-  export const view = createSequenceView
-
-  /**
-   * @see {@link createSubsequence}
-   */
-  export const subsequence = createSubsequence
-
-  /**
-   * @see {@link createSequenceCursor}
-   */
-  export const cursor = createSequenceCursor
-
-  /**
-   * 
-   */
-  export function stringify(sequence: Iterable<unknown>): string {
-    let result: string = '['
-    let iterator: Iterator<unknown> = sequence[Symbol.iterator]()
-    let iteratorResult: IteratorResult<unknown> = iterator.next()
-
-    if (!iteratorResult.done) {
-      result += toString(iteratorResult.value)
-      iteratorResult = iterator.next()
-    }
-
-    while (!iteratorResult.done) {
-      result += ', '
-      result += toString(iteratorResult.value)
-      iteratorResult = iterator.next()
-    }
-
-    return result + ']'
-  }
 }

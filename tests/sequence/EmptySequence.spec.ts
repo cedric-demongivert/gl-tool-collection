@@ -1,7 +1,11 @@
+import { Comparator } from "@cedric-demongivert/gl-tool-utils"
+import { EmptyCollectionError } from "../../sources/error/EmptyCollectionError"
+import { IllegalArgumentsError } from "../../sources/error/IllegalArgumentsError"
+import { IllegalCallError } from "../../sources/error/IllegalCallError"
 import { EmptySequence } from "../../sources/sequence/EmptySequence"
 import { EMPTY_SEQUENCE_INSTANCE } from "../../sources/sequence/EmptySequence"
 import { getEmptySequence } from "../../sources/sequence/EmptySequence"
-import { Sequence } from "../../sources/sequence/Sequence"
+import { IllegalSequenceIndexError } from "../../sources/sequence/error/IllegalSequenceIndexError"
 
 /**
  * 
@@ -27,9 +31,9 @@ describe('sequence/EmptySequence', function () {
         /**
          * 
          */
-        it('returns undefined', function () {
+        it('throws', function () {
             const sequence = new EmptySequence<unknown>()
-            expect(sequence.get(123)).toBeUndefined()
+            expect(() => sequence.get(15)).toThrowError(new IllegalArgumentsError({ index: 15 }, new IllegalSequenceIndexError({ value: 15, sequence})))
         })
     })
 
@@ -40,9 +44,9 @@ describe('sequence/EmptySequence', function () {
         /**
          * 
          */
-        it('returns undefined', function () {
+        it('throws', function () {
             const sequence = new EmptySequence<unknown>()
-            expect(sequence.last).toBeUndefined()
+            expect(() => sequence.last).toThrowError(new IllegalCallError('get last', new EmptyCollectionError(sequence)))
         })
     })
 
@@ -53,9 +57,9 @@ describe('sequence/EmptySequence', function () {
         /**
          * 
          */
-        it('returns undefined', function () {
+        it('throws', function () {
             const sequence = new EmptySequence<unknown>()
-            expect(sequence.first).toBeUndefined()
+            expect(() => sequence.first).toThrowError(new IllegalCallError('get first', new EmptyCollectionError(sequence)))
         })
     })
 
@@ -70,91 +74,36 @@ describe('sequence/EmptySequence', function () {
             const sequence = new EmptySequence<number>()
             expect(sequence.indexOf(18)).toBe(-1)
         })
-    })
 
-    /**
-     * 
-     */
-    describe('#indexOfInSubsequence', function () {
         /**
          * 
          */
-        it('returns -1', function () {
+        it('throws if the specified subsequence is out of bounds', function () {
             const sequence = new EmptySequence<number>()
-            expect(sequence.indexOfInSubsequence(18, 0, 9)).toBe(-1)
+            expect(() => sequence.indexOf(18, Comparator.compareWithOperator, 0, 5)).toThrow()
+            expect(() => sequence.indexOf(18, Comparator.compareWithOperator, 5, 5)).toThrow()
         })
     })
 
     /**
      * 
      */
-    describe('#hasInSubsequence', function () {
+    describe('#has', function () {
         /**
          * 
          */
         it('returns false', function () {
             const sequence = new EmptySequence<number>()
-            expect(sequence.hasInSubsequence(18, 0, 9)).toBeFalsy()
+            expect(sequence.has(18)).toBeFalsy()
         })
-    })
 
-    /**
-     * 
-     */
-    describe('#equals', function () {
         /**
          * 
          */
-        it('returns true if the given instance is an empty sequence', function () {
+        it('throws if the specified subsequence is out of bounds', function () {
             const sequence = new EmptySequence<number>()
-            expect(sequence.equals(new EmptySequence<number>())).toBeTruthy()
-        })
-        
-        /**
-         * 
-         */
-        it('returns true when applied on itself', function () {
-            const sequence = new EmptySequence<number>()
-            expect(sequence.equals(sequence)).toBeTruthy()
-        })
-        
-        /**
-         * 
-         */
-        it('returns false for null', function () {
-            const sequence = new EmptySequence<number>()
-            expect(sequence.equals(null)).toBeFalsy()
-        })
-        
-        /**
-         * 
-         */
-        it('returns false for undefined', function () {
-            const sequence = new EmptySequence<number>()
-            expect(sequence.equals(undefined)).toBeFalsy()
-        })
-        
-        /**
-         * 
-         */
-        it('returns false for instances of other type', function () {
-            const sequence = new EmptySequence<number>()
-            expect(sequence.equals(new Date())).toBeFalsy()
-            expect(sequence.equals(15)).toBeFalsy()
-            expect(sequence.equals("test")).toBeFalsy()
-        })
-    })
-
-    /**
-     * 
-     */
-    describe('#toString', function () {
-        /**
-         * 
-         */
-        it('returns a description of the sequence', function () {
-            const sequence = new EmptySequence<number>()
-            expect(sequence.toString().indexOf(Sequence.stringify([])))
+            expect(() => sequence.has(18, Comparator.compareWithOperator, 0, 5)).toThrow()
+            expect(() => sequence.has(18, Comparator.compareWithOperator, 5, 5)).toThrow()
         })
     })
 })

@@ -2,6 +2,7 @@ import { ForwardCursor } from './cursor/ForwardCursor'
 
 import { Collection } from './Collection'
 import { areEquallyConstructed } from './areEquallyConstructed'
+import { Comparator } from '@cedric-demongivert/gl-tool-utils'
 
 /**
  * A read-only view over another collection.
@@ -32,8 +33,8 @@ export class CollectionView<
   /**
    * @see {@link Collection.has}
    */
-  public has(element: Element): boolean {
-    return this._collection.has(element)
+  public has<Key = Element>(key: Key, comparator: Comparator<Key, Element> = Comparator.compareWithOperator): boolean {
+    return this._collection.has(key, comparator)
   }
 
   /**

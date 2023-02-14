@@ -135,6 +135,24 @@ export class SequenceCursor<Element> implements RandomAccessCursor<Element>
 
     return false
   }
+
+  /**
+   * @see {@link RandomAccessCursor.values}
+   */
+  public * values(): IterableIterator<Element> {
+    while (this.index < this.sequence.size) {
+      const value = this.sequence.get(this.index)
+      this.index += 1
+      yield value
+    }
+  }
+
+  /**
+   * @see {@link RandomAccessCursor[Symbol.iterator]}
+   */
+  public [Symbol.iterator](): IterableIterator<Element> {
+    return this.values()
+  }
 }
 
 /**

@@ -93,6 +93,18 @@ export class EmptyRandomAccessCursor<Element> implements RandomAccessCursor<Elem
 
     return areEquallyConstructed(other, this)
   }
+
+  /**
+   * @see {@link RandomAccessCursor.values}
+   */
+  public * values(): IterableIterator<Element> {
+  }
+
+  /**
+   * @see {@link RandomAccessCursor[Symbol.iterator]}
+   */
+  public * [Symbol.iterator](): IterableIterator<Element> {
+  }
 }
 
 /**

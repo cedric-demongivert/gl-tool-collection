@@ -1,4 +1,6 @@
 import { Comparator } from '@cedric-demongivert/gl-tool-utils'
+import { IllegalArgumentsError } from '../error/IllegalArgumentsError'
+import { IllegalSubsequenceError } from '../sequence/error/IllegalSubsequenceError'
 
 import { Sequence } from '../sequence/Sequence'
 
@@ -11,19 +13,27 @@ import { Sequence } from '../sequence/Sequence'
  * @param sequence - A sequence to search.
  * @param value - A value to search.
  * @param [comparator = Comparator.compareWithOperator] - A comparison function to use.
- * @oaran [offset = 0] - Number of element to skip from the start of the sequence.
- * @oaran [size = sequence.size - offset] - Number of element to search.
+ * @oaran [startOrEnd = 0]
+ * @oaran [endOrStart = sequence.size]
  */
 export function bisect<Item, Search>(
   sequence: Sequence<Item>,
   value: Search,
   comparator: Comparator<Search, Item> = Comparator.compareWithOperator,
-  offset: number = 0,
-  size: number = sequence.size - offset,
+  startOrEnd: number = 0,
+  endOrStart: number = sequence.size
 ) {
-  if (size > 0) {
-    let left = offset
-    let right = offset + size
+  const size = sequence.size
+  const start = startOrEnd < endOrStart ? startOrEnd : endOrStart
+  const end = startOrEnd < endOrStart ? endOrStart : startOrEnd
+
+  if (start < 0 || start > size || end > size) {
+    throw new IllegalArgumentsError({ startOrEnd, endOrStart }, new IllegalSubsequenceError(sequence, startOrEnd, endOrStart))
+  }
+
+  if (start < end) {
+    let left = start
+    let right = end
 
     while (left !== right) {
       const cursor = left + ((right - left) >>> 1)
