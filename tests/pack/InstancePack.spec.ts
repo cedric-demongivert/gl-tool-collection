@@ -1,5 +1,4 @@
-import { Comparator, Empty } from '@cedric-demongivert/gl-tool-utils'
-import { zeroes } from '../../sources/generator/zeroes'
+import { createFactoryDuplicator } from '../../sources/allocator/FactoryDuplicator'
 import { range } from '../../sources/generator/range'
 import { InstancePack } from '../../sources/pack/InstancePack'
 import { createInstancePackFromValues } from '../../sources/pack/InstancePack'
@@ -60,7 +59,7 @@ function compareIntegers(left: Integer, right: Integer): number {
   return left.value - right.value
 }
 
-const DUPLICATOR: Duplicator<Integer> = Duplicator.fromFactory(integerFactory)
+const DUPLICATOR: Duplicator<Integer> = createFactoryDuplicator(integerFactory)
 
 /**
  * 

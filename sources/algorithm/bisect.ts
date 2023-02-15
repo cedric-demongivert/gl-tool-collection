@@ -7,8 +7,8 @@ import { Sequence } from '../sequence/Sequence'
 /**
  * Binary search an element in an ordered sequence and returns its location.
  *
- * If the given element does not exist in the given sequence, this method will 
- * return its insertion index in the form of a negative number : (-insertionIndex -1).
+ * This method will return the insertion index of an element in the form of the negative number : (-insertionIndex -1) 
+ * if the given element does not exist in the sequence.
  *
  * @param sequence - A sequence to search.
  * @param value - A value to search.
@@ -61,7 +61,7 @@ export namespace bisect {
   /**
    * @see {@link bisect}
    *
-   * A bisection implementation that always returns the FIRST element of the parent sequence that matches the given value.
+   * A bisection implementation that always returns the first element of the sequence that matches the given value.
    *
    * @param sequence - A sequence to search.
    * @param value - A value to search.
@@ -90,7 +90,7 @@ export namespace bisect {
   /**
    * @see {@link bisect}
    *
-   * A bisection implementation that always returns the LAST element of the parent sequence that matches the given value.
+   * A bisection implementation that always returns the last element of the parent sequence that matches the given value.
    *
    * @param sequence - A sequence to search.
    * @param value - A value to search.

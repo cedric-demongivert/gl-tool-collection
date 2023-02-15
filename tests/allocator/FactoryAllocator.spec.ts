@@ -14,7 +14,7 @@ function clearableFactory(): Clearable {
 /**
  * 
  */
-describe('FactoryAllocator', function () {
+describe('allocator/FactoryAllocator', function () {
     /**
      * 
      */

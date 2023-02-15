@@ -1,5 +1,5 @@
 
-import { Clearable, Factory } from '@cedric-demongivert/gl-tool-utils'
+import { Clearable, Empty, Factory } from '@cedric-demongivert/gl-tool-utils'
 
 import { Pack } from '../pack/Pack'
 import { createArrayPack } from '../pack/ArrayPack'
@@ -18,7 +18,7 @@ export class FactoryAllocator<Product extends Clearable> implements Allocator<Pr
   /**
    * A pack that contains unused instances of the managed type of object.
    */
-  private readonly _instances: Pack<Product>
+  private readonly _instances: Pack<Product | null>
 
   /**
    * 
@@ -42,19 +42,23 @@ export class FactoryAllocator<Product extends Clearable> implements Allocator<Pr
    */
   public constructor(factory: Factory<Product>, capacity: number = 16) {
     this.factory = factory
-    this._instances = createArrayPack(factory, capacity)
+    const instances = createArrayPack<Product | null>(Empty.nullptr, capacity)
 
-    while (this._instances.size < this._instances.capacity) {
-      this._instances.push(this.factory())
+    while (instances.size < instances.capacity) {
+      instances.push(factory())
     }
+
+    this._instances = instances
   }
 
   /**
    * @see {@link Allocator.allocate}
    */
   public allocate(): Product {
-    if (this._instances.size > 0) {
-      return this._instances.pop()!
+    const instances = this._instances
+
+    if (instances.size > 0) {
+      return instances.pop()!
     } else {
       return this.factory()
     }
@@ -72,7 +76,7 @@ export class FactoryAllocator<Product extends Clearable> implements Allocator<Pr
    * @see {@link Allocator.clear}
    */
   public clear(): void {
-    const instances: Pack<Product | null> = this._instances
+    const instances = this._instances
 
     for (let index = 0; index < instances.size; ++index) {
       instances.set(index, null)

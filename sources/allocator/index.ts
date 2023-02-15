@@ -1,4 +1,5 @@
 export * from './Allocator'
+export * from './Allocators'
 export * from './Duplicator'
 export * from './FactoryAllocator'
 export * from './FactoryDuplicator'

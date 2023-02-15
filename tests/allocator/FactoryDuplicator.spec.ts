@@ -1,7 +1,6 @@
 import { Assignable, Clearable } from "@cedric-demongivert/gl-tool-utils"
 import { mock } from 'jest-mock-extended'
 
-import { FactoryDuplicator } from "../../sources/allocator/FactoryDuplicator"
 import { createFactoryDuplicator } from "../../sources/allocator/FactoryDuplicator"
 
 /**
@@ -14,7 +13,7 @@ function duplicableFactory(): Clearable & Assignable<any> {
 /**
  * 
  */
-describe('FactoryDuplicator', function () {
+describe('allocator/FactoryDuplicator', function () {
     /**
      * 
      */
