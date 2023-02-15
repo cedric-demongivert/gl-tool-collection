@@ -14,6 +14,7 @@ import { createSequenceView } from '../sequence/SequenceView'
 
 import { Pack } from './Pack'
 import { join } from '../algorithm'
+import { areEquallyConstructed } from '../areEquallyConstructed'
 
 
 /**
@@ -540,7 +541,7 @@ export class ArrayPack<Element> implements Pack<Element> {
     if (other == null) return false
     if (other === this) return true
 
-    if (other instanceof ArrayPack) {
+    if (areEquallyConstructed(other, this)) {
       if (other.size !== this._size) return false
 
       for (let index = 0, size = this._size; index < size; ++index) {

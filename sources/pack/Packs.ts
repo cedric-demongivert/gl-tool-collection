@@ -8,12 +8,10 @@ import { createInt16Pack } from './BufferPack'
 import { createInt32Pack } from './BufferPack'
 import { createFloat32Pack } from './BufferPack'
 import { createFloat64Pack } from './BufferPack'
-import { createUnsignedPackUpTo } from './BufferPack'
-import { createSignedPackUpTo } from './BufferPack'
+import { createUintPackUpTo } from './BufferPack'
+import { createIntPackUpTo } from './BufferPack'
 import { createArrayPack } from './ArrayPack'
 import { createInstancePack } from './InstancePack'
-
-import { CircularPack } from '../circular/CircularPack'
 
 /**
  * 
@@ -79,21 +77,15 @@ export namespace Packs {
   /**
    * @see {@link createUnsignedPackUpTo}
    */
-  export const unsignedUpTo = createUnsignedPackUpTo
-
+  export const uintUpTo = createUintPackUpTo
 
   /**
    * @see {@link createSignedPackUpTo}
    */
-  export const signedUpTo = createSignedPackUpTo
+  export const intUpTo = createIntPackUpTo
 
   /**
    * @see {@link createInstancePack}
    */
   export const instance = createInstancePack
-
-  /**
-   * @see {@link InstancePack.circular}
-   */
-  export const circular = CircularPack.fromPack
 }

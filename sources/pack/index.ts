@@ -1,5 +1,5 @@
 export * from './ArrayPack'
 export * from './BufferPack'
-export * from '../circular/CircularPack'
 export * from './InstancePack'
 export * from './Pack'
+export * from './Packs'

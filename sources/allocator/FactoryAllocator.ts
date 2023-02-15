@@ -1,6 +1,8 @@
-import { Pack } from '../pack/Pack'
 
 import { Clearable, Factory } from '@cedric-demongivert/gl-tool-utils'
+
+import { Pack } from '../pack/Pack'
+import { createArrayPack } from '../pack/ArrayPack'
 
 import { Allocator } from './Allocator'
 
@@ -40,7 +42,7 @@ export class FactoryAllocator<Product extends Clearable> implements Allocator<Pr
    */
   public constructor(factory: Factory<Product>, capacity: number = 16) {
     this.factory = factory
-    this._instances = Pack.any<Product>(capacity, factory)
+    this._instances = createArrayPack(factory, capacity)
 
     while (this._instances.size < this._instances.capacity) {
       this._instances.push(this.factory())
