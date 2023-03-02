@@ -33,8 +33,8 @@ export class CollectionView<
   /**
    * @see {@link Collection.has}
    */
-  public has<Key = Element>(key: Key, comparator: Comparator<Key, Element> = Comparator.compareWithOperator): boolean {
-    return this._collection.has(key, comparator)
+  public has(element: Element): boolean {
+    return this._collection.has(element)
   }
 
   /**

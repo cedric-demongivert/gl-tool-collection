@@ -1,12 +1,13 @@
-import { Pack, SequenceCursor } from '../sequence'
+import { Pack } from '../pack/Pack'
+import { createUint32Pack } from '../pack/BufferPack'
+import { SequenceCursor } from '../sequence/SequenceCursor'
 
-import { ReallocableCollection } from '../ReallocableCollection'
+import { Group } from '../group/Group'
+import { OrderedGroup } from '../group/OrderedGroup'
 
-import { Group } from './Group'
+import { RandomAccessCursor } from '../cursor/RandomAccessCursor'
+
 import { OrderedSet } from './OrderedSet'
-import { OrderedGroup } from './OrderedGroup'
-import { RandomAccessCursor } from '../cursor'
-import { IsCollection } from '../IsCollection'
 
 // SWAR Algorithm [SIMD Within A Register]
 function countBits(bits: number): number {
@@ -18,7 +19,7 @@ function countBits(bits: number): number {
 /**
  *
  */
-const BITSUMS: Pack<number> = Pack.uint32(32)
+const BITSUMS: Pack<number> = createUint32Pack(32)
 
 for (let index = 0; index < 32; ++index) {
   BITSUMS.set(index, ~(0xFFFFFFFF << index))
@@ -27,91 +28,43 @@ for (let index = 0; index < 32; ++index) {
 /**
  * 
  */
-export class BitSet implements ReallocableCollection, OrderedSet<number>
+export class BitSet implements OrderedSet<number>
 {
   /**
-  *
-  */
+   *
+   */
   private _size: number
 
   /**
-  *
-  */
+   *
+   */
   private _elements: Pack<number>
 
   /**
-   * 
+   *
    */
-  private readonly _view: OrderedGroup<number>
-
-  /**
-  *
-  */
   public constructor(capacity: number = 32) {
-    this._elements = Pack.uint32(capacity >> 5 + (capacity % 32 === 0 ? 0 : 1))
+    this._elements = createUint32Pack(capacity >> 5 + (capacity % 32 === 0 ? 0 : 1))
     this._size = 0
-    this._view = OrderedGroup.view(this)
   }
 
   /**
-   * @see {@link Collection[IsCollection.SYMBOL]}
+   * @see {@link OrderedSet.size}
    */
-  public [IsCollection.SYMBOL](): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isSequence}
-   */
-  public isSequence(): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isPack}
-   */
-  public isPack(): false {
-    return false
-  }
-
-  /**
-   * @see {@link Collection.isList}
-   */
-  public isList(): false {
-    return false
-  }
-
-  /**
-   * @see {@link Collection.isGroup}
-   */
-  public isGroup(): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isSet}
-   */
-  public isSet(): true {
-    return true
-  }
-
-  /**
-  * @see {@link Collection.size}
-  */
   public get size(): number {
     return this._size
   }
 
   /**
-  * @see {@link StaticCollection.capacity}
-  */
+   * 
+   */
   public get capacity(): number {
     return this._elements.capacity * 32
   }
 
   /**
-  * @see {@link Collection.has}
-  */
+   * @see {@link OrderedSet.has}
+   */
   public has(element: number): boolean {
     const elements: Pack<number> = this._elements
     const cell: number = element >> 5

@@ -79,14 +79,12 @@ describe('sequence/SequenceView', function () {
         it('delegates the computation to the underlying implementation', function () {
          const sequence = mock<Sequence<number>>()
          const view = new SequenceView(sequence)
-
-         const comparator: Comparator<unknown, unknown> = jest.fn()
    
          sequence.indexOf.mockReturnValue(3)
    
          expect(sequence.indexOf).not.toHaveBeenCalled()
-         expect(view.indexOf(6, comparator, 5, 32)).toBe(3)
-         expect(sequence.indexOf).toHaveBeenCalledWith(6, comparator, 5, 32)
+         expect(view.indexOf(6, 5, 32)).toBe(3)
+         expect(sequence.indexOf).toHaveBeenCalledWith(6, 5, 32)
        })
        
        /**
@@ -118,14 +116,12 @@ describe('sequence/SequenceView', function () {
         it('delegates the computation to the underlying implementation', function () {
             const sequence = mock<Sequence<number>>()
             const view = new SequenceView(sequence)
-   
-            const comparator: Comparator<unknown, unknown> = jest.fn()
       
             sequence.has.mockReturnValue(true)
       
             expect(sequence.has).not.toHaveBeenCalled()
-            expect(view.has(6, comparator, 5, 32)).toBe(true)
-            expect(sequence.has).toHaveBeenCalledWith(6, comparator, 5, 32)
+            expect(view.has(6, 5, 32)).toBe(true)
+            expect(sequence.has).toHaveBeenCalledWith(6, 5, 32)
           })
           
           /**

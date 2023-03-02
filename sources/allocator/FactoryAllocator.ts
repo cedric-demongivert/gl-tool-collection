@@ -65,6 +65,13 @@ export class FactoryAllocator<Product extends Clearable> implements Allocator<Pr
   }
 
   /**
+   * @see {@link Allocator.rollback}
+   */
+  public rollback(instance: Product): void {
+    instance.clear()
+  }
+
+  /**
    * @see {@link Allocator.free}
    */
   public free(instance: Product): void {

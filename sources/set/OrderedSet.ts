@@ -1,22 +1,19 @@
-import { Sequence } from '../sequence'
+import { Comparator } from '@cedric-demongivert/gl-tool-utils'
+
+import { OrderedGroup } from '../group/OrderedGroup'
+
+import { Collection } from '../Collection'
 
 import { Set } from './Set'
-import { OrderedGroup } from './OrderedGroup'
-import { Collection } from '../Collection'
 
 /**
  * A set is an unordered collection that does not accept duplicates.
  */
 export interface OrderedSet<Element> extends OrderedGroup<Element>, Set<Element> {
   /**
-   * @see {@link Collection.isSequence}
+   * @see {@link Sequence.has}
    */
-  isSequence(): true
-
-  /**
-   * @see {@link Collection.isSet}
-   */
-  isSet(): true
+  has<Key = Element>(key: Key, comparator?: Comparator<Key, Element>, startOrEnd?: number, endOrStart?: number): boolean
 
   /**
    * @see {@link Collection.view}
@@ -27,20 +24,4 @@ export interface OrderedSet<Element> extends OrderedGroup<Element>, Set<Element>
    * @see {@link Clonable.clone}
    */
   clone(): OrderedSet<Element>
-}
-
-/**
- * 
- */
-export namespace OrderedSet {
-  /**
-   * Return true if the given collection is a set.
-   *
-   * @param collection - A collection to assert.
-   *
-   * @returns True if the given collection is a set.
-   */
-  export function is<Element>(collection: Collection<Element>): collection is OrderedSet<Element> {
-    return Set.is(collection) && Sequence.is(collection)
-  }
 }

@@ -68,19 +68,15 @@ export interface Sequence<Element> extends Collection<Element> {
    * This method allows searching for an element in a given subsequence. It MUST allow 
    * defining the boundaries of a subsequence in any order.
    * 
-   * By default, a sequence implementation MUST search from its first element to its
-   * last one by applying the {@link Comparator.compareWithOperator} comparator.
-   * 
    * @throws {@link IllegalArgumentsError<IllegalSubsequenceError>} (MUST) if the requested subsequence is out of the bounds of the collection.
    *
-   * @param key - An element to search for.
-   * @param [comparator=Comparator.compareWithOperator] - A comparator to use to compare the requested element to any stored element.
+   * @param element - An element to search for.
    * @param [startOrEnd=0] - Index of starting element (inclusive) or index of the last element (exclusive) of the subsequence to search.
    * @param [endOrStart=this.size] - Index of starting element (inclusive) or index of the last element (exclusive) of the subsequence to search.
    *
    * @returns The index of the first element equal to the given one in this sequence or a negative integer if the given value does not exist in this sequence of elements.
    */
-  indexOf<Key = Element>(key: Key, comparator?: Comparator<Key, Element>, startOrEnd?: number, endOrStart?: number): number
+  indexOf(element: Element, startOrEnd?: number, endOrStart?: number): number
 
   /**
    * @see {@link Collection.has}
@@ -96,14 +92,13 @@ export interface Sequence<Element> extends Collection<Element> {
    * 
    * @throws {@link IllegalArgumentsError<IllegalSubsequenceError>} (MUST) if the requested subsequence is out of the bounds of the collection.
    *
-   * @param key - An element to search for.
-   * @param [comparator=Comparator.compareWithOperator] - A comparator to use to compare the requested element to any stored element.
+   * @param element - An element to search for.
    * @param [startOrEnd=0] - Index of starting element (inclusive) or index of the last element (exclusive) of the subsequence to search.
    * @param [endOrStart=this.size] - Index of starting element (inclusive) or index of the last element (exclusive) of the subsequence to search.
    *
    * @returns True if the requested element exists in the collection.
    */
-  has<Key = Element>(key: Key, comparator?: Comparator<Key, Element>, startOrEnd?: number, endOrStart?: number): boolean
+  has(element: Element, startOrEnd?: number, endOrStart?: number): boolean
 
   /**
    * @see {@link Collection.clone}

@@ -2,19 +2,22 @@ import { Comparator, equals, Factory } from '@cedric-demongivert/gl-tool-utils'
 
 import { Sequence } from '../sequence/Sequence'
 import { SequenceCursor } from '../sequence/SequenceCursor'
-import { quicksort } from '../algorithm/quicksort'
-
-import { IllegalCallError } from '../error/IllegalCallError'
-import { EmptyCollectionError } from '../error/EmptyCollectionError'
-import { IllegalArgumentsError } from '../error/IllegalArgumentsError'
 import { IllegalSubsequenceError } from '../sequence/error/IllegalSubsequenceError'
 import { IllegalSequenceIndexError } from '../sequence/error/IllegalSequenceIndexError'
 import { NegativeSequenceIndexError } from '../sequence/error/NegativeSequenceIndexError'
 import { createSequenceView } from '../sequence/SequenceView'
 
-import { Pack } from './Pack'
-import { join } from '../algorithm'
+import { IllegalCallError } from '../error/IllegalCallError'
+import { EmptyCollectionError } from '../error/EmptyCollectionError'
+import { IllegalArgumentsError } from '../error/IllegalArgumentsError'
+
+import { quicksort } from '../algorithm/quicksort'
+import { join } from '../algorithm/join'
+import { gcd } from '../algorithm/gcd'
+
 import { areEquallyConstructed } from '../areEquallyConstructed'
+
+import { Pack } from './Pack'
 
 
 /**
@@ -320,6 +323,33 @@ export class ArrayPack<Element> implements Pack<Element> {
 
     this._size += 1
   }
+  
+  /**
+   * @see {@link Pack.rotate}
+   */
+  public rotate(offset: number): void {
+    const elements = this._elements
+    const size = this._size
+
+    let safeOffset: number = offset % size
+    if (safeOffset < 0) safeOffset += size
+
+    const roots: number = gcd(size, safeOffset)
+
+    for (let start = 0; start < roots; ++start) {
+      let temporary: Element = elements[start]
+      let index = (start + safeOffset) % size
+
+      while (index != start) {
+        const swap: Element = elements[index]
+        elements[index] = temporary
+        temporary = swap
+        index = (index + safeOffset) % size
+      }
+
+      elements[start] = temporary
+    }
+  }
 
   /**
    * @see {@link Pack.delete}
@@ -341,6 +371,43 @@ export class ArrayPack<Element> implements Pack<Element> {
     }
 
     this._size -= offset
+  }
+
+  /**
+   * @see {@link Pack.unique}
+   */
+  public unique(
+    comparator: Comparator<Element, Element> = Comparator.compareWithOperator, 
+    startOrEnd: number = 0, 
+    endOrStart: number = this._size
+  ): void {
+    const size = this._size
+    const start = startOrEnd < endOrStart ? startOrEnd : endOrStart
+    const end = startOrEnd < endOrStart ? endOrStart : startOrEnd
+
+    if (start < 0 || start > size || end > size) {
+      throw new IllegalArgumentsError({ startOrEnd, endOrStart }, new IllegalSubsequenceError(this, startOrEnd, endOrStart))
+    }
+
+    const elements = this._elements
+    let processedIndex = start
+
+    for (let candidateIndex = start; candidateIndex < end; ++candidateIndex) {
+      const candidate = elements[candidateIndex]
+
+      let index = start
+
+      while (index < processedIndex && comparator(candidate, elements[index]) !== 0) {
+        ++index
+      }
+
+      if (index === processedIndex) {
+        elements[processedIndex] = elements[candidateIndex]
+        processedIndex += 1
+      }
+    }
+
+    this.delete(processedIndex, end)
   }
 
   /**
@@ -368,24 +435,14 @@ export class ArrayPack<Element> implements Pack<Element> {
   /**
    * @see {@link Pack.has}
    */
-  public has<Key>(
-    key: Key, 
-    comparator: Comparator<Key, Element> = Comparator.compareWithOperator,
-    startOrEnd: number = 0,
-    endOrStart: number = this.size
-  ): boolean {
-    return this.indexOf(key, comparator, startOrEnd, endOrStart) >= 0
+  public has(element: Element, startOrEnd: number = 0, endOrStart: number = this.size): boolean {
+    return this.indexOf(element, startOrEnd, endOrStart) >= 0
   }
 
   /**
    * @see {@link Pack.indexOf}
    */
-  public indexOf<Key>(
-    key: Key, 
-    comparator: Comparator<Key, Element> = Comparator.compareWithOperator,
-    startOrEnd: number = 0,
-    endOrStart: number = this.size
-  ): number {
+  public indexOf(element: Element, startOrEnd: number = 0, endOrStart: number = this.size): number {
     const size = this._size
     const start = startOrEnd < endOrStart ? startOrEnd : endOrStart
     const end = startOrEnd < endOrStart ? endOrStart : startOrEnd
@@ -397,7 +454,7 @@ export class ArrayPack<Element> implements Pack<Element> {
     const elements: Array<Element> = this._elements
 
     for (let index = start; index < end; ++index) {
-      if (comparator(key, elements[index]) === 0) {
+      if (element === elements[index]) {
         return index
       }
     }

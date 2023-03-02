@@ -43,25 +43,15 @@ export class SequenceView<
   /**
    * @see {@link Sequence.indexOf}
    */
-  public indexOf<Key = Element>(
-    key: Key, 
-    comparator: Comparator<Key, Element> = Comparator.compareWithOperator, 
-    startOrEnd: number = 0, 
-    endOrStart: number = this.size
-  ): number {
-    return this._collection.indexOf(key, comparator, startOrEnd, endOrStart)
+  public indexOf(element: Element, startOrEnd: number = 0, endOrStart: number = this.size): number {
+    return this._collection.indexOf(element, startOrEnd, endOrStart)
   }
 
   /**
    * @see {@link Sequence.has}
    */
-  public has<Key = Element>(
-    key: Key,
-    comparator: Comparator<Key, Element> = Comparator.compareWithOperator, 
-    startOrEnd: number = 0, 
-    endOrStart: number = this.size
-  ): boolean {
-    return this._collection.has(key, comparator, startOrEnd, endOrStart)
+  public has(element: Element, startOrEnd: number = 0, endOrStart: number = this.size): boolean {
+    return this._collection.has(element, startOrEnd, endOrStart)
   }
 }
 

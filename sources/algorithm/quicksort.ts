@@ -1,7 +1,7 @@
 import { Comparator } from '@cedric-demongivert/gl-tool-utils'
 import { IllegalArgumentsError } from '../error/IllegalArgumentsError'
 
-import { List } from '../list/List'
+import { SortableSequence } from '../sequence/SortableSequence'
 import { IllegalSubsequenceError } from '../sequence/error/IllegalSubsequenceError'
 
 /**
@@ -13,7 +13,7 @@ import { IllegalSubsequenceError } from '../sequence/error/IllegalSubsequenceErr
  * @param [endOrStart = sequence.size] 
  */
 export function quicksort<Element>(
-  sequence: List<Element>,
+  sequence: SortableSequence<Element>,
   comparator: Comparator<Element, Element> = Comparator.compareWithOperator,
   startOrEnd: number = 0,
   endOrStart: number = sequence.size
@@ -33,7 +33,7 @@ export function quicksort<Element>(
  * 
  */
 function rquicksort<Element>(
-  sequence: List<Element>,
+  sequence: SortableSequence<Element>,
   comparator: Comparator<Element, Element>,
   left: number,
   right: number
@@ -49,7 +49,7 @@ function rquicksort<Element>(
  * 
  */
 function partition<Element>(
-  sequence: List<Element>,
+  sequence: SortableSequence<Element>,
   comparator: Comparator<Element, Element>,
   left: number, 
   right: number

@@ -18,7 +18,7 @@ export class EmptyCollection<Element> implements Collection<Element> {
   /**
    * @see {@link Collection.has}
    */
-  public has<Key = Element>(key: Key, comparator: Comparator<Key, Element> = Comparator.compareWithOperator): false {
+  public has(element: Element): false {
     return false
   }
 

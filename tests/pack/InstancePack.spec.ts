@@ -200,11 +200,11 @@ describe('pack/InstancePack', function () {
     it('returns the index of the first element equal to the searched one', function () {
       const pack = createInstancePackFromValues(DUPLICATOR, ...wrap(0, 1, 2, 1, 3, 2, 3, 4))
 
-      expect(pack.indexOf(new Integer(0), compareIntegers)).toBe(0)
-      expect(pack.indexOf(new Integer(1), compareIntegers)).toBe(1)
-      expect(pack.indexOf(new Integer(2), compareIntegers)).toBe(2)
-      expect(pack.indexOf(new Integer(3), compareIntegers)).toBe(4)
-      expect(pack.indexOf(new Integer(4), compareIntegers)).toBe(7)
+      expect(pack.indexOf(pack.get(0))).toBe(0)
+      expect(pack.indexOf(pack.get(1))).toBe(1)
+      expect(pack.indexOf(pack.get(2))).toBe(2)
+      expect(pack.indexOf(pack.get(3))).toBe(4)
+      expect(pack.indexOf(pack.get(4))).toBe(7)
     })
     
     /**
@@ -213,9 +213,9 @@ describe('pack/InstancePack', function () {
     it('returns a negative integer if the given value does not exist in the sequence', function () {
       const pack = createInstancePackFromValues(DUPLICATOR, ...wrap(0, 1, 2, 3, 4))
 
-      expect(pack.indexOf(new Integer(10), compareIntegers)).toBeLessThan(0)
-      expect(pack.indexOf(new Integer(-5), compareIntegers)).toBeLessThan(0)
-      expect(pack.indexOf(new Integer(5), compareIntegers)).toBeLessThan(0)
+      expect(pack.indexOf(new Integer(1))).toBeLessThan(0)
+      expect(pack.indexOf(new Integer(2))).toBeLessThan(0)
+      expect(pack.indexOf(new Integer(-5))).toBeLessThan(0)
     })
 
     /**
@@ -224,11 +224,11 @@ describe('pack/InstancePack', function () {
     it('allows searching for an element in a given subsequence', function () {
       const pack = createInstancePackFromValues(DUPLICATOR, ...wrap(0, 1, 2, 1, 3, 2, 3, 4))
 
-      expect(pack.indexOf(new Integer(0), compareIntegers, 2, 4)).toBeLessThan(0)
-      expect(pack.indexOf(new Integer(1), compareIntegers, 2, 4)).toBe(3)
-      expect(pack.indexOf(new Integer(2), compareIntegers, 2, 4)).toBe(2)
-      expect(pack.indexOf(new Integer(3), compareIntegers, 2, 4)).toBeLessThan(0)
-      expect(pack.indexOf(new Integer(4), compareIntegers, 2, 4)).toBeLessThan(0)
+      expect(pack.indexOf(pack.get(0), 2, 4)).toBeLessThan(0)
+      expect(pack.indexOf(pack.get(1), 2, 4)).toBe(3)
+      expect(pack.indexOf(pack.get(2), 2, 4)).toBe(2)
+      expect(pack.indexOf(pack.get(3), 2, 4)).toBeLessThan(0)
+      expect(pack.indexOf(pack.get(4), 2, 4)).toBeLessThan(0)
     })
 
     /**
@@ -237,11 +237,11 @@ describe('pack/InstancePack', function () {
     it('allows defining the boundaries of a subsequence in any order', function () {
       const pack = createInstancePackFromValues(DUPLICATOR, ...wrap(0, 1, 2, 1, 3, 2, 3, 4))
 
-      expect(pack.indexOf(new Integer(0), compareIntegers, 4, 2)).toBeLessThan(0)
-      expect(pack.indexOf(new Integer(1), compareIntegers, 4, 2)).toBe(3)
-      expect(pack.indexOf(new Integer(2), compareIntegers, 4, 2)).toBe(2)
-      expect(pack.indexOf(new Integer(3), compareIntegers, 4, 2)).toBeLessThan(0)
-      expect(pack.indexOf(new Integer(4), compareIntegers, 4, 2)).toBeLessThan(0)
+      expect(pack.indexOf(pack.get(0), 4, 2)).toBeLessThan(0)
+      expect(pack.indexOf(pack.get(1), 4, 2)).toBe(3)
+      expect(pack.indexOf(pack.get(2), 4, 2)).toBe(2)
+      expect(pack.indexOf(pack.get(3), 4, 2)).toBeLessThan(0)
+      expect(pack.indexOf(pack.get(4), 4, 2)).toBeLessThan(0)
     })
 
     /**
@@ -250,10 +250,10 @@ describe('pack/InstancePack', function () {
     it('throws if the requested subsequence is out of the bounds of the collection', function () {
       const pack = createInstancePackFromValues(DUPLICATOR, ...wrap(0, 1, 2, 1, 3, 2, 3, 4))
 
-      expect(() => pack.indexOf(new Integer(15), compareIntegers, -5, 4)).toThrow()
-      expect(() => pack.indexOf(new Integer(-5), compareIntegers, 12, 4)).toThrow()
-      expect(() => pack.indexOf(new Integer(-5), compareIntegers, 4, -5)).toThrow()
-      expect(() => pack.indexOf(new Integer(-5), compareIntegers, 4, 12)).toThrow()
+      expect(() => pack.indexOf(pack.get(0), -5, 4)).toThrow()
+      expect(() => pack.indexOf(pack.get(0), 12, 4)).toThrow()
+      expect(() => pack.indexOf(pack.get(0), 4, -5)).toThrow()
+      expect(() => pack.indexOf(pack.get(0), 4, 12)).toThrow()
     })
   })
 
@@ -375,6 +375,130 @@ describe('pack/InstancePack', function () {
 
       expect([...pack]).toEqual([...wrap(0, 1)])
       expect(pack.capacity).toBe(2)
+    })
+  })
+
+  /**
+   * 
+   */
+  describe('#rotate', function () {
+    /**
+     * 
+     */
+    it('rotates the sequence by the given offset', function () {
+      const pack = createInstancePackFromValues(DUPLICATOR, ...wrap(0, 1, 2, 3, 4, 5))
+
+      expect([...pack]).toEqual([...wrap(0, 1, 2, 3, 4, 5)])
+
+      pack.rotate(1)
+
+      expect([...pack]).toEqual([...wrap(5, 0, 1, 2, 3, 4)])
+
+      pack.rotate(2)
+
+      expect([...pack]).toEqual([...wrap(3, 4, 5, 0, 1, 2)])
+
+      pack.rotate(6)
+
+      expect([...pack]).toEqual([...wrap(3, 4, 5, 0, 1, 2)])
+
+      pack.rotate(0)
+
+      expect([...pack]).toEqual([...wrap(3, 4, 5, 0, 1, 2)])
+    })
+
+    /**
+     * 
+     */
+    it('accepts negative offsets', function () {
+      const pack = createInstancePackFromValues(DUPLICATOR, ...wrap(0, 1, 2, 3, 4, 5))
+
+      expect([...pack]).toEqual([...wrap(0, 1, 2, 3, 4, 5)])
+
+      pack.rotate(-1)
+
+      expect([...pack]).toEqual([...wrap(1, 2, 3, 4, 5, 0)])
+
+      pack.rotate(-2)
+
+      expect([...pack]).toEqual([...wrap(3, 4, 5, 0, 1, 2)])
+
+      pack.rotate(-6)
+
+      expect([...pack]).toEqual([...wrap(3, 4, 5, 0, 1, 2)])
+
+      pack.rotate(-0)
+
+      expect([...pack]).toEqual([...wrap(3, 4, 5, 0, 1, 2)])
+    })
+  })
+
+  /**
+   * 
+   */
+  describe('#unique', function () {
+    /**
+     * 
+     */
+    it('removes duplicates from the list', function () {
+      const pack = createInstancePackFromValues(DUPLICATOR, ...wrap(0, 1, 0, 2, 2, 1, 3, 2, 3))
+
+      expect([...pack]).toEqual([...wrap(0, 1, 0, 2, 2, 1, 3, 2, 3)])
+
+      pack.unique(compareIntegers)
+
+      expect([...pack]).toEqual([...wrap(0, 1, 2, 3)])
+    })
+
+    /**
+     * 
+     */
+    it('allows removing duplicates from a subsequence of elements', function () {
+      const pack = createInstancePackFromValues(DUPLICATOR, ...wrap(0, 1, 0, 2, 2, 1, 3, 2, 3))
+
+      expect([...pack]).toEqual([...wrap(0, 1, 0, 2, 2, 1, 3, 2, 3)])
+
+      pack.unique(compareIntegers, 2, 7)
+
+      expect([...pack]).toEqual([...wrap(0, 1, 0, 2, 1, 3, 2, 3)])
+    })
+
+    /**
+     * 
+     */
+    it('allow its user to define the boundaries of a subsequence in any order', function () {
+      const pack = createInstancePackFromValues(DUPLICATOR, ...wrap(0, 1, 0, 2, 2, 1, 3, 2, 3))
+
+      expect([...pack]).toEqual([...wrap(0, 1, 0, 2, 2, 1, 3, 2, 3)])
+
+      pack.unique(compareIntegers, 7, 2)
+
+      expect([...pack]).toEqual([...wrap(0, 1, 0, 2, 1, 3, 2, 3)])
+    })
+
+    /**
+     * 
+     */
+    it('does nothing if the given boundaries define a valid empty sequence', function () {
+      const pack = createInstancePackFromValues(DUPLICATOR, ...wrap(0, 1, 0, 2, 2, 1, 3, 2, 3))
+
+      expect([...pack]).toEqual([...wrap(0, 1, 0, 2, 2, 1, 3, 2, 3)])
+
+      pack.unique(compareIntegers, 8, 8)
+
+      expect([...pack]).toEqual([...wrap(0, 1, 0, 2, 2, 1, 3, 2, 3)])
+    })
+
+    /**
+     * 
+     */
+    it('throws if the requested subsequence is out of the bounds of the collection', function () {
+      const pack = createInstancePackFromValues(DUPLICATOR, ...wrap(0, 1, 0, 2, 2, 1, 3, 2, 3))
+
+      expect(() => pack.unique(compareIntegers, -5, 2)).toThrow()
+      expect(() => pack.unique(compareIntegers, 2, -5)).toThrow()
+      expect(() => pack.unique(compareIntegers, 2, 12)).toThrow()
+      expect(() => pack.unique(compareIntegers, 12, 2)).toThrow()
     })
   })
 

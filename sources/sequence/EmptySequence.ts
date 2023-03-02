@@ -40,12 +40,7 @@ export class EmptySequence<Element> extends EmptyCollection<Element> implements 
   /**
    * @see {@link Sequence.indexOf}
    */
-  public indexOf<Key = Element>(
-    key: Key, 
-    comparator: Comparator<Key, Element> = Comparator.compareWithOperator, 
-    startOrEnd: number = 0,
-    endOrStart: number = 0
-  ): -1 {
+  public indexOf(element: Element, startOrEnd: number = 0, endOrStart: number = 0): -1 {
     if (startOrEnd != endOrStart || startOrEnd != 0) throw new IllegalArgumentsError({ startOrEnd, endOrStart }, new IllegalSubsequenceError(this, startOrEnd, endOrStart))
     return -1
   }
@@ -53,12 +48,7 @@ export class EmptySequence<Element> extends EmptyCollection<Element> implements 
   /**
    * @see {@link Sequence.has}
    */
-  public has<Key = Element>(
-    key: Key, 
-    comparator: Comparator<Key, Element> = Comparator.compareWithOperator, 
-    startOrEnd: number = 0,
-    endOrStart: number = 0
-  ): false {
+  public has(element: Element, startOrEnd: number = 0, endOrStart: number = 0): false {
     if (startOrEnd != endOrStart || startOrEnd != 0) throw new IllegalArgumentsError({ startOrEnd, endOrStart }, new IllegalSubsequenceError(this, startOrEnd, endOrStart))
     return false
   }

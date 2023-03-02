@@ -10,6 +10,13 @@ export class FactoryDuplicator<Product extends Clearable & Assignable<Product>> 
   public copy(toCopy: Product): Product {
     return this.allocate().copy(toCopy)
   }
+
+  /**
+   * @see {@link Duplicator.copy}
+   */
+  public move(origin: Product, target: Product): void {
+    target.copy(origin)
+  }
 }
 
 /**

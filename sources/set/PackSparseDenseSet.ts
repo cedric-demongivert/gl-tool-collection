@@ -1,11 +1,16 @@
 import { Empty } from '@cedric-demongivert/gl-tool-utils'
-import { ForwardCursor } from '../cursor'
-import { IsCollection } from '../IsCollection'
-import { Pack } from '../sequence'
 
-import { Group } from './Group'
-import { OrderedGroup } from './OrderedGroup'
+import { ForwardCursor } from '../cursor/ForwardCursor'
+
+import { Pack } from '../pack/Pack'
+
+import { Group } from '../group/Group'
+import { OrderedGroup } from '../group/OrderedGroup'
+
 import { SparseDenseSet } from './SparseDenseSet'
+import { createOrderedGroupView } from '../group'
+import { join } from '../algorithm'
+import { ArrayPack, createArrayPack, createUint16Pack, createUint32Pack, createUint8Pack, createUintPackUpTo } from '../pack'
 
 /**
  * 
@@ -24,59 +29,17 @@ export class PackSparseDenseSet implements SparseDenseSet {
   /**
    * 
    */
-  private readonly _view: OrderedGroup<number>
+  private _allocator: Pack.Allocator<number>
 
   /**
    * Create a new empty sparse set based uppon the given pack.
    *
    * @param dense - An empty dense number pack.
    */
-  public constructor(dense: Pack<number>) {
-    this._sparse = dense.clone()
-    this._dense = dense
-    this._view = OrderedGroup.view(this)
-  }
-
-  /**
-   * @see {@link Collection[IsCollection.SYMBOL]}
-   */
-  public [IsCollection.SYMBOL](): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isSequence}
-   */
-  public isSequence(): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isPack}
-   */
-  public isPack(): false {
-    return false
-  }
-
-  /**
-   * @see {@link Collection.isList}
-   */
-  public isList(): false {
-    return false
-  }
-
-  /**
-   * @see {@link Collection.isGroup}
-   */
-  public isGroup(): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isSet}
-   */
-  public isSet(): true {
-    return true
+  public constructor(allocator: Pack.Allocator<number>, capacity: number) {
+    this._sparse = allocator(capacity)
+    this._dense = allocator(capacity)
+    this._allocator = allocator
   }
 
   /**
@@ -94,40 +57,31 @@ export class PackSparseDenseSet implements SparseDenseSet {
   }
 
   /**
-   * @see {@link Collection.has}
+   * @see {@link OrderedSet.has}
    */
-  public has(element: number): boolean {
-    const index: number = this._sparse.get(element)!
-    return index < this._dense.size && this._dense.get(index) === element
+  public has(
+    element: number, 
+    startOrEnd: number = 0,
+    endOrStart: number = this.size
+  ): boolean {
+    return this.indexOf(element, startOrEnd, endOrStart) > -1
   }
 
   /**
    * @see {@link Sequence.indexOf}
    */
-  public indexOf(element: number): number {
-    const index: number = this._sparse.get(element)!
+  public indexOf(
+    element: number, 
+    startOrEnd: number = 0,
+    endOrStart: number = this.size
+  ): number {
+    const index: number = this._sparse.get(element)
 
-    if (index < this._dense.size && this._dense.get(index) === element) {
+    if (index < end && index >= start && this._dense.get(index) === element) {
       return index
     }
 
     return -1
-  }
-
-  /**
-   * @see {@link Sequence.hasInSubsequence}
-   */
-  public hasInSubsequence(element: number, offset: number, size: number): boolean {
-    const index: number = this.indexOf(element)
-    return index >= offset && index < offset + size
-  }
-
-  /**
-   * @see {@link Sequence.indexOfInSubsequence}
-   */
-  public indexOfInSubsequence(element: number, offset: number, size: number): number {
-    const index: number = this.indexOf(element)
-    return index >= offset && index < offset + size ? index : -1
   }
 
   /**
@@ -169,7 +123,7 @@ export class PackSparseDenseSet implements SparseDenseSet {
     let max: number = 0
 
     for (let value of toCopy) {
-      max = Math.max(value, max)
+      max = value < max ? max : value
     }
 
     if (max > this.capacity) {
@@ -187,9 +141,7 @@ export class PackSparseDenseSet implements SparseDenseSet {
    * @see {@link Clonable.clone}
    */
   public clone(): PackSparseDenseSet {
-    const copy: PackSparseDenseSet = new PackSparseDenseSet(
-      this._dense.clone()
-    )
+    const copy: PackSparseDenseSet = new PackSparseDenseSet(this._allocator, this.capacity)
 
     copy._dense.copy(this._dense)
     copy._sparse.copy(this._sparse)
@@ -231,10 +183,10 @@ export class PackSparseDenseSet implements SparseDenseSet {
   public max(): number {
     if (this._dense.size <= 0) return 0
 
-    let result: number = this._dense.get(0)!
+    let result: number = this._dense.get(0)
 
     for (let index = 1, length = this._dense.size; index < length; ++index) {
-      const cell = this._dense.get(index)!
+      const cell = this._dense.get(index)
       result = cell > result ? cell : result
     }
 
@@ -249,10 +201,10 @@ export class PackSparseDenseSet implements SparseDenseSet {
   public min(): number {
     if (this._dense.size <= 0) return 0
 
-    let result: number = this._dense.get(0)!
+    let result: number = this._dense.get(0)
 
     for (let index = 1, length = this._dense.size; index < length; ++index) {
-      const cell = this._dense.get(index)!
+      const cell = this._dense.get(index)
       result = cell < result ? cell : result
     }
 
@@ -284,7 +236,7 @@ export class PackSparseDenseSet implements SparseDenseSet {
    * @see {@link Collection.view}
    */
   public view(): OrderedGroup<number> {
-    return this._view
+    return createOrderedGroupView(this)
   }
 
   /**
@@ -319,7 +271,7 @@ export class PackSparseDenseSet implements SparseDenseSet {
       if (other.size !== this._dense.size) return false
 
       for (let index = 0, length = other.size; index < length; ++index) {
-        if (!this.has(other.get(index)!)) return false
+        if (!this.has(other.get(index))) return false
       }
 
       return true
@@ -329,75 +281,79 @@ export class PackSparseDenseSet implements SparseDenseSet {
   }
 
   /**
+   * 
+   */
+  public stringify(): string {
+    return '{' + join(this) + '}' 
+  }
+
+  /**
    * @see {@link Object.toString}
    */
   public toString(): string {
-    return this.constructor.name + ' (' + this._dense.constructor.name + ') ' + Group.stringify(this)
+    return this.constructor.name + ' (' + this._dense.constructor.name + ') ' + this.stringify()
   }
 }
 
 /**
- * 
+ * Instantiate a uint32 sparse-dense set.
+ *
+ * @param capacity - Capacity of the sparse-dense set to instantiate.
+ *
+ * @returns A new sparse-dense set of the given capacity.
  */
-export namespace PackSparseDenseSet {
-  /**
-   * Instantiate a uint32 sparse-dense set.
-   *
-   * @param capacity - Capacity of the sparse-dense set to instantiate.
-   *
-   * @returns A new sparse-dense set of the given capacity.
-   */
-  export function uint32(capacity: number): PackSparseDenseSet {
-    return new PackSparseDenseSet(Pack.uint32(capacity))
-  }
+export function createUint32PackSparseDenseSet(capacity: number): PackSparseDenseSet {
+  return new PackSparseDenseSet(createUint32Pack, capacity)
+}
 
-  /**
-   * Instantiate a uint16 sparse-dense set.
-   *
-   * @param capacity - Capacity of the sparse-dense set to instantiate.
-   *
-   * @returns A new sparse-dense set of the given capacity.
-   */
-  export function uint16(capacity: number): PackSparseDenseSet {
-    return new PackSparseDenseSet(Pack.uint16(capacity))
-  }
+/**
+ * Instantiate a uint16 sparse-dense set.
+ *
+ * @param capacity - Capacity of the sparse-dense set to instantiate.
+ *
+ * @returns A new sparse-dense set of the given capacity.
+ */
+export function createUint16PackSparseDenseSet(capacity: number): PackSparseDenseSet {
+  return new PackSparseDenseSet(createUint16Pack, capacity)
+}
 
-  /**
-   * Instantiate a uint8 sparse-dense set.
-   *
-   * @param capacity - Capacity of the sparse-dense set to instantiate.
-   *
-   * @returns A new sparse-dense set of the given capacity.
-   */
-  export function uint8(capacity: number): PackSparseDenseSet {
-    return new PackSparseDenseSet(Pack.uint8(capacity))
-  }
+/**
+ * Instantiate a uint8 sparse-dense set.
+ *
+ * @param capacity - Capacity of the sparse-dense set to instantiate.
+ *
+ * @returns A new sparse-dense set of the given capacity.
+ */
+export function createUint8PackSparseDenseSet(capacity: number): PackSparseDenseSet {
+  return new PackSparseDenseSet(createUint8Pack, capacity)
+}
 
-  /**
-   * Instantiate an array sparse-dense set.
-   *
-   * @param capacity - Capacity of the sparse-dense set to instantiate.
-   *
-   * @returns A new sparse-dense set of the given capacity.
-   */
-  export function any(capacity: number): PackSparseDenseSet {
-    return new PackSparseDenseSet(Pack.any(capacity, Empty.number))
-  }
+function createAnyNumberPack(capacity: number): Pack<number> {
+  return createArrayPack(Empty.number, capacity)
+}
 
-  /**
-   * Instantiate a sparse-dense set that can store numbers up to the given value.
-   *
-   * @param capacity - Maximum number to be able to store into the resulting sparse-dense set.
-   *
-   * @returns A new sparse-dense set that can store numbers up to the given value.
-   */
-  export function upTo(capacity: number): PackSparseDenseSet {
-    if (capacity <= 0xff) {
-      return new PackSparseDenseSet(Pack.uint8(capacity))
-    } else if (capacity <= 0xffff) {
-      return new PackSparseDenseSet(Pack.uint16(capacity))
-    } else {
-      return new PackSparseDenseSet(Pack.uint32(capacity))
-    }
-  }
+/**
+ * Instantiate an array sparse-dense set.
+ *
+ * @param capacity - Capacity of the sparse-dense set to instantiate.
+ *
+ * @returns A new sparse-dense set of the given capacity.
+ */
+export function createAnyNumberPackSparseDenseSet(capacity: number): PackSparseDenseSet {
+  return new PackSparseDenseSet(createAnyNumberPack, capacity)
+}
+
+function createPackUpTo(capacity: number): Pack<number> {
+  return createUintPackUpTo(capacity, capacity)
+}
+
+/**
+ * Instantiate a sparse-dense set that can store numbers up to the given value.
+ *
+ * @param capacity - Maximum number to be able to store into the resulting sparse-dense set.
+ *
+ * @returns A new sparse-dense set that can store numbers up to the given value.
+ */
+export function createPackSparseDenseSetUpTo(capacity: number): PackSparseDenseSet {
+  return new PackSparseDenseSet(createPackUpTo, capacity)
 }

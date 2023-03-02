@@ -1,24 +1,30 @@
 import { Comparator, equals } from '@cedric-demongivert/gl-tool-utils'
 
 import { quicksort } from '../algorithm/quicksort'
+import { join } from '../algorithm/join'
+import { gcd } from '../algorithm/gcd'
+
 import { TypedArray } from '../native/TypedArray'
 import { UintArray } from '../native/TypedArray'
 import { IntArray } from '../native/TypedArray'
 import { allocateSameTypedArray } from '../native/TypedArray'
 import { createIntArrayUpTo } from '../native/TypedArray'
 import { createUintArrayUpTo } from '../native/TypedArray'
+
 import { Sequence } from '../sequence/Sequence'
 import { SequenceCursor } from '../sequence/SequenceCursor'
-import { Pack } from './Pack'
-import { areEquallyConstructed } from '../areEquallyConstructed'
-import { IllegalArgumentsError } from '../error/IllegalArgumentsError'
 import { IllegalSequenceIndexError } from '../sequence/error/IllegalSequenceIndexError'
-import { IllegalCallError } from '../error/IllegalCallError'
-import { EmptyCollectionError } from '../error/EmptyCollectionError'
 import { NegativeSequenceIndexError } from '../sequence/error/NegativeSequenceIndexError'
-import { join } from '../algorithm/join'
 import { IllegalSubsequenceError } from '../sequence/error/IllegalSubsequenceError'
 import { createSequenceView } from '../sequence/SequenceView'
+
+import { IllegalArgumentsError } from '../error/IllegalArgumentsError'
+import { IllegalCallError } from '../error/IllegalCallError'
+import { EmptyCollectionError } from '../error/EmptyCollectionError'
+
+import { areEquallyConstructed } from '../areEquallyConstructed'
+
+import { Pack } from './Pack'
 
 /**
  * A wrapper for handling javascript ArrayBuffer instances as gl-tool Packs.
@@ -307,6 +313,70 @@ export class BufferPack<Wrapped extends TypedArray> implements Pack<number> {
 
     elements[0] = value
   }
+  
+  /**
+   * @see {@link Pack.rotate}
+   */
+  public rotate(offset: number): void {
+    const elements = this._elements
+    const size = this._size
+
+    let safeOffset: number = offset % size
+    if (safeOffset < 0) safeOffset += size
+
+    const roots: number = gcd(size, safeOffset)
+
+    for (let start = 0; start < roots; ++start) {
+      let temporary: number = elements[start]
+      let index = (start + safeOffset) % size
+
+      while (index != start) {
+        const swap: number = elements[index]
+        elements[index] = temporary
+        temporary = swap
+        index = (index + safeOffset) % size
+      }
+
+      elements[start] = temporary
+    }
+  }
+
+  /**
+   * @see {@link Pack.unique}
+   */
+  public unique(
+    comparator: Comparator<number, number> = Comparator.compareWithOperator, 
+    startOrEnd: number = 0, 
+    endOrStart: number = this._size
+  ): void {
+    const size = this._size
+    const start = startOrEnd < endOrStart ? startOrEnd : endOrStart
+    const end = startOrEnd < endOrStart ? endOrStart : startOrEnd
+
+    if (start < 0 || start > size || end > size) {
+      throw new IllegalArgumentsError({ startOrEnd, endOrStart }, new IllegalSubsequenceError(this, startOrEnd, endOrStart))
+    }
+
+    const elements = this._elements
+    let processedIndex = start
+
+    for (let candidateIndex = start; candidateIndex < end; ++candidateIndex) {
+      const candidate = elements[candidateIndex]
+
+      let index = start
+
+      while (index < processedIndex && comparator(candidate, elements[index]) !== 0) {
+        ++index
+      }
+
+      if (index === processedIndex) {
+        elements[processedIndex] = elements[candidateIndex]
+        processedIndex += 1
+      }
+    }
+
+    this.delete(processedIndex, end)
+  }
 
   /**
    * @see {@link Pack.delete}
@@ -356,24 +426,14 @@ export class BufferPack<Wrapped extends TypedArray> implements Pack<number> {
   /**
    * @see {@link Pack.has}
    */
-  public has<Key>(
-    key: Key, 
-    comparator: Comparator<Key, number> = Comparator.compareWithOperator,
-    startOrEnd: number = 0,
-    endOrStart: number = this.size
-  ): boolean {
-    return this.indexOf(key, comparator, startOrEnd, endOrStart) >= 0
+  public has(element: number, startOrEnd: number = 0, endOrStart: number = this.size): boolean {
+    return this.indexOf(element, startOrEnd, endOrStart) >= 0
   }
 
   /**
    * @see {@link Pack.indexOf}
    */
-  public indexOf<Key>(
-    key: Key, 
-    comparator: Comparator<Key, number> = Comparator.compareWithOperator,
-    startOrEnd: number = 0,
-    endOrStart: number = this.size
-  ): number {
+  public indexOf(element: number, startOrEnd: number = 0, endOrStart: number = this.size): number {
     const size = this._size
     const start = startOrEnd < endOrStart ? startOrEnd : endOrStart
     const end = startOrEnd < endOrStart ? endOrStart : startOrEnd
@@ -385,7 +445,7 @@ export class BufferPack<Wrapped extends TypedArray> implements Pack<number> {
     const elements = this._elements
 
     for (let index = start; index < end; ++index) {
-      if (comparator(key, elements[index]) === 0) {
+      if (element === elements[index]) {
         return index
       }
     }

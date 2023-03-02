@@ -1,16 +1,11 @@
 import { Clearable, Clonable } from '@cedric-demongivert/gl-tool-utils'
 import { Collection } from '../Collection'
-import { Group } from './Group'
+import { Group } from '../group/Group'
 
 /**
  * A set is an unordered collection that does not accept duplicates.
  */
 export interface Set<Element> extends Group<Element>, Clearable, Clonable {
-  /**
-   * @see {@link Collection.isSet}
-   */
-  isSet(): true
-
   /**
    * Add a new element to the set.
    *
@@ -41,16 +36,4 @@ export interface Set<Element> extends Group<Element>, Clearable, Clonable {
    * @see {@link Clonable.clone}
    */
   clone(): Set<Element>
-}
-
-/**
- * 
- */
-export namespace Set {
-  /**
-   * 
-   */
-  export function is<Element>(collection: Collection<Element>): collection is Set<Element> {
-    return collection.isSet()
-  }
 }

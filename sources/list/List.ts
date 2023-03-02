@@ -1,17 +1,13 @@
 import { Clearable, Comparator } from '@cedric-demongivert/gl-tool-utils'
 import { Collection } from '../Collection'
-import type { IllegalArgumentsError } from '../error/IllegalArgumentsError'
-import type { EmptyCollectionError } from '../error/EmptyCollectionError'
-import type { NegativeSequenceIndexError } from '../sequence/error/NegativeSequenceIndexError'
-import type { IllegalSequenceIndexError } from '../sequence/error/IllegalSequenceIndexError'
-import type { IllegalSubsequenceError } from '../sequence/error/IllegalSubsequenceError'
 
 import { Sequence } from '../sequence/Sequence'
+import { SortableSequence } from '../sequence/SortableSequence'
 
 /**
  * A mutable sequence of elements.
  */
-export interface List<Element> extends Sequence<Element>, Clearable {
+export interface List<Element> extends SortableSequence<Element>, Clearable {
   /**
    * Returns the number of elements in the list if read and updates the number of elements in the list if wrote. 
    *
@@ -52,17 +48,6 @@ export interface List<Element> extends Sequence<Element>, Clearable {
    * @returns The first element of the list before the mutation.
    */
   shift(): Element
-
-  /**
-   * Swaps two elements of the list.
-   * 
-   * @throws {@link IllegalArgumentsError<IllegalSequenceIndexError>} (MUST) if the first index is out of bounds.
-   * @throws {@link IllegalArgumentsError<IllegalSequenceIndexError>} (MUST) if the second index is out of bounds.
-   *
-   * @param first - Index of the first element to swap in the sequence.
-   * @param second - Index of the second element to swap in the sequence.
-   */
-  swap(first: number, second: number): void
 
   /**
    * Updates an element of the list.
@@ -121,6 +106,33 @@ export interface List<Element> extends Sequence<Element>, Clearable {
   sort(comparator?: Comparator<Element, Element>, startOrEnd?: number, endOrStart?: number): void
 
   /**
+   * Removes duplicates from the list by using the requested comparator.
+   * 
+   * This method preserves the ordering of the list and as a result MAY be 
+   * costly in time. For more information about this behavior, look at your 
+   * list implementation.
+   * 
+   * By default, a list MUST removes its duplicates from its first element to 
+   * its last one by using the Comparator.compareWithOperator comparator. 
+   * 
+   * @see {@link Comparator.compareWithOperator}
+   * 
+   * This method allows removing duplicates from a subsequence of elements. It MUST allow 
+   * its user to define the boundaries of a subsequence in any order.
+   * 
+   * This operation does nothing if the given boundaries define a valid empty sequence.
+   * 
+   * @throws {@link IllegalArgumentsError<IllegalSubsequenceError>} (MUST) if the requested subsequence is out of the bounds of the collection.
+   *
+   * @param [comparator] - The comparator to use.
+   * @param [startOrEnd] - Index of the first element to process (inclusive).
+   * @param [endOrStart] - Index of the last element to process (exclusive).
+   * 
+   * @see {@link Array.sort}
+   */
+  unique(comparator?: Comparator<Element, Element>, startOrEnd?: number, endOrStart?: number): void
+
+  /**
    * Inserts a value at the given location in the sequence.
    *
    * All values after the insertion index will be moved to their next available
@@ -149,6 +161,15 @@ export interface List<Element> extends Sequence<Element>, Clearable {
    * this method MUST throw an error. @TODO Better define this error
    */
   push(value: Element): void
+  
+  /**
+   * Rotates the sequence by the given offset.
+   * 
+   * This method accepts negative offsets.
+   * 
+   * @param offset - The offset to use.
+   */
+  rotate(offset: number): void
 
   /**
    * Appends the given value at the beginning of the list.
@@ -246,4 +267,14 @@ export interface List<Element> extends Sequence<Element>, Clearable {
    * @see {@link Sequence.view}
    */
   view(): Sequence<Element>
+}
+
+/**
+ * 
+ */
+export namespace List {
+  /**
+   * 
+   */
+  export type Allocator<Element> = () => List<Element>
 }

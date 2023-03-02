@@ -56,28 +56,12 @@ describe('CollectionView', function () {
     it('forwards the call to the underlying implementation', function () {
       const collection = mock<Collection<number>>()
       const view = new CollectionView(collection)
-
-      const comparator = jest.fn()
-  
-      collection.has.mockReturnValue(true)
-  
-      expect(collection.has).not.toHaveBeenCalled()
-      expect(view.has(15, comparator)).toBeTruthy()
-      expect(collection.has).toHaveBeenCalledWith(15, comparator)
-    })
-
-    /**
-     * 
-     */
-    it('uses Comparator.compareWithOperator by default', function () {
-      const collection = mock<Collection<number>>()
-      const view = new CollectionView(collection)
   
       collection.has.mockReturnValue(true)
   
       expect(collection.has).not.toHaveBeenCalled()
       expect(view.has(15)).toBeTruthy()
-      expect(collection.has).toHaveBeenCalledWith(15, Comparator.compareWithOperator)
+      expect(collection.has).toHaveBeenCalledWith(15)
     })
   })
 

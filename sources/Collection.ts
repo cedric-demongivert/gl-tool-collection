@@ -1,4 +1,4 @@
-import type { Comparable, Clonable, Comparator } from '@cedric-demongivert/gl-tool-utils'
+import type { Comparable, Clonable } from '@cedric-demongivert/gl-tool-utils'
 import type { ForwardCursor } from './cursor/ForwardCursor'
 
 /**
@@ -24,16 +24,16 @@ export interface Collection<Element> extends Iterable<Element>, Comparable, Clon
   forward(): ForwardCursor<Element>
 
   /**
-   * Returns true if an element of this collection is equal to the given key.
+   * Returns true if the collection contains the requested element.
    * 
-   * By default, a collection will compare the given key with the {@link Comparator.compareWithOperator} comparator.
+   * For more information about the equality relationship used by 
+   * this method, look at your collection implementation. 
    *
-   * @param key - A key to search for.
-   * @param [comparator=Comparator.compareWithOperator] - A comparison procedure between the key and the elements of the collection.
+   * @param element - An element to search for.
    *
-   * @returns True if the given element is in this collection.
+   * @returns True if the collection contains the requested element.
    */
-  has<Key = Element>(key: Key, comparator?: Comparator<Key, Element>): boolean
+  has(element: Element): boolean
 
   /**
    * @returns A javascript iterator over this collection.

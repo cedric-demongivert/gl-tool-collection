@@ -19,6 +19,11 @@ export interface Allocator<Product> extends Clearable {
   free(instance: Product): void
 
   /**
+   * 
+   */
+  rollback(instance: Product): void
+
+  /**
    * Empty this allocator of all of it's currently pre-allocated instances.
    */
   clear(): void

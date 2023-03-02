@@ -201,11 +201,11 @@ describe('pack/ArrayPack', function () {
     it('allows searching for an element in a given subsequence', function () {
       const pack: ArrayPack<number> = createArrayPackFromValues(Empty.zero, 0, 1, 2, 1, 3, 2, 3, 4)
 
-      expect(pack.indexOf(0, Comparator.compareWithOperator, 2, 4)).toBeLessThan(0)
-      expect(pack.indexOf(1, Comparator.compareWithOperator, 2, 4)).toBe(3)
-      expect(pack.indexOf(2, Comparator.compareWithOperator, 2, 4)).toBe(2)
-      expect(pack.indexOf(3, Comparator.compareWithOperator, 2, 4)).toBeLessThan(0)
-      expect(pack.indexOf(4, Comparator.compareWithOperator, 2, 4)).toBeLessThan(0)
+      expect(pack.indexOf(0, 2, 4)).toBeLessThan(0)
+      expect(pack.indexOf(1, 2, 4)).toBe(3)
+      expect(pack.indexOf(2, 2, 4)).toBe(2)
+      expect(pack.indexOf(3, 2, 4)).toBeLessThan(0)
+      expect(pack.indexOf(4, 2, 4)).toBeLessThan(0)
     })
 
     /**
@@ -214,11 +214,11 @@ describe('pack/ArrayPack', function () {
     it('allows defining the boundaries of a subsequence in any order', function () {
       const pack: ArrayPack<number> = createArrayPackFromValues(Empty.zero, 0, 1, 2, 1, 3, 2, 3, 4)
 
-      expect(pack.indexOf(0, Comparator.compareWithOperator, 4, 2)).toBeLessThan(0)
-      expect(pack.indexOf(1, Comparator.compareWithOperator, 4, 2)).toBe(3)
-      expect(pack.indexOf(2, Comparator.compareWithOperator, 4, 2)).toBe(2)
-      expect(pack.indexOf(3, Comparator.compareWithOperator, 4, 2)).toBeLessThan(0)
-      expect(pack.indexOf(4, Comparator.compareWithOperator, 4, 2)).toBeLessThan(0)
+      expect(pack.indexOf(0, 4, 2)).toBeLessThan(0)
+      expect(pack.indexOf(1, 4, 2)).toBe(3)
+      expect(pack.indexOf(2, 4, 2)).toBe(2)
+      expect(pack.indexOf(3, 4, 2)).toBeLessThan(0)
+      expect(pack.indexOf(4, 4, 2)).toBeLessThan(0)
     })
 
     /**
@@ -227,10 +227,10 @@ describe('pack/ArrayPack', function () {
     it('throws if the requested subsequence is out of the bounds of the collection', function () {
       const pack: ArrayPack<number> = createArrayPackFromValues(Empty.zero, 0, 1, 2, 1, 3, 2, 3, 4)
 
-      expect(() => pack.indexOf(15, Comparator.compareWithOperator, -5, 4)).toThrow()
-      expect(() => pack.indexOf(-5, Comparator.compareWithOperator, 12, 4)).toThrow()
-      expect(() => pack.indexOf(-5, Comparator.compareWithOperator, 4, -5)).toThrow()
-      expect(() => pack.indexOf(-5, Comparator.compareWithOperator, 4, 12)).toThrow()
+      expect(() => pack.indexOf(15, -5, 4)).toThrow()
+      expect(() => pack.indexOf(-5, 12, 4)).toThrow()
+      expect(() => pack.indexOf(-5, 4, -5)).toThrow()
+      expect(() => pack.indexOf(-5, 4, 12)).toThrow()
     })
   })
 
@@ -515,6 +515,61 @@ describe('pack/ArrayPack', function () {
   /**
    * 
    */
+  describe('#rotate', function () {
+    /**
+     * 
+     */
+    it('rotates the sequence by the given offset', function () {
+      const pack: ArrayPack<number> = createArrayPackFromValues(Empty.zero, 0, 1, 2, 3, 4, 5)
+
+      expect([...pack]).toEqual([0, 1, 2, 3, 4, 5])
+
+      pack.rotate(1)
+
+      expect([...pack]).toEqual([5, 0, 1, 2, 3, 4])
+
+      pack.rotate(2)
+
+      expect([...pack]).toEqual([3, 4, 5, 0, 1, 2])
+
+      pack.rotate(6)
+
+      expect([...pack]).toEqual([3, 4, 5, 0, 1, 2])
+
+      pack.rotate(0)
+
+      expect([...pack]).toEqual([3, 4, 5, 0, 1, 2])
+    })
+
+    /**
+     * 
+     */
+    it('accepts negative offsets', function () {
+      const pack: ArrayPack<number> = createArrayPackFromValues(Empty.zero, 0, 1, 2, 3, 4, 5)
+
+      expect([...pack]).toEqual([0, 1, 2, 3, 4, 5])
+
+      pack.rotate(-1)
+
+      expect([...pack]).toEqual([1, 2, 3, 4, 5, 0])
+
+      pack.rotate(-2)
+
+      expect([...pack]).toEqual([3, 4, 5, 0, 1, 2])
+
+      pack.rotate(-6)
+
+      expect([...pack]).toEqual([3, 4, 5, 0, 1, 2])
+
+      pack.rotate(-0)
+
+      expect([...pack]).toEqual([3, 4, 5, 0, 1, 2])
+    })
+  })
+
+  /**
+   * 
+   */
   describe('#set', function () {
     /**
      * 
@@ -691,6 +746,76 @@ describe('pack/ArrayPack', function () {
       expect(() => pack.sort(Comparator.compareNumbers, 12, 2)).toThrow()
     })
   })
+
+  /**
+   * 
+   */
+  describe('#unique', function () {
+    /**
+     * 
+     */
+    it('removes duplicates from the list', function () {
+      const pack: ArrayPack<number> = createArrayPackFromValues(Empty.zero, 0, 1, 0, 2, 2, 1, 3, 2, 3)
+
+      expect([...pack]).toEqual([0, 1, 0, 2, 2, 1, 3, 2, 3])
+
+      pack.unique(Comparator.compareNumbers)
+
+      expect([...pack]).toEqual([0, 1, 2, 3])
+    })
+
+    /**
+     * 
+     */
+    it('allows removing duplicates from a subsequence of elements', function () {
+      const pack: ArrayPack<number> = createArrayPackFromValues(Empty.zero, 0, 1, 0, 2, 2, 1, 3, 2, 3)
+
+      expect([...pack]).toEqual([0, 1, 0, 2, 2, 1, 3, 2, 3])
+
+      pack.unique(Comparator.compareNumbers, 2, 7)
+
+      expect([...pack]).toEqual([0, 1, 0, 2, 1, 3, 2, 3])
+    })
+
+    /**
+     * 
+     */
+    it('allow its user to define the boundaries of a subsequence in any order', function () {
+      const pack: ArrayPack<number> = createArrayPackFromValues(Empty.zero, 0, 1, 0, 2, 2, 1, 3, 2, 3)
+
+      expect([...pack]).toEqual([0, 1, 0, 2, 2, 1, 3, 2, 3])
+
+      pack.unique(Comparator.compareNumbers, 7, 2)
+
+      expect([...pack]).toEqual([0, 1, 0, 2, 1, 3, 2, 3])
+    })
+
+    /**
+     * 
+     */
+    it('does nothing if the given boundaries define a valid empty sequence', function () {
+      const pack: ArrayPack<number> = createArrayPackFromValues(Empty.zero, 0, 1, 0, 2, 2, 1, 3, 2, 3)
+
+      expect([...pack]).toEqual([0, 1, 0, 2, 2, 1, 3, 2, 3])
+
+      pack.unique(Comparator.compareNumbers, 8, 8)
+
+      expect([...pack]).toEqual([0, 1, 0, 2, 2, 1, 3, 2, 3])
+    })
+
+    /**
+     * 
+     */
+    it('throws if the requested subsequence is out of the bounds of the collection', function () {
+      const pack: ArrayPack<number> = createArrayPackFromValues(Empty.zero, 3, 1, 2, 0, 7, 4, 6, 5, 8)
+
+      expect(() => pack.unique(Comparator.compareNumbers, -5, 2)).toThrow()
+      expect(() => pack.unique(Comparator.compareNumbers, 2, -5)).toThrow()
+      expect(() => pack.unique(Comparator.compareNumbers, 2, 12)).toThrow()
+      expect(() => pack.unique(Comparator.compareNumbers, 12, 2)).toThrow()
+    })
+  })
+
   /**
    * 
    */

@@ -1,13 +1,12 @@
-import { ReallocableCollection } from '../ReallocableCollection'
+import { OrderedGroup } from '../group/OrderedGroup'
 
-import { OrderedGroup } from './OrderedGroup'
 import { OrderedSet } from './OrderedSet'
 import { PackSparseDenseSet } from './PackSparseDenseSet'
 
 /**
  * 
  */
-export interface SparseDenseSet extends OrderedSet<number>, ReallocableCollection {
+export interface SparseDenseSet extends OrderedSet<number> {
   /**
   * @see {@link Collection.view}
   */

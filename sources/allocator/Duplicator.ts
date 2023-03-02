@@ -12,4 +12,9 @@ export interface Duplicator<Product> extends Allocator<Product> {
    * @returns A new instance of the managed type of object that is a copy of the given one.
    */
   copy(toCopy: Product): Product
+
+  /**
+   * 
+   */
+  move(origin: Product, target: Product): void
 }
