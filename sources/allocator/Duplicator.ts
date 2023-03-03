@@ -5,7 +5,7 @@ import { Allocator } from './Allocator'
  */
 export interface Duplicator<Product> extends Allocator<Product> {
   /**
-   * Allocate and return a new instance of the managed type of object that is a copy of an existing one.
+   * Returns a new instance of the managed type of object that is a copy of an existing one.
    *
    * @param toCopy - An instance to copy.
    *

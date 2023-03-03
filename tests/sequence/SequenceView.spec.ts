@@ -101,7 +101,7 @@ describe('sequence/SequenceView', function () {
   
         expect(sequence.indexOf).not.toHaveBeenCalled()
         expect(view.indexOf(18)).toBe(5)
-        expect(sequence.indexOf).toHaveBeenCalledWith(18, Comparator.compareWithOperator, 0, 12)
+        expect(sequence.indexOf).toHaveBeenCalledWith(18, 0, 12)
       })
     })
 
@@ -138,7 +138,7 @@ describe('sequence/SequenceView', function () {
      
            expect(sequence.has).not.toHaveBeenCalled()
            expect(view.has(18)).toBe(true)
-           expect(sequence.has).toHaveBeenCalledWith(18, Comparator.compareWithOperator, 0, 12)
+           expect(sequence.has).toHaveBeenCalledWith(18, 0, 12)
          })
     })
 

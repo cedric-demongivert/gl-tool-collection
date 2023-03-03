@@ -80,8 +80,8 @@ describe('sequence/EmptySequence', function () {
          */
         it('throws if the specified subsequence is out of bounds', function () {
             const sequence = new EmptySequence<number>()
-            expect(() => sequence.indexOf(18, Comparator.compareWithOperator, 0, 5)).toThrow()
-            expect(() => sequence.indexOf(18, Comparator.compareWithOperator, 5, 5)).toThrow()
+            expect(() => sequence.indexOf(18, 0, 5)).toThrow()
+            expect(() => sequence.indexOf(18, 5, 5)).toThrow()
         })
     })
 
@@ -102,8 +102,8 @@ describe('sequence/EmptySequence', function () {
          */
         it('throws if the specified subsequence is out of bounds', function () {
             const sequence = new EmptySequence<number>()
-            expect(() => sequence.has(18, Comparator.compareWithOperator, 0, 5)).toThrow()
-            expect(() => sequence.has(18, Comparator.compareWithOperator, 5, 5)).toThrow()
+            expect(() => sequence.has(18, 0, 5)).toThrow()
+            expect(() => sequence.has(18, 5, 5)).toThrow()
         })
     })
 })
