@@ -203,8 +203,8 @@ describe('pack/InstancePack', function () {
       expect(pack.indexOf(pack.get(0))).toBe(0)
       expect(pack.indexOf(pack.get(1))).toBe(1)
       expect(pack.indexOf(pack.get(2))).toBe(2)
-      expect(pack.indexOf(pack.get(3))).toBe(4)
-      expect(pack.indexOf(pack.get(4))).toBe(7)
+      expect(pack.indexOf(pack.get(3))).toBe(1)
+      expect(pack.indexOf(pack.get(4))).toBe(4)
     })
     
     /**
@@ -213,8 +213,8 @@ describe('pack/InstancePack', function () {
     it('returns a negative integer if the given value does not exist in the sequence', function () {
       const pack = createInstancePackFromValues(DUPLICATOR, ...wrap(0, 1, 2, 3, 4))
 
-      expect(pack.indexOf(new Integer(1))).toBeLessThan(0)
-      expect(pack.indexOf(new Integer(2))).toBeLessThan(0)
+      expect(pack.indexOf(new Integer(12))).toBeLessThan(0)
+      expect(pack.indexOf(new Integer(25))).toBeLessThan(0)
       expect(pack.indexOf(new Integer(-5))).toBeLessThan(0)
     })
 
@@ -227,7 +227,7 @@ describe('pack/InstancePack', function () {
       expect(pack.indexOf(pack.get(0), 2, 4)).toBeLessThan(0)
       expect(pack.indexOf(pack.get(1), 2, 4)).toBe(3)
       expect(pack.indexOf(pack.get(2), 2, 4)).toBe(2)
-      expect(pack.indexOf(pack.get(3), 2, 4)).toBeLessThan(0)
+      expect(pack.indexOf(pack.get(3), 2, 4)).toBe(3)
       expect(pack.indexOf(pack.get(4), 2, 4)).toBeLessThan(0)
     })
 
@@ -240,7 +240,7 @@ describe('pack/InstancePack', function () {
       expect(pack.indexOf(pack.get(0), 4, 2)).toBeLessThan(0)
       expect(pack.indexOf(pack.get(1), 4, 2)).toBe(3)
       expect(pack.indexOf(pack.get(2), 4, 2)).toBe(2)
-      expect(pack.indexOf(pack.get(3), 4, 2)).toBeLessThan(0)
+      expect(pack.indexOf(pack.get(3), 4, 2)).toBe(3)
       expect(pack.indexOf(pack.get(4), 4, 2)).toBeLessThan(0)
     })
 
@@ -459,7 +459,7 @@ describe('pack/InstancePack', function () {
       expect([...pack]).toEqual([...wrap(0, 1, 0, 2, 2, 1, 3, 2, 3)])
 
       pack.unique(compareIntegers, 2, 7)
-
+      
       expect([...pack]).toEqual([...wrap(0, 1, 0, 2, 1, 3, 2, 3)])
     })
 
@@ -1075,9 +1075,9 @@ describe('pack/InstancePack', function () {
       pack.warp(1)
 
       expect(pack.size).toBe(3)
-      expect(pack.has(new Integer(0), compareIntegers)).toBeTruthy()
-      expect(pack.has(new Integer(2), compareIntegers)).toBeTruthy()
-      expect(pack.has(new Integer(3), compareIntegers)).toBeTruthy()
+      expect(pack.has(new Integer(0))).toBeTruthy()
+      expect(pack.has(new Integer(2))).toBeTruthy()
+      expect(pack.has(new Integer(3))).toBeTruthy()
     })
     
     /**
@@ -1091,11 +1091,11 @@ describe('pack/InstancePack', function () {
       pack.warp(1, 3)
 
       expect(pack.size).toBe(5)
-      expect(pack.has(new Integer(0), compareIntegers)).toBeTruthy()
-      expect(pack.has(new Integer(3), compareIntegers)).toBeTruthy()
-      expect(pack.has(new Integer(4), compareIntegers)).toBeTruthy()
-      expect(pack.has(new Integer(5), compareIntegers)).toBeTruthy()
-      expect(pack.has(new Integer(6), compareIntegers)).toBeTruthy()
+      expect(pack.has(new Integer(0))).toBeTruthy()
+      expect(pack.has(new Integer(3))).toBeTruthy()
+      expect(pack.has(new Integer(4))).toBeTruthy()
+      expect(pack.has(new Integer(5))).toBeTruthy()
+      expect(pack.has(new Integer(6))).toBeTruthy()
     })
     
     /**
@@ -1109,11 +1109,11 @@ describe('pack/InstancePack', function () {
       pack.warp(3, 1)
 
       expect(pack.size).toBe(5)
-      expect(pack.has(new Integer(0), compareIntegers)).toBeTruthy()
-      expect(pack.has(new Integer(3), compareIntegers)).toBeTruthy()
-      expect(pack.has(new Integer(4), compareIntegers)).toBeTruthy()
-      expect(pack.has(new Integer(5), compareIntegers)).toBeTruthy()
-      expect(pack.has(new Integer(6), compareIntegers)).toBeTruthy()
+      expect(pack.has(new Integer(0))).toBeTruthy()
+      expect(pack.has(new Integer(3))).toBeTruthy()
+      expect(pack.has(new Integer(4))).toBeTruthy()
+      expect(pack.has(new Integer(5))).toBeTruthy()
+      expect(pack.has(new Integer(6))).toBeTruthy()
     })
 
     /**

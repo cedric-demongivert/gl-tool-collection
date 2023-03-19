@@ -13,7 +13,7 @@ export interface OrderedGroup<Element> extends Group<Element>, Sequence<Element>
   /**
    * @see {@link Sequence.has}
    */
-  has<Key = Element>(key: Key, comparator?: Comparator<Key, Element>, startOrEnd?: number, endOrStart?: number): boolean
+  has(key: Element, startOrEnd?: number, endOrStart?: number): boolean
 
   /**
    * @see {@link Clonable.clone}

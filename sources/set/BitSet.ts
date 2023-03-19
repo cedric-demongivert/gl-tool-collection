@@ -8,6 +8,11 @@ import { OrderedGroup } from '../group/OrderedGroup'
 import { RandomAccessCursor } from '../cursor/RandomAccessCursor'
 
 import { OrderedSet } from './OrderedSet'
+import { createOrderedGroupView } from '../group/OrderedGroupView'
+import { IllegalArgumentsError } from '../error/IllegalArgumentsError'
+import { IllegalSubsequenceError } from '../sequence/error/IllegalSubsequenceError'
+import { Comparator } from '@cedric-demongivert/gl-tool-utils'
+import { join } from '../algorithm'
 
 // SWAR Algorithm [SIMD Within A Register]
 function countBits(bits: number): number {
@@ -38,7 +43,7 @@ export class BitSet implements OrderedSet<number>
   /**
    *
    */
-  private _elements: Pack<number>
+  private readonly _elements: Pack<number>
 
   /**
    *
@@ -65,55 +70,85 @@ export class BitSet implements OrderedSet<number>
   /**
    * @see {@link OrderedSet.has}
    */
-  public has(element: number): boolean {
-    const elements: Pack<number> = this._elements
-    const cell: number = element >> 5
-    const mask: number = 0b1 << (element % 32)
+  public has(element: number, startOrEnd: number = 0, endOrStart = this.size): boolean {
+    if (startOrEnd === 0 && endOrStart === this.size || endOrStart === 0 && startOrEnd === this.size) {
+      const elements: Pack<number> = this._elements
+      const cell: number = element >> 5
+      const mask: number = 0b1 << (element % 32)
 
-    return cell < elements.size && (elements.get(cell)! & mask) > 0
+      return cell < elements.size && (elements.get(cell) & mask) > 0
+    } else {
+      return this.indexOf(element, startOrEnd, endOrStart) > -1
+    }    
   }
 
   /**
-  * @see {@link Sequence.indexOf}
-  */
-  public indexOf(element: number): number {
+   * @see {@link Sequence.indexOf}
+   */
+  public indexOf(element: number, startOrEnd: number = 0, endOrStart = this.size): number {
+    const size = this._size
+    const start = startOrEnd < endOrStart ? startOrEnd : endOrStart
+    const end = startOrEnd < endOrStart ? endOrStart : startOrEnd
+
+    if (start < 0 || start > size || end > size) {
+      throw new IllegalArgumentsError({ startOrEnd, endOrStart }, new IllegalSubsequenceError(this, startOrEnd, endOrStart))
+    }
+
     const elements: Pack<number> = this._elements
     const cell: number = element >> 5
     const mask: number = 0b1 << (element % 32)
 
-    if (cell < elements.size && (elements.get(cell)! & mask) > 0) {
+    if (cell < elements.size && (elements.get(cell) & mask) > 0) {
       let offset: number = 0
 
       for (let index = 0; index < cell; ++index) {
-        offset += countBits(elements.get(index)!)
+        offset += countBits(elements.get(index))
       }
 
-      return offset + countBits(elements.get(cell)! & ~(0xFFFFFFFF << element % 32)) - 1
+      const result = offset + countBits(elements.get(cell) & ~(0xFFFFFFFF << element % 32)) - 1
+
+      return result >= start && result < end ? result : -1
     } else {
       return -1
     }
   }
 
   /**
-  * @see {@link Sequence.hasInSubsequence}
-  */
-  public hasInSubsequence(element: number, offset: number, size: number): boolean {
-    const index: number = this.indexOf(element)
-    return index >= offset && index < offset + size
-  }
+   * 
+   */
+  public search<Key>(key: Key, comparator: Comparator<Key, number>, startOrEnd: number = 0, endOrStart: number = this.size): number {
+    const size = this.size
+    const start = startOrEnd < endOrStart ? startOrEnd : endOrStart
+    const end = startOrEnd < endOrStart ? endOrStart : startOrEnd
 
-  /**
-  * @see {@link Sequence.indexOfInSubsequence}
-  */
-  public indexOfInSubsequence(element: number, offset: number, size: number): number {
-    const index: number = this.indexOf(element)
-
-    if (index < size) {
-      return Math.max(index - offset, -1)
-    } else {
-      return -1
+    if (start < 0 || start > size || end > size) {
+      throw new IllegalArgumentsError({ startOrEnd, endOrStart }, new IllegalSubsequenceError(this, startOrEnd, endOrStart))
     }
+
+    const elements: Pack<number> = this._elements
+    let skipped: number = 0
+
+    for (let cell = 0; cell < elements.size; ++cell) {
+      const base: number = cell * 32
+
+      for (let index = 0; index < 32; ++index) {
+        if ((elements.get(cell) & (0b1 << index)) > 0) {
+          if (skipped >= start) {
+            if (skipped < end) {
+              if (comparator(key, base + index) === 0) return skipped
+            } else {
+              return -1
+            }
+          }
+
+          skipped += 1
+        }
+      }
+    }
+
+    return -1
   }
+  
 
   /**
   * @see {@link Set.add}
@@ -123,7 +158,7 @@ export class BitSet implements OrderedSet<number>
     const cell: number = element >> 5
     const mask: number = 0b1 << (element % 32)
 
-    if (cell >= elements.size || (elements.get(cell)! & mask) === 0) {
+    if (cell >= elements.size || (elements.get(cell) & mask) === 0) {
       this._size += 1
 
       if (elements.capacity < cell) {
@@ -133,7 +168,7 @@ export class BitSet implements OrderedSet<number>
       if (elements.size < cell) {
         elements.set(cell, mask)
       } else {
-        elements.set(cell, elements.get(cell)! | mask)
+        elements.set(cell, elements.get(cell) | mask)
       }
     }
   }
@@ -146,9 +181,9 @@ export class BitSet implements OrderedSet<number>
     const cell: number = element >> 5
     const mask: number = 0b1 << (element % 32)
 
-    if (cell < elements.size && (elements.get(cell)! & mask) > 0) {
+    if (cell < elements.size && (elements.get(cell) & mask) > 0) {
       this._size -= 1
-      const nextBits: number = elements.get(cell)! & ~mask
+      const nextBits: number = elements.get(cell) & ~mask
 
       if (nextBits === 0) {
         do {
@@ -169,15 +204,15 @@ export class BitSet implements OrderedSet<number>
     const elements: Pack<number> = this._elements
     let skipped: number = 0
     let cell: number = 0
-    let cellElements: number = countBits(elements.get(cell)!)
+    let cellElements: number = countBits(elements.get(cell))
 
     while (skipped + cellElements < index) {
       cell += 1
       skipped += cellElements
-      cellElements = countBits(elements.get(cell)!)
+      cellElements = countBits(elements.get(cell))
     }
 
-    const bits: number = elements.get(cell)!
+    const bits: number = elements.get(cell)
     const rest: number = index - skipped // + 1?
 
     /** generated **/
@@ -245,21 +280,21 @@ export class BitSet implements OrderedSet<number>
   }
 
   /**
-  * @see {@link ReallocableCollection.reallocate}
+  * 
   */
   public reallocate(capacity: number): void {
     this._elements.reallocate(capacity)
   }
 
   /**
-  * @see {@link ReallocableCollection.fit}
+  * 
   */
   public fit(): void {
     this._elements.fit()
   }
 
   /**
-  * @see {@link Set.copy}
+  * @see {@link OrderedSet.copy}
   */
   public copy(toCopy: Group<number>): void {
     this.clear()
@@ -270,7 +305,7 @@ export class BitSet implements OrderedSet<number>
   }
 
   /**
-  * @see {@link Collection.clone}
+  * @see {@link OrderedSet.clone}
   */
   public clone(): BitSet {
     const result: BitSet = new BitSet(this.capacity)
@@ -279,7 +314,7 @@ export class BitSet implements OrderedSet<number>
   }
 
   /**
-  * @see {@link Clearable.clear}
+  * @see {@link OrderedSet.clear}
   */
   public clear(): void {
     this._elements.clear()
@@ -287,14 +322,14 @@ export class BitSet implements OrderedSet<number>
   }
 
   /**
-  * @see {@link Sequence.first}
+  * @see {@link OrderedSet.first}
   */
   public get first(): number {
     return this.get(0)
   }
 
   /**
-  * @see {@link Sequence.last}
+  * @see {@link OrderedSet.last}
   */
   public get last(): number {
     // optimizable
@@ -302,21 +337,21 @@ export class BitSet implements OrderedSet<number>
   }
 
   /**
-  * @see {@link Collection.view}
+  * @see {@link OrderedSet.view}
   */
   public view(): OrderedGroup<number> {
-    return this._view
+    return createOrderedGroupView(this)
   }
 
   /**
-  * @see {@link Collection.forward}
+  * @see {@link OrderedSet.forward}
   */
   public forward(): RandomAccessCursor<number> {
     return new SequenceCursor(this, 0)
   }
 
   /**
-  * @see {@link Collection.values}
+  * @see {@link OrderedSet.values}
   */
   public * values(): IterableIterator<number> {
     const elements: Pack<number> = this._elements
@@ -325,7 +360,7 @@ export class BitSet implements OrderedSet<number>
       const base: number = cell * 32
 
       for (let index = 0; index < 32; ++index) {
-        if ((elements.get(cell)! & (0b1 << index)) > 0) {
+        if ((elements.get(cell) & (0b1 << index)) > 0) {
           yield base + index
         }
       }
@@ -333,14 +368,14 @@ export class BitSet implements OrderedSet<number>
   }
 
   /**
-  * @see {@link Collection[Symbol.iterator]}
+  * @see {@link OrderedSet[Symbol.iterator]}
   */
   public [Symbol.iterator](): IterableIterator<number> {
     return this.values()
   }
 
   /**
-  * @see {@link Collection.equals}
+  * @see {@link OrderedSet.equals}
   */
   public equals(other: any): boolean {
     if (other == null) return false
@@ -360,27 +395,23 @@ export class BitSet implements OrderedSet<number>
   }
 
   /**
-   * @see {@link Object.toString}
+   * @see {@link OrderedSet.stringify}
+   */
+  public stringify(): string {
+    return '{' + join(this, ', ') + '}'
+  }
+
+  /**
+   * @see {@link OrderedSet.toString}
    */
   public toString(): string {
-    return this.constructor.name + ' ' + Group.stringify(this)
+    return this.constructor.name + ' ' + this.stringify()
   }
 }
 
-export namespace BitSet {
-  /**
-  * Return a copy of a given pack set.
-  *
-  * @param toCopy - A pack set to copy.
-  */
-  export function copy(toCopy: BitSet): BitSet {
-    return toCopy == null ? toCopy : toCopy.clone()
-  }
-
-  /**
-  *
-  */
-  export function allocate(capacity: number): BitSet {
-    return new BitSet(capacity)
-  }
+/**
+ *
+ */
+export function createBitSet(capacity: number): BitSet {
+  return new BitSet(capacity)
 }

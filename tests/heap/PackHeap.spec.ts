@@ -1,20 +1,32 @@
-/** eslint-env jest */
+import { PackHeap } from '../../sources/heap/PackHeap'
+import { Heaps } from '../../sources/heap/Heaps'
 
-import { Heap } from '../../src/heap/Heap'
-
-type HeapFactory<T> = (capacity : number) => Heap<T>
-
-export function isHeap (factory : HeapFactory<number>) : void {
+/**
+ * 
+ */
+describe('#PackHeap', function () {
+  /**
+   * 
+   */
   describe('#constructor', function () {
+    /**
+     * 
+     */
     it('allows to instantiate an empty heap', function () {
-      const heap : Heap<number> = factory(8)
+      const heap = Heaps.float32(8)
       expect([...heap]).toEqual([])
     })
   })
 
+  /**
+   * 
+   */
   describe('#get', function () {
+    /**
+     * 
+     */
     it('returns the nth element of the heap', function () {
-      const heap : Heap<number> = factory(32)
+      const heap = Heaps.float32(32)
       const elements : number[] = []
 
       for (let index = 0; index < 20; ++index) {
@@ -42,9 +54,15 @@ export function isHeap (factory : HeapFactory<number>) : void {
     })
   })
 
+  /**
+   * 
+   */
   describe('#push', function () {
+    /**
+     * 
+     */
     it('add a value to the heap', function () {
-      const heap : Heap<number> = factory(32)
+      const heap = Heaps.float32(32)
       const elements : number[] = []
 
       expect(heap.size).toBe(0)
@@ -74,9 +92,15 @@ export function isHeap (factory : HeapFactory<number>) : void {
     })
   })
 
+  /**
+   * 
+   */
   describe('#delete', function () {
+    /**
+     * 
+     */
     it('delete a value of the heap', function () {
-      const heap : Heap<number> = factory(32)
+      const heap = Heaps.float32(64)
       const elements : number[] = []
       const removed : number[] = []
 
@@ -120,9 +144,15 @@ export function isHeap (factory : HeapFactory<number>) : void {
     })
   })
 
+  /**
+   * 
+   */
   describe('#has', function () {
+    /**
+     * 
+     */
     it('return true if the given value is in the heap', function () {
-      const heap : Heap<number> = factory(32)
+      const heap = Heaps.float32(32)
       const elements : number[] = [
          5, 10,  8,  3,  9,  7,  1,  4,  2,  0,
          6, 11, 13, 15, 19, 16, 22, 23, 30, 18
@@ -140,9 +170,15 @@ export function isHeap (factory : HeapFactory<number>) : void {
     })
   })
 
+  /**
+   * 
+   */
   describe('#indexOf', function () {
+    /**
+     * 
+     */
     it('return the index of the given value of the heap', function () {
-      const heap : Heap<number> = factory(32)
+      const heap = Heaps.float32(32)
       const elements : number[] = [
          5, 10,  8,  3,  9,  7,  1,  4,  2,  0,
          6, 11, 13, 15, 19, 16, 22, 23, 30, 18
@@ -160,9 +196,15 @@ export function isHeap (factory : HeapFactory<number>) : void {
     })
   })
 
-  describe('#next', function () {
+  /**
+   * 
+   */
+  describe('#pop', function () {
+    /**
+     * 
+     */
     it('removes the topmost value of the heap', function () {
-      const heap : Heap<number> = factory(32)
+      const heap = Heaps.float32(32)
       const elements : number[] = []
       const removed : number[] = []
 
@@ -172,7 +214,7 @@ export function isHeap (factory : HeapFactory<number>) : void {
       }
 
       while (heap.size > 0) {
-        removed.push(heap.next())
+        removed.push(heap.pop())
       }
 
       expect([...heap]).toEqual([])
@@ -191,9 +233,15 @@ export function isHeap (factory : HeapFactory<number>) : void {
     })
   })
 
+  /**
+   * 
+   */
   describe('#clear', function () {
+    /**
+     * 
+     */
     it('empty the heap', function () {
-      const heap : Heap<number> = factory(32)
+      const heap = Heaps.float32(32)
       const elements : number[] = []
 
       for (let index = 0; index < 20; ++index) {
@@ -209,10 +257,16 @@ export function isHeap (factory : HeapFactory<number>) : void {
     })
   })
 
+  /**
+   * 
+   */
   describe('#equals', function () {
+    /**
+     * 
+     */
     it('return true if both collections have the same content', function () {
-      const heap : Heap<number> = factory(32)
-      const copy : Heap<number> = factory(32)
+      const heap = Heaps.float32(32)
+      const copy = Heaps.float32(32)
       const elements : number[] = []
 
       for (let index = 0; index < 20; ++index) {
@@ -224,9 +278,12 @@ export function isHeap (factory : HeapFactory<number>) : void {
       expect(heap.equals(copy)).toBeTruthy()
     })
 
+    /**
+     * 
+     */
     it('return true if both collections have the same content but different capacities', function () {
-      const heap : Heap<number> = factory(32)
-      const copy : Heap<number> = factory(64)
+      const heap = Heaps.float32(32)
+      const copy = Heaps.float32(64)
       const elements : number[] = []
 
       for (let index = 0; index < 20; ++index) {
@@ -238,9 +295,12 @@ export function isHeap (factory : HeapFactory<number>) : void {
       expect(heap.equals(copy)).toBeTruthy()
     })
 
+    /**
+     * 
+     */
     it('return false if both collections does not have the same content', function () {
-      const heap : Heap<number> = factory(32)
-      const different : Heap<number> = factory(32)
+      const heap = Heaps.float32(32)
+      const different = Heaps.float32(32)
 
       for (let index = 0; index < 20; ++index) {
         heap.push(Math.random())
@@ -250,9 +310,12 @@ export function isHeap (factory : HeapFactory<number>) : void {
       expect(heap.equals(different)).toBeFalsy()
     })
 
+    /**
+     * 
+     */
     it('return false if both collections does not have the same size', function () {
-      const heap : Heap<number> = factory(32)
-      const different : Heap<number> = factory(32)
+      const heap = Heaps.float32(32)
+      const different = Heaps.float32(32)
       const elements : number[] = []
 
       for (let index = 0; index < 20; ++index) {
@@ -266,8 +329,11 @@ export function isHeap (factory : HeapFactory<number>) : void {
       expect(heap.equals(different)).toBeFalsy()
     })
 
+    /**
+     * 
+     */
     it('return false otherwise', function () {
-      const heap : Heap<number> = factory(32)
+      const heap = Heaps.float32(32)
       const elements : number[] = []
 
       for (let index = 0; index < 20; ++index) {
@@ -281,9 +347,15 @@ export function isHeap (factory : HeapFactory<number>) : void {
     })
   })
 
+  /**
+   * 
+   */
   describe('#copy', function () {
+    /**
+     * 
+     */
     it('return a copy of an existing heap', function () {
-      const heap : Heap<number> = factory(32)
+      const heap = Heaps.float32(32)
       const elements : number[] = []
 
       for (let index = 0; index < 20; ++index) {
@@ -291,9 +363,9 @@ export function isHeap (factory : HeapFactory<number>) : void {
         heap.push(elements[index])
       }
 
-      const copy : Heap<number> = heap.clone()
+      const copy = heap.clone()
 
       expect(heap.equals(copy)).toBeTruthy()
     })
   })
-}
+})

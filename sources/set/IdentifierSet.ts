@@ -1,6 +1,5 @@
-import { ReallocableCollection } from '../ReallocableCollection'
-import { SequenceCursor } from '../sequence'
-import { UnsignedIntegerBuffer } from '../native'
+import { SequenceCursor } from '../sequence/SequenceCursor'
+import { UnsignedIntegerBuffer } from '../native/TypedArray'
 import { ForwardCursor } from '../cursor'
 
 import { Group } from './Group'
@@ -11,7 +10,7 @@ import { IsCollection } from '../IsCollection'
 /**
  * 
  */
-export class IdentifierSet implements OrderedSet<number>, ReallocableCollection {
+export class IdentifierSet implements OrderedSet<number> {
   /**
    * 
    */

@@ -11,6 +11,7 @@ import { IllegalSequenceIndexError } from './error/IllegalSequenceIndexError'
 import { IllegalSubsequenceError } from './error/IllegalSubsequenceError'
 
 import { Sequence } from './Sequence'
+import { Key } from 'readline'
 
 /**
  * An empty sequence, e.g., a sequence of zero elements.
@@ -51,6 +52,14 @@ export class EmptySequence<Element> extends EmptyCollection<Element> implements 
   public has(element: Element, startOrEnd: number = 0, endOrStart: number = 0): false {
     if (startOrEnd != endOrStart || startOrEnd != 0) throw new IllegalArgumentsError({ startOrEnd, endOrStart }, new IllegalSubsequenceError(this, startOrEnd, endOrStart))
     return false
+  }
+
+  /**
+   * @see {@link Sequence.search}
+   */
+  public search<Key>(key: Key, comparator: Comparator<Key, Element>, startOrEnd: number = 0, endOrStart: number = 0): -1 {
+    if (startOrEnd != endOrStart || startOrEnd != 0) throw new IllegalArgumentsError({ startOrEnd, endOrStart }, new IllegalSubsequenceError(this, startOrEnd, endOrStart))
+    return -1
   }
 }
 

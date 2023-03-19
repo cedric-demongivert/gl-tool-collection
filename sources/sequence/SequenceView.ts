@@ -53,6 +53,13 @@ export class SequenceView<
   public has(element: Element, startOrEnd: number = 0, endOrStart: number = this.size): boolean {
     return this._collection.has(element, startOrEnd, endOrStart)
   }
+
+  /**
+   * @see {@link Sequence.search}
+   */
+  public search<Key>(key: Key, comparator: Comparator<Key, Element>, startOrEnd: number = 0, endOrStart: number = 0): number {
+    return this._collection.search(key, comparator, startOrEnd, endOrStart)
+  }
 }
 
 /**

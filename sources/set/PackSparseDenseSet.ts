@@ -10,7 +10,7 @@ import { OrderedGroup } from '../group/OrderedGroup'
 import { SparseDenseSet } from './SparseDenseSet'
 import { createOrderedGroupView } from '../group'
 import { join } from '../algorithm'
-import { ArrayPack, createArrayPack, createUint16Pack, createUint32Pack, createUint8Pack, createUintPackUpTo } from '../pack'
+import { createArrayPack, createUint16Pack, createUint32Pack, createUint8Pack, createUintPackUpTo } from '../pack'
 
 /**
  * 
@@ -59,22 +59,14 @@ export class PackSparseDenseSet implements SparseDenseSet {
   /**
    * @see {@link OrderedSet.has}
    */
-  public has(
-    element: number, 
-    startOrEnd: number = 0,
-    endOrStart: number = this.size
-  ): boolean {
+  public has(element: number, startOrEnd: number = 0, endOrStart: number = this.size): boolean {
     return this.indexOf(element, startOrEnd, endOrStart) > -1
   }
 
   /**
    * @see {@link Sequence.indexOf}
    */
-  public indexOf(
-    element: number, 
-    startOrEnd: number = 0,
-    endOrStart: number = this.size
-  ): number {
+  public indexOf(element: number, startOrEnd: number = 0, endOrStart: number = this.size): number {
     const index: number = this._sparse.get(element)
 
     if (index < end && index >= start && this._dense.get(index) === element) {

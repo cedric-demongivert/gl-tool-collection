@@ -1,5 +1,5 @@
 
-import { Comparator, Factory } from '@cedric-demongivert/gl-tool-utils'
+import { Comparator } from '@cedric-demongivert/gl-tool-utils'
 
 import { List } from '../list/List'
 import { ForwardCursor } from '../cursor/ForwardCursor'
@@ -8,9 +8,10 @@ import { Group } from '../group/Group'
 import { OrderedGroup } from '../group/OrderedGroup'
 import { createOrderedGroupView } from '../group/OrderedGroupView'
 
-import { OrderedSet } from './OrderedSet'
 import { join } from '../algorithm/join'
 import { areEquallyConstructed } from '../areEquallyConstructed'
+
+import { OrderedSet } from './OrderedSet'
 
 /**
  * 
@@ -25,14 +26,14 @@ export class ListSet<Element, Wrapped extends List<Element> = List<Element>> imp
   /**
    * 
    */
-  protected _comparator: Comparator<Element, Element>
+  protected _comparator: Comparator<Element>
 
   /**
    * Create a new set collection based upon a pack instance.
    *
    * @param pack - An empty pack instance to wrap as a set.
    */
-  public constructor(elements: Wrapped, comparator: Comparator<Element, Element> = Comparator.compareWithOperator) {
+  public constructor(elements: Wrapped, comparator: Comparator<Element> = Comparator.compareWithOperator) {
     this._elements = elements
     this._comparator = comparator
   }
@@ -62,25 +63,22 @@ export class ListSet<Element, Wrapped extends List<Element> = List<Element>> imp
   /**
    * @see {@link OrderedSet.has}
    */
-  public has<Key>(
-    key: Key, 
-    comparator: Comparator<Key, Element> = Comparator.compareWithOperator,
-    startOrEnd: number = 0,
-    endOrStart: number = this.size
-  ): boolean {
-    return this._elements.indexOf(key, comparator, startOrEnd, endOrStart) >= 0
+  public has(element: Element, startOrEnd: number = 0, endOrStart: number = this.size): boolean {
+    return this._elements.search(element, this._comparator, startOrEnd, endOrStart) >= 0
   }
 
   /**
    * @see {@link OrderedSet.indexOf}
    */
-  public indexOf<Key>(
-    key: Key, 
-    comparator: Comparator<Key, Element> = Comparator.compareWithOperator,
-    startOrEnd: number = 0,
-    endOrStart: number = this.size
-  ): number {
-    return this._elements.indexOf(key, comparator, startOrEnd, endOrStart)
+  public indexOf(element: Element, startOrEnd: number = 0, endOrStart: number = this.size): number {
+    return this._elements.search(element, this._comparator, startOrEnd, endOrStart)
+  }
+
+  /**
+   * @see {@link OrderedSet.indexOf}
+   */
+  public search<Key>(key: Key, comparator: Comparator<Key, Element>, startOrEnd: number = 0, endOrStart: number = this.size): number {
+    return this._elements.search(key, comparator, startOrEnd, endOrStart)
   }
 
   /**
@@ -89,7 +87,7 @@ export class ListSet<Element, Wrapped extends List<Element> = List<Element>> imp
   public add(element: Element): void {
     const elements = this._elements
 
-    if (elements.indexOf(element, this._comparator) < 0) {
+    if (elements.indexOf(element) < 0) {
       elements.push(element)
     }
   }
@@ -100,7 +98,7 @@ export class ListSet<Element, Wrapped extends List<Element> = List<Element>> imp
   public delete(element: Element): void {
     const elements = this._elements
 
-    const index: number = elements.indexOf(element, this._comparator)
+    const index: number = elements.indexOf(element)
 
     if (index >= 0) {
       this._elements.warp(index)
@@ -211,6 +209,13 @@ export class ListSet<Element, Wrapped extends List<Element> = List<Element>> imp
    * @see {@link OrderedSet.toString}
    */
   public toString(): string {
-    return this.constructor.name + ' (' + this._elements.constructor.name + ', ' + this._comparator.name + ') ' + Group.stringify(this)
+    return this.constructor.name + ' (' + this._elements.constructor.name + ', ' + this._comparator.name + ') ' + this.stringify()
   }
+}
+
+/**
+ * 
+ */
+export function wrapAsListSet<Element>(list: List<Element>, comparator: Comparator<Element> = Comparator.compareWithOperator): ListSet<Element> {
+  return new ListSet(list, comparator)
 }

@@ -103,7 +103,7 @@ export interface List<Element> extends SortableSequence<Element>, Clearable {
    * 
    * @see {@link Array.sort}
    */
-  sort(comparator?: Comparator<Element, Element>, startOrEnd?: number, endOrStart?: number): void
+  sort(comparator?: Comparator<Element>, startOrEnd?: number, endOrStart?: number): void
 
   /**
    * Removes duplicates from the list by using the requested comparator.

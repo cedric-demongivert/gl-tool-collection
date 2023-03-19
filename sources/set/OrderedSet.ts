@@ -13,7 +13,7 @@ export interface OrderedSet<Element> extends OrderedGroup<Element>, Set<Element>
   /**
    * @see {@link Sequence.has}
    */
-  has<Key = Element>(key: Key, comparator?: Comparator<Key, Element>, startOrEnd?: number, endOrStart?: number): boolean
+  has(element: Element, startOrEnd?: number, endOrStart?: number): boolean
 
   /**
    * @see {@link Collection.view}

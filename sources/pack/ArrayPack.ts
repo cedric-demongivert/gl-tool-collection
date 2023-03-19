@@ -463,6 +463,29 @@ export class ArrayPack<Element> implements Pack<Element> {
   }
 
   /**
+   * @see {@link Pack.search}
+   */
+  public search<Key>(key: Key, comparator: Comparator<Key, Element>, startOrEnd: number = 0, endOrStart: number = 0): number {
+    const size = this._size
+    const start = startOrEnd < endOrStart ? startOrEnd : endOrStart
+    const end = startOrEnd < endOrStart ? endOrStart : startOrEnd
+
+    if (start < 0 || start > size || end > size) {
+      throw new IllegalArgumentsError({ startOrEnd, endOrStart }, new IllegalSubsequenceError(this, startOrEnd, endOrStart))
+    }
+
+    const elements = this._elements
+
+    for (let index = start; index < end; ++index) {
+      if (comparator(key, elements[index]) === 0) {
+        return index
+      }
+    }
+
+    return -1
+  }
+
+  /**
    * @see {@link Pack.copy}
    */
   public copy(

@@ -144,25 +144,29 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
    * @see {@link Pack.get}
    */
-  public get(index: number): Element {
+  public get(index: number, output: Element = this.duplicator.allocate()): Element {
     if (index < 0 || index >= this._size) {
       throw new IllegalArgumentsError({ index }, new IllegalSequenceIndexError({ value: index, sequence: this }))
     }
     
-    return this._elements[index]
+    this.duplicator.move(this._elements[index], output)
+
+    return output
   }
 
   /**
    * @see {@link Pack.pop}
    */
-  public pop(): Element {
+  public pop(output: Element = this.duplicator.allocate()): Element {
     if (this._size < 1) throw new IllegalCallError(this.pop, new EmptyCollectionError(this))
 
     const elements = this._elements
 
     this._size -= 1
+    
+    this.duplicator.move(this._elements[this._size], output)
 
-    return elements[this._size]
+    return output
   }
 
   /**
@@ -171,7 +175,7 @@ export class InstancePack<Element> implements Pack<Element> {
   public get last(): Element {
     if (this._size < 1) throw new IllegalCallError('get last', new EmptyCollectionError(this))
 
-    return this._elements[this._size - 1]
+    return this.duplicator.copy(this._elements[this._size - 1])
   }
 
   /**
@@ -180,7 +184,7 @@ export class InstancePack<Element> implements Pack<Element> {
   public get first(): Element {
     if (this._size < 1) throw new IllegalCallError('get first', new EmptyCollectionError(this))
 
-    return this._elements[0]
+    return this.duplicator.copy(this._elements[0])
   }
 
   /**
@@ -193,23 +197,18 @@ export class InstancePack<Element> implements Pack<Element> {
     for (let index = 0, size = this._size; index < size; ++index) {
       duplicator.move(element, elements[index])
     }
-    
   }
 
   /**
    * @see {@link Pack.shift}
    */
-  public shift(): Element {
+  public shift(output: Element = this.duplicator.allocate()): Element {
     if (this._size < 1) throw new IllegalCallError(this.shift, new EmptyCollectionError(this))
 
-    const elements: Element[] = this._elements
-
-    const value: Element = elements[0]
-    elements[0] = this.duplicator.allocate()
-
+    this.duplicator.move(this._elements[0], output)
     this.delete(0)
 
-    return value
+    return output
   }
 
   /**
@@ -236,10 +235,12 @@ export class InstancePack<Element> implements Pack<Element> {
     }
 
     const elements: Array<Element> = this._elements
+    const duplicator = this.duplicator
 
-    const swap: Element = elements[first]
-    elements[first] = elements[second]
-    elements[second] = swap
+    const swap: Element = duplicator.copy(elements[first])
+    duplicator.move(elements[second], elements[first])
+    duplicator.move(swap, elements[second])
+    duplicator.free(swap)
   }
 
   /**
@@ -278,15 +279,13 @@ export class InstancePack<Element> implements Pack<Element> {
     const startOrCapacity: number = start < elements.length ? start : elements.length
 
     for (let index = this._size; index < startOrCapacity; ++index) {
-      duplicator.free(elements[index])
-      elements[index] = duplicator.allocate()
+      duplicator.rollback(elements[index])
     }
 
     const endOrCapacity: number = end < elements.length ? end : elements.length
 
     for (let index = start; index < endOrCapacity; ++index) {
-      duplicator.free(elements[index])
-      elements[index] = duplicator.copy(value)
+      duplicator.move(value, elements[index])
     }
 
     while (elements.length < start) {
@@ -315,13 +314,12 @@ export class InstancePack<Element> implements Pack<Element> {
     const elements: Array<Element> = this._elements
     const duplicator: Duplicator<Element> = this.duplicator
 
-    duplicator.free(elements[this._size])
 
     for (let cursor = this._size; cursor > index; --cursor) {
-      elements[cursor] = elements[cursor - 1]
+      duplicator.move(elements[cursor - 1], elements[cursor])
     }
 
-    elements[index] = duplicator.copy(value)
+    duplicator.move(value, elements[index])
 
     this._size += 1
   }
@@ -335,11 +333,10 @@ export class InstancePack<Element> implements Pack<Element> {
     const elements: Array<Element> = this._elements
 
     if (index === elements.length) {
-      elements.push(duplicator.copy(value))
-    } else {
-      duplicator.free(elements[index])
-      elements[index] = duplicator.copy(value)
-    }
+      elements.push(duplicator.allocate())
+    } 
+
+    duplicator.move(value, elements[index])
 
     this._size += 1
   }
@@ -352,16 +349,14 @@ export class InstancePack<Element> implements Pack<Element> {
     const duplicator: Duplicator<Element> = this.duplicator
 
     if (this._size === elements.length) {
-      elements.push(duplicator.copy(value))
+      elements.push(duplicator.allocate())
     }
-
-    duplicator.free(elements[this._size])
 
     for (let index = this._size; index > 0; --index) {
-      elements[index] = elements[index - 1]
+      duplicator.move(elements[index - 1], elements[index])
     }
 
-    elements[0] = duplicator.copy(value)
+    duplicator.move(value, elements[0])
 
     this._size += 1
   }
@@ -383,9 +378,8 @@ export class InstancePack<Element> implements Pack<Element> {
     const offset: number = end - start
 
     for (let cursor = end; cursor < size; ++cursor) {
-      duplicator.free(elements[cursor - offset])
-      elements[cursor - offset] = elements[cursor]
-      elements[cursor] = duplicator.allocate()
+      duplicator.move(elements[cursor], elements[cursor - offset])
+      duplicator.rollback(elements[cursor])
     }
 
     this._size -= offset
@@ -408,9 +402,8 @@ export class InstancePack<Element> implements Pack<Element> {
     const toWarp: number = end - start
 
     for (let index = 0; index < toWarp; ++index) {
-      duplicator.free(elements[start + index])
-      elements[start + index] = elements[size - index - 1]
-      elements[size - index - 1] = duplicator.allocate()
+      duplicator.move(elements[size - index - 1], elements[start + index])
+      duplicator.rollback(elements[size - index - 1])
     }
 
     this._size -= toWarp
@@ -438,7 +431,30 @@ export class InstancePack<Element> implements Pack<Element> {
     const elements: Array<Element> = this._elements
 
     for (let index = start; index < end; ++index) {
-      if (element === elements[index]) {
+      if (equals(elements[index], element)) {
+        return index
+      }
+    }
+
+    return -1
+  }
+
+  /**
+   * @see {@link Pack.search}
+   */
+  public search<Key>(key: Key, comparator: Comparator<Key, Element>, startOrEnd: number = 0, endOrStart: number = 0): number {
+    const size = this._size
+    const start = startOrEnd < endOrStart ? startOrEnd : endOrStart
+    const end = startOrEnd < endOrStart ? endOrStart : startOrEnd
+
+    if (start < 0 || start > size || end > size) {
+      throw new IllegalArgumentsError({ startOrEnd, endOrStart }, new IllegalSubsequenceError(this, startOrEnd, endOrStart))
+    }
+
+    const elements = this._elements
+
+    for (let index = start; index < end; ++index) {
+      if (comparator(key, elements[index]) === 0) {
         return index
       }
     }
@@ -449,6 +465,7 @@ export class InstancePack<Element> implements Pack<Element> {
   /**
    * @see {@link Pack.copy}
    */
+  // @TODO resolve memory leak (get may copy)
   public copy(
     toCopy: Sequence<Element>, 
     startOrEnd: number = 0,
@@ -468,8 +485,7 @@ export class InstancePack<Element> implements Pack<Element> {
     const subsequenceSizeOrCapacity: number = subsequenceSize < elements.length ? subsequenceSize : elements.length
 
     for (let index = 0; index < subsequenceSizeOrCapacity; ++index) {
-      duplicator.free(elements[index])
-      elements[index] = duplicator.copy(toCopy.get(start + index))
+      duplicator.move(toCopy.get(start + index), elements[index])
     }
 
     while (elements.length < subsequenceSize) {
@@ -490,12 +506,11 @@ export class InstancePack<Element> implements Pack<Element> {
     const duplicator: Duplicator<Element> = this.duplicator
 
     for (let index = offset; index < endOrCapacity; ++index) {
-      duplicator.free(elements[index])
-      elements[index] = duplicator.copy(toConcat.get(index - offset)!)
+      duplicator.move(toConcat.get(index - offset), elements[index])
     }
 
     while (elements.length < end) {
-      elements.push(duplicator.copy(toConcat.get(elements.length - offset)!))
+      elements.push(duplicator.copy(toConcat.get(elements.length - offset)))
     }
 
     this._size = end
@@ -512,8 +527,7 @@ export class InstancePack<Element> implements Pack<Element> {
     const duplicator: Duplicator<Element> = this.duplicator
 
     for (let index = this._size; index < endOrCapacity; ++index) {
-      duplicator.free(elements[index])
-      elements[index] = duplicator.copy(toConcat[index - offset])
+      duplicator.move(toConcat[index - offset], elements[index])
     }
 
     while (elements.length < end) {
@@ -554,18 +568,18 @@ export class InstancePack<Element> implements Pack<Element> {
       }
 
       if (index === processedIndex) {
-        elements[processedIndex] = elements[candidateIndex]
+        duplicator.move(candidate, elements[processedIndex])
         processedIndex += 1
       } else {
-        duplicator.free(elements[candidateIndex])
-        elements[candidateIndex] = duplicator.allocate()
+        duplicator.rollback(candidate)
       }
     }
-
-    for (let index = 0, rest = size - end; index < rest; ++index) {
-      const tmp = elements[processedIndex + index]
-      elements[processedIndex + index] = elements[end + index]
-      elements[end + index] = tmp
+    
+    if (processedIndex < end) {
+      for (let index = 0, until = this._size - end; index < until; ++index) {
+        duplicator.move(elements[end + index], elements[processedIndex + index])
+        duplicator.rollback(elements[end + index])
+      }
     }
 
     this._size -= end - processedIndex
@@ -577,6 +591,7 @@ export class InstancePack<Element> implements Pack<Element> {
   public rotate(offset: number): void {
     const elements = this._elements
     const size = this._size
+    const duplicator = this.duplicator
 
     let safeOffset: number = offset % size
     if (safeOffset < 0) safeOffset += size
@@ -584,17 +599,18 @@ export class InstancePack<Element> implements Pack<Element> {
     const roots: number = gcd(size, safeOffset)
 
     for (let start = 0; start < roots; ++start) {
-      let temporary: Element = elements[start]
+      let temporary: Element = duplicator.copy(elements[start])
       let index = (start + safeOffset) % size
 
       while (index != start) {
-        const swap: Element = elements[index]
-        elements[index] = temporary
+        const swap: Element = duplicator.copy(elements[index])
+        duplicator.move(temporary, elements[index])
+        duplicator.free(temporary)
         temporary = swap
         index = (index + safeOffset) % size
       }
 
-      elements[start] = temporary
+      duplicator.move(temporary, elements[start])
     }
   }
 
@@ -644,8 +660,10 @@ export class InstancePack<Element> implements Pack<Element> {
    * @see {@link Pack.values}
    */
   public * values(): IterableIterator<Element> {
+    const duplicator = this.duplicator
+
     for (let index = 0; index < this._size; ++index) {
-      yield this._elements[index]
+      yield duplicator.copy(this._elements[index])
     }
   }
 
