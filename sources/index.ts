@@ -6,7 +6,7 @@ export * from './EmptyCollection'
 
 export * from './algorithm'
 export * from './allocator'
-// export * from './circular'
+export * from './circular'
 export * from './cursor'
 export * from './generator'
 export * from './group'

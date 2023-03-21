@@ -131,6 +131,7 @@ export class CircularPackAdapter<Element> implements CircularPack<Element> {
     }
 
     elements.reallocate(capacity)
+    elements.size = capacity
   }
 
   /**
@@ -140,6 +141,7 @@ export class CircularPackAdapter<Element> implements CircularPack<Element> {
     const elements = this._elements
     elements.rotate(-this._start)
     elements.reallocate(this._size)
+    elements.size = this._size
   }
 
   /**
@@ -260,8 +262,8 @@ export class CircularPackAdapter<Element> implements CircularPack<Element> {
     const value: Element = arguments.length > 2 ? arguments[2] : arguments[1]
     const endOrStart: number = arguments.length > 2 ? arguments[1] : startOrEnd + 1
 
-    const start: number = startOrEnd < endOrStart ? startOrEnd : endOrStart
-    const end: number = startOrEnd < endOrStart ? endOrStart : startOrEnd
+    let start: number = startOrEnd < endOrStart ? startOrEnd : endOrStart
+    let end: number = startOrEnd < endOrStart ? endOrStart : startOrEnd
     
     if (startOrEnd < 0) {
       if (arguments.length > 2) {
@@ -275,26 +277,25 @@ export class CircularPackAdapter<Element> implements CircularPack<Element> {
       throw new IllegalArgumentsError({ endOrStart }, new NegativeSequenceIndexError(endOrStart))
     }
 
-    let until: number = start + count - 1
+    const oldCapacity = this._elements.capacity
 
-    if (until >= this._elements.capacity) {
-      const offset: number = Math.min(until - this._elements.capacity + 1, this._size)
-
-      this._start = (this._start + offset) % this._elements.capacity
-      this._size -= offset
-      start = this._elements.capacity - 1
+    if (end > oldCapacity) {
+      this.reallocate(end)
     }
 
-    while (start >= this._size) {
-      this.push(this._elements.defaultValue())
+    const elements = this._elements
+    const capacity = elements.capacity
+    const offset = this._start
+
+    for (let index = this._size; index < start; ++index) {
+      elements.set((offset + index) % capacity, elements.defaultValue())
     }
 
-    until = start + count
-    const offset: number = this._start
-
-    for (let index = start; index < until; ++index) {
-      this._elements.set((offset + index) % this._elements.capacity, value)
+    for (let index = start; index < end; ++index) {
+      elements.set((offset + index) % capacity, value)
     }
+
+    this._size = end > this._size ? end : this._size
   }
 
   /**
@@ -319,17 +320,20 @@ export class CircularPackAdapter<Element> implements CircularPack<Element> {
     } 
 
     if (this._size == this._elements.capacity) {
-      this._start = (this._start + 1) % this._elements.capacity
+      this.shift()
       --index;
-    } else {
-      this._size += 1
     }
 
-    for (let cursor = this._size - 1; cursor > index; --cursor) {
-      this.set(cursor, this.get(cursor - 1)!)
+    const elements = this._elements
+    const capacity = elements.capacity
+    const offset = this._start
+
+    for (let cursor = this._size - 1; cursor >= index; --cursor) {
+      elements.set((cursor + 1 + offset) % capacity, elements.get((cursor + offset) % capacity))
     }
 
-    this.set(index, value)
+    elements.set((index + offset) % capacity, value)
+    this._size += 1
   }
 
   /**
@@ -381,12 +385,13 @@ export class CircularPackAdapter<Element> implements CircularPack<Element> {
       throw new IllegalArgumentsError({ startOrEnd, endOrStart }, new IllegalSubsequenceError(this, startOrEnd, endOrStart))
     }
 
-    for (let cursor = 0; cursor < start; ++cursor) {
-      this.set(end - cursor - 1, this.get(start - cursor - 1)!)
+    const offset = end - start
+
+    for (let cursor = end; cursor < size; ++cursor) {
+      this.set(cursor - offset, this.get(cursor))
     }
 
-    this._start = (this._start + size) % this._elements.capacity
-    this._size -= size
+    this._size -= offset
   }
 
   /**
@@ -415,24 +420,14 @@ export class CircularPackAdapter<Element> implements CircularPack<Element> {
   /**
    * @see {@link CircularPack.has}
    */
-  public has<Key>(
-    key: Key, 
-    comparator: Comparator<Key, Element> = Comparator.compareWithOperator,
-    startOrEnd: number = 0,
-    endOrStart: number = this.size
-  ): boolean {
-    return this.indexOf(key, comparator, startOrEnd, endOrStart) >= 0
+  public has(element: Element, startOrEnd: number = 0, endOrStart: number = this.size): boolean {
+    return this.indexOf(element, startOrEnd, endOrStart) >= 0
   }
 
   /**
    * @see {@link CircularPack.indexOf}
    */
-  public indexOf<Key>(
-    key: Key, 
-    comparator: Comparator<Key, Element> = Comparator.compareWithOperator,
-    startOrEnd: number = 0,
-    endOrStart: number = this.size
-  ): number {
+  public indexOf(element: Element, startOrEnd: number = 0, endOrStart: number = this.size): number {
     const size = this._size
     const start = startOrEnd < endOrStart ? startOrEnd : endOrStart
     const end = startOrEnd < endOrStart ? endOrStart : startOrEnd
@@ -443,13 +438,33 @@ export class CircularPackAdapter<Element> implements CircularPack<Element> {
 
     const elements = this._elements
 
-    for (let index = 0, length = this._size; index < length; ++index) {
-      if (
-        comparator(
-          key,
-          elements.get((this._start + index) % elements.capacity)
-        ) == 0
-      ) { return index }
+    for (let index = start; index < end; ++index) {
+      if (elements.get((this._start + index) % elements.capacity) == element) { 
+        return index 
+      }
+    }
+
+    return -1
+  }
+
+  /**
+   * @see {@link Pack.search}
+   */
+  public search<Key>(key: Key, comparator: Comparator<Key, Element>, startOrEnd: number = 0, endOrStart: number = this.size): number {
+    const size = this._size
+    const start = startOrEnd < endOrStart ? startOrEnd : endOrStart
+    const end = startOrEnd < endOrStart ? endOrStart : startOrEnd
+
+    if (start < 0 || start > size || end > size) {
+      throw new IllegalArgumentsError({ startOrEnd, endOrStart }, new IllegalSubsequenceError(this, startOrEnd, endOrStart))
+    }
+
+    const elements = this._elements
+
+    for (let index = start; index < end; ++index) {
+      if (comparator(key, elements.get((this._start + index) % elements.capacity)) === 0) { 
+        return index 
+      }
     }
 
     return -1
@@ -474,13 +489,27 @@ export class CircularPackAdapter<Element> implements CircularPack<Element> {
   }
 
   /**
+   * @see {@link CircularPack.pushSequence}
+   */
+  public unshiftSequence(toConcat: Sequence<Element>): void {
+    for (let index = 0, size = toConcat.size; index < size; ++index) {
+      this.unshift(toConcat.get(size - index - 1))
+    }
+  }
+
+  /**
+   * @see {@link CircularPack.pushArray}
+   */
+  public unshiftArray(toConcat: Element[]): void {
+    for (let index = 0, size = toConcat.length; index < size; ++index) {
+      this.unshift(toConcat[size - index - 1])
+    }
+  }
+
+  /**
    * @see {@link CircularPack.copy}
    */
-  public copy(
-    toCopy: Sequence<Element>, 
-    startOrEnd: number = 0,
-    endOrStart: number = toCopy.size
-  ): void {
+  public copy(toCopy: Sequence<Element>, startOrEnd: number = 0, endOrStart: number = toCopy.size): void {
     const toCopySize = toCopy.size
     const start = startOrEnd < endOrStart ? startOrEnd : endOrStart
     const end = startOrEnd < endOrStart ? endOrStart : startOrEnd
@@ -489,14 +518,17 @@ export class CircularPackAdapter<Element> implements CircularPack<Element> {
       throw new IllegalArgumentsError({ startOrEnd, endOrStart }, new IllegalSubsequenceError(this, startOrEnd, endOrStart))
     }
 
+    const size = end - start
+
     if (size > this.capacity) {
       this.reallocate(size)
+
     }
 
     this.clear()
 
     for (let index = 0; index < size; ++index) {
-      this.push(toCopy.get(offset + index)!)
+      this.push(toCopy.get(start + index))
     }
   }
 
@@ -597,8 +629,8 @@ export function asCircularPackAdapter<Element>(pack: Pack<Element>): CircularPac
  *
  * @returns A new buffer that wrap a pack of the given type of instance.
  */
-export function createArrayCircularPackAdapter<Element>(capacity: number, defaultValue: Factory<Element>): CircularPackAdapter<Element> {
-  return new CircularPackAdapter(createArrayPack(capacity, defaultValue))
+export function createArrayCircularPackAdapter<Element>(defaultValue: Factory<Element>, capacity: number): CircularPackAdapter<Element> {
+  return new CircularPackAdapter(createArrayPack(defaultValue, capacity))
 }
 
 /**
@@ -712,7 +744,7 @@ export function createInstanceCircularPackAdapter<Element>(allocator: Duplicator
  *         in range [0, maximum] and that is of the given capacity.
  */
 export function createUnsignedCircularPackAdapterUpTo(maximum: number, capacity: number): CircularPackAdapter<number> {
-  return new CircularPackAdapter<number>(createUnsignedPackUpTo(maximum, capacity))
+  return new CircularPackAdapter<number>(createUintPackUpTo(maximum, capacity))
 }
 
 /**
@@ -726,5 +758,5 @@ export function createUnsignedCircularPackAdapterUpTo(maximum: number, capacity:
  *         in range [-maximum, maximum] and that is of the given capacity.
  */
 export function createSignedCircularPackAdapterUpTo(maximum: number, capacity: number): CircularPackAdapter<number> {
-  return new CircularPackAdapter<number>(createSignedPackUpTo(maximum, capacity))
+  return new CircularPackAdapter<number>(createIntPackUpTo(maximum, capacity))
 }
