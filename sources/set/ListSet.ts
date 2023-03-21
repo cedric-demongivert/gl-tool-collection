@@ -216,6 +216,6 @@ export class ListSet<Element, Wrapped extends List<Element> = List<Element>> imp
 /**
  * 
  */
-export function wrapAsListSet<Element>(list: List<Element>, comparator: Comparator<Element> = Comparator.compareWithOperator): ListSet<Element> {
+export function createListSet<Element>(list: List<Element>, comparator: Comparator<Element> = Comparator.compareWithOperator): ListSet<Element> {
   return new ListSet(list, comparator)
 }

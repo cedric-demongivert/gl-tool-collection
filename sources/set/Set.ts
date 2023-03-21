@@ -1,5 +1,7 @@
 import { Clearable, Clonable } from '@cedric-demongivert/gl-tool-utils'
+
 import { Collection } from '../Collection'
+
 import { Group } from '../group/Group'
 
 /**

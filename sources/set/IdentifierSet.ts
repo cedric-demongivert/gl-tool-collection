@@ -1,11 +1,16 @@
 import { SequenceCursor } from '../sequence/SequenceCursor'
-import { UnsignedIntegerBuffer } from '../native/TypedArray'
+import { createUintArrayUpTo, UintArray } from '../native/TypedArray'
 import { ForwardCursor } from '../cursor'
 
-import { Group } from './Group'
+import { Group } from '../group/Group'
+import { OrderedGroup } from '../group/OrderedGroup'
+import { createOrderedGroupView } from '../group/OrderedGroupView'
+
 import { OrderedSet } from './OrderedSet'
-import { OrderedGroup } from './OrderedGroup'
-import { IsCollection } from '../IsCollection'
+import { join } from '../algorithm'
+import { Comparator } from '@cedric-demongivert/gl-tool-utils'
+import { IllegalArgumentsError } from '../error/IllegalArgumentsError'
+import { IllegalSubsequenceError } from '../sequence/error/IllegalSubsequenceError'
 
 /**
  * 
@@ -14,12 +19,12 @@ export class IdentifierSet implements OrderedSet<number> {
   /**
    * 
    */
-  private _sparse: UnsignedIntegerBuffer
+  private _sparse: UintArray
 
   /**
    * 
    */
-  private _dense: UnsignedIntegerBuffer
+  private _dense: UintArray
 
   /**
    * 
@@ -37,8 +42,8 @@ export class IdentifierSet implements OrderedSet<number> {
    * @param capacity - Number of identifier to allocate.
    */
   public constructor(capacity: number) {
-    this._sparse = UnsignedIntegerBuffer.upTo(capacity - 1, capacity)
-    this._dense = UnsignedIntegerBuffer.upTo(capacity - 1, capacity)
+    this._sparse = createUintArrayUpTo(capacity - 1, capacity)
+    this._dense = createUintArrayUpTo(capacity - 1, capacity)
     this._size = 0
 
     for (let index = 0; index < capacity; ++index) {
@@ -46,49 +51,7 @@ export class IdentifierSet implements OrderedSet<number> {
       this._dense[index] = index
     }
 
-    this._view = OrderedGroup.view(this)
-  }
-
-  /**
-   * @see {@link Collection[IsCollection.SYMBOL]}
-   */
-  public [IsCollection.SYMBOL](): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isSequence}
-   */
-  public isSequence(): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isPack}
-   */
-  public isPack(): false {
-    return false
-  }
-
-  /**
-   * @see {@link Collection.isList}
-   */
-  public isList(): false {
-    return false
-  }
-
-  /**
-   * @see {@link Collection.isGroup}
-   */
-  public isGroup(): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isSet}
-   */
-  public isSet(): true {
-    return true
+    this._view = createOrderedGroupView(this)
   }
 
   /**
@@ -108,32 +71,48 @@ export class IdentifierSet implements OrderedSet<number> {
   /**
    * @see {@link Collection.has}
    */
-  public has(element: number): boolean {
-    return this._sparse[element] < this._size
+  public has(element: number, startOrEnd: number = 0, endOrStart: number = this.size): boolean {
+    return this.indexOf(element, startOrEnd, endOrStart) >= 0
   }
 
   /**
    * @see {@link Sequence.indexOf}
    */
-  public indexOf(element: number): number {
-    const index: number = this._sparse[element]
-    return index < this._size ? index : -1
+  public indexOf(element: number, startOrEnd: number = 0, endOrStart: number = this.size): number {
+    const size = this._size
+    const start = startOrEnd < endOrStart ? startOrEnd : endOrStart
+    const end = startOrEnd < endOrStart ? endOrStart : startOrEnd
+
+    if (start < 0 || start > size || end > size) {
+      throw new IllegalArgumentsError({ startOrEnd, endOrStart }, new IllegalSubsequenceError(this, startOrEnd, endOrStart))
+    }
+
+    const result = this._sparse[element]
+
+    return result >= start && result < end && this._dense[result] === element ? result : - 1
   }
 
   /**
-   * @see {@link Sequence.hasInSubsequence}
+   * 
    */
-  public hasInSubsequence(element: number, offset: number, size: number): boolean {
-    const index: number = this.indexOf(element)
-    return index >= offset && index < offset + size
-  }
+  public search<Key>(key: Key, comparator: Comparator<Key, number>, startOrEnd: number = 0, endOrStart: number = this.size): number {
+    const size = this.size
+    const start = startOrEnd < endOrStart ? startOrEnd : endOrStart
+    const end = startOrEnd < endOrStart ? endOrStart : startOrEnd
 
-  /**
-   * @see {@link Sequence.indexOfInSubsequence}
-   */
-  public indexOfInSubsequence(element: number, offset: number, size: number): number {
-    const index: number = this.indexOf(element)
-    return index >= offset && index < offset + size ? index : -1
+    if (start < 0 || start > size || end > size) {
+      throw new IllegalArgumentsError({ startOrEnd, endOrStart }, new IllegalSubsequenceError(this, startOrEnd, endOrStart))
+    }
+
+    const elements = this._dense
+    
+    for (let index = 0, size = this._size; index < size; ++index) {
+      if (comparator(key, elements[index]) === 0) {
+        return index
+      }
+    }
+
+    return -1
   }
 
   /**
@@ -189,11 +168,11 @@ export class IdentifierSet implements OrderedSet<number> {
    * @see {@link StaticCollection.reallocate}
    */
   public reallocate(capacity: number): void {
-    const oldDense: UnsignedIntegerBuffer = this._dense
+    const oldDense: UintArray = this._dense
     const oldSize: number = this._size
 
-    const newDense: UnsignedIntegerBuffer = UnsignedIntegerBuffer.upTo(capacity - 1, capacity)
-    const newSparse: UnsignedIntegerBuffer = UnsignedIntegerBuffer.upTo(capacity - 1, capacity)
+    const newDense: UintArray = createUintArrayUpTo(capacity - 1, capacity)
+    const newSparse: UintArray = createUintArrayUpTo(capacity - 1, capacity)
 
     this._dense = newDense
     this._sparse = newSparse
@@ -316,7 +295,7 @@ export class IdentifierSet implements OrderedSet<number> {
    * @see {@link Clonable.clone}
    */
   public clone(): IdentifierSet {
-    const result: IdentifierSet = IdentifierSet.allocate(this._dense.length)
+    const result: IdentifierSet = createIdentifierSet(this._dense.length)
 
     result.copy(this)
 
@@ -360,21 +339,23 @@ export class IdentifierSet implements OrderedSet<number> {
   }
 
   /**
+   * 
+   */
+  public stringify(): string {
+    return '{' + join(this, ', ') + '}'
+  }
+
+  /**
    * @see {@link Object.toString}
    */
   public toString(): string {
-    return this.constructor.name + ' ' + Group.stringify(this)
+    return this.constructor.name + ' ' + this.stringify()
   }
 }
 
 /**
  * 
  */
-export namespace IdentifierSet {
-  /**
-   * 
-   */
-  export function allocate(capacity: number): IdentifierSet {
-    return new IdentifierSet(capacity)
-  }
+export function createIdentifierSet(capacity: number): IdentifierSet {
+  return new IdentifierSet(capacity)
 }

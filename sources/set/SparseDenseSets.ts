@@ -1,63 +1,36 @@
-import { SparseDenseSet } from './SparseDenseSet'
-import { PackSparseDenseSet } from './PackSparseDenseSet'
+import { createUint32PackSparseDenseSet } from './PackSparseDenseSet'
+import { createUint16PackSparseDenseSet } from './PackSparseDenseSet'
+import { createUint8PackSparseDenseSet } from './PackSparseDenseSet'
+import { createAnyPackSparseDenseSet } from './PackSparseDenseSet'
+import { createPackSparseDenseSetUpTo } from './PackSparseDenseSet'
 
 /**
  * 
  */
 export namespace SparseDenseSets {
     /**
-    * Instantiate a uint32 sparse-dense set.
-    *
-    * @param capacity - Capacity of the sparse-dense set to instantiate.
-    *
-    * @returns A new sparse-dense set of the given capacity.
-    */
-    export function uint32(capacity: number): SparseDenseSet {
-      return PackSparseDenseSet.uint32(capacity)
-    }
+     * @see {@link createUint32PackSparseDenseSet}
+     */
+    export const uint32 = createUint32PackSparseDenseSet
   
     /**
-    * Instantiate a uint16 sparse-dense set.
-    *
-    * @param capacity - Capacity of the sparse-dense set to instantiate.
-    *
-    * @returns A new sparse-dense set of the given capacity.
-    */
-    export function uint16(capacity: number): SparseDenseSet {
-      return PackSparseDenseSet.uint16(capacity)
-    }
+     * @see {@link createUint16PackSparseDenseSet}
+     */
+    export const uint16 = createUint16PackSparseDenseSet
   
     /**
-    * Instantiate a uint8 sparse-dense set.
-    *
-    * @param capacity - Capacity of the sparse-dense set to instantiate.
-    *
-    * @returns A new sparse-dense set of the given capacity.
-    */
-    export function uint8(capacity: number): SparseDenseSet {
-      return PackSparseDenseSet.uint8(capacity)
-    }
+     * @see {@link createUint8PackSparseDenseSet}
+     */
+    export const uint8 = createUint8PackSparseDenseSet
   
     /**
-    * Instantiate an array sparse-dense set.
-    *
-    * @param capacity - Capacity of the sparse-dense set to instantiate.
-    *
-    * @returns A new sparse-dense set of the given capacity.
-    */
-    // export function any(capacity: number): SparseDenseSet {
-    //  return PackSparseDenseSet.any(capacity)
-    // }
+     * @see {@link createAnyPackSparseDenseSet}
+     */
+    export const any = createAnyPackSparseDenseSet
   
     /**
-    * Instantiate a sparse-dense set that can store numbers up to the given value.
-    *
-    * @param capacity - Maximum number to be able to store into the resulting sparse-dense set.
-    *
-    * @returns A new sparse-dense set that can store numbers up to the given value.
-    */
-    export function upTo(capacity: number): SparseDenseSet {
-      return PackSparseDenseSet.upTo(capacity)
-    }
+     * @see {@link createPackSparseDenseSetUpTo}
+     */
+    export const upTo = createPackSparseDenseSetUpTo
   }
   

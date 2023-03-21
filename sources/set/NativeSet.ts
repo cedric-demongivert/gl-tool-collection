@@ -1,6 +1,10 @@
-import { Set as GLToolSet } from '../set/Set'
+import { Set as GLToolSet } from './Set'
 import { Group } from '../group/Group'
-import { ForwardCursor, NativeCursor } from '../cursor/Cursor'
+import { createGroupView } from '../group/GroupView'
+
+import { ForwardCursor } from '../cursor/ForwardCursor'
+import { NativeCursor } from '../native/NativeCursor'
+import { join } from '../algorithm'
 
 /**
  * 
@@ -24,50 +28,8 @@ export class NativeSet<Element> implements GLToolSet<Element>
    */
   public constructor(elements: Set<Element>) {
     this._elements = elements
-    this._view = Group.view(this)
+    this._view = createGroupView(this)
     this.values = this.values.bind(this)
-  }
-
-  /**
-   * @see {@link Collection[IsCollection.SYMBOL]}
-   */
-  public [IsCollection.SYMBOL](): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isSequence}
-   */
-  public isSequence(): false {
-    return false
-  }
-
-  /**
-   * @see {@link Collection.isPack}
-   */
-  public isPack(): false {
-    return false
-  }
-
-  /**
-   * @see {@link Collection.isList}
-   */
-  public isList(): false {
-    return false
-  }
-
-  /**
-   * @see {@link Collection.isGroup}
-   */
-  public isGroup(): true {
-    return true
-  }
-
-  /**
-   * @see {@link Collection.isSet}
-   */
-  public isSet(): true {
-    return true
   }
 
   /**
@@ -112,27 +74,6 @@ export class NativeSet<Element> implements GLToolSet<Element>
    */
   public delete(element: Element): void {
     this._elements.delete(element)
-  }
-
-  /**
-   * @see {@link Sequence.get}
-   */
-  public get(index: number): Element {
-    if (index < 0) {
-      return undefined!
-    }
-
-    let cursor: number = 0
-
-    for (const element of this._elements) {
-      if (cursor === index) {
-        return element
-      } else {
-        cursor += 1
-      }
-    }
-
-    return undefined!
   }
 
   /**
@@ -198,8 +139,8 @@ export class NativeSet<Element> implements GLToolSet<Element>
     if (other instanceof NativeSet) {
       if (other.size !== this._elements.size) return false
 
-      for (let index = 0, length = other.size; index < length; ++index) {
-        if (!this.has(other.get(index))) return false
+      for (const value of other.values()) {
+        if (!this.has(value)) return false
       }
 
       return true
@@ -209,40 +150,36 @@ export class NativeSet<Element> implements GLToolSet<Element>
   }
 
   /**
+   * @see {@link Set.stringify}
+   */
+  public stringify(): string {
+    return '{' + join(this, ', ') + '}'
+  }
+
+  /**
    * @see {@link Object.toString}
    */
   public toString(): string {
-    return this.constructor.name + ' ' + Group.stringify(this)
+    return this.constructor.name + ' ' + this.stringify()
   }
 }
 
-export namespace NativeSet {
-  /**
-  * Return a copy of a given native set.
-  *
-  * @param toCopy - A native set to copy.
-  */
-  export function clone<Element>(toCopy: NativeSet<Element>): NativeSet<Element> {
-    return toCopy == null ? toCopy : toCopy.clone()
-  }
+/**
+ * Instantiate a new set that wrap a set of the given type of instance.
+ *
+ * @returns A new set that wrap a set of the given type of instance.
+ */
+export function createNativeSet<T>(): NativeSet<T> {
+  return new NativeSet<T>(new Set<T>())
+}
 
-  /**
-  * Instantiate a new set that wrap a set of the given type of instance.
-  *
-  * @returns A new set that wrap a set of the given type of instance.
-  */
-  export function any<T>(): NativeSet<T> {
-    return new NativeSet<T>(new Set<T>())
-  }
-
-  /**
-  * Instantiate a new set that wrap a set of the given type of instance.
-  *
-  * @param set - The set to wrap.
-  *
-  * @returns A new set that wrap a set of the given type of instance.
-  */
-  export function wrap<T>(set: Set<T>): NativeSet<T> {
-    return new NativeSet<T>(set)
-  }
+/**
+ * Instantiate a new set that wrap a set of the given type of instance.
+ *
+ * @param set - The set to wrap.
+ *
+ * @returns A new set that wrap a set of the given type of instance.
+ */
+export function wrapAsNativeSet<T>(set: Set<T>): NativeSet<T> {
+  return new NativeSet<T>(set)
 }

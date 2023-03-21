@@ -39,6 +39,6 @@ export class PackSet<Element, Wrapped extends Pack<Element>> extends ListSet<Ele
 *
 * @returns A new set that wrap a pack of the given type of instance.
 */
-export function wrapAsPackSet<Element, Wrapped extends Pack<Element>>(pack: Wrapped, comparator: Comparator<Element> = Comparator.compareWithOperator): PackSet<Element, Wrapped> {
+export function createPackSet<Element, Wrapped extends Pack<Element>>(pack: Wrapped, comparator: Comparator<Element> = Comparator.compareWithOperator): PackSet<Element, Wrapped> {
   return new PackSet(pack, comparator)
 }

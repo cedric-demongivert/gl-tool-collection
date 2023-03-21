@@ -1,16 +1,20 @@
-import { Empty } from '@cedric-demongivert/gl-tool-utils'
+import { Comparator, Empty } from '@cedric-demongivert/gl-tool-utils'
 
 import { ForwardCursor } from '../cursor/ForwardCursor'
 
 import { Pack } from '../pack/Pack'
+import { createArrayPack } from '../pack/ArrayPack'
+import { createUint16Pack, createUint32Pack, createUint8Pack, createUintPackUpTo } from '../pack/BufferPack'
 
 import { Group } from '../group/Group'
 import { OrderedGroup } from '../group/OrderedGroup'
+import { createOrderedGroupView } from '../group/OrderedGroupView'
+
+import { join } from '../algorithm/join'
 
 import { SparseDenseSet } from './SparseDenseSet'
-import { createOrderedGroupView } from '../group'
-import { join } from '../algorithm'
-import { createArrayPack, createUint16Pack, createUint32Pack, createUint8Pack, createUintPackUpTo } from '../pack'
+import { IllegalArgumentsError } from '../error/IllegalArgumentsError'
+import { IllegalSubsequenceError } from '../sequence/error/IllegalSubsequenceError'
 
 /**
  * 
@@ -67,6 +71,14 @@ export class PackSparseDenseSet implements SparseDenseSet {
    * @see {@link Sequence.indexOf}
    */
   public indexOf(element: number, startOrEnd: number = 0, endOrStart: number = this.size): number {
+    const size = this.size
+    const start = startOrEnd < endOrStart ? startOrEnd : endOrStart
+    const end = startOrEnd < endOrStart ? endOrStart : startOrEnd
+
+    if (start < 0 || start > size || end > size) {
+      throw new IllegalArgumentsError({ startOrEnd, endOrStart }, new IllegalSubsequenceError(this, startOrEnd, endOrStart))
+    }
+    
     const index: number = this._sparse.get(element)
 
     if (index < end && index >= start && this._dense.get(index) === element) {
@@ -74,6 +86,13 @@ export class PackSparseDenseSet implements SparseDenseSet {
     }
 
     return -1
+  }
+
+  /**
+   * 
+   */
+  public search<Key>(key: Key, comparator: Comparator<Key, number>, startOrEnd: number = 0, endOrStart: number = this.size): number {
+    return this._dense.search(key, comparator, startOrEnd, endOrStart)
   }
 
   /**
@@ -331,7 +350,7 @@ function createAnyNumberPack(capacity: number): Pack<number> {
  *
  * @returns A new sparse-dense set of the given capacity.
  */
-export function createAnyNumberPackSparseDenseSet(capacity: number): PackSparseDenseSet {
+export function createAnyPackSparseDenseSet(capacity: number): PackSparseDenseSet {
   return new PackSparseDenseSet(createAnyNumberPack, capacity)
 }
 

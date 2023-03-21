@@ -1,5 +1,3 @@
-import { Comparator } from '@cedric-demongivert/gl-tool-utils'
-
 import { OrderedGroup } from '../group/OrderedGroup'
 
 import { Collection } from '../Collection'
