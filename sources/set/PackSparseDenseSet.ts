@@ -44,6 +44,8 @@ export class PackSparseDenseSet implements SparseDenseSet {
     this._sparse = allocator(capacity)
     this._dense = allocator(capacity)
     this._allocator = allocator
+
+    this._sparse.size = capacity
   }
 
   /**
@@ -164,15 +166,19 @@ export class PackSparseDenseSet implements SparseDenseSet {
    * @see {@link ReallocableCollection.reallocate}
    */
   public reallocate(capacity: number): void {
-    const oldDense: Pack<number> = this._dense
+    const oldDense = this._dense
+    const newDense = this._dense.allocate(capacity)
+    const newSparse = this._sparse.allocate(capacity)
 
-    this._dense = this._dense.allocate(capacity)
-    this._sparse = this._sparse.allocate(capacity)
+    this._dense = newDense
+    this._sparse = newSparse
+
+    newSparse.size = capacity
 
     for (let index = 0, size = oldDense.size; index < size; ++index) {
       if (oldDense.get(index)! < capacity) {
-        this._sparse.set(oldDense.get(index)!, this._dense.size)
-        this._dense.push(oldDense.get(index)!)
+        newSparse.set(oldDense.get(index), newDense.size)
+        newDense.push(oldDense.get(index))
       }
     }
   }
@@ -181,9 +187,11 @@ export class PackSparseDenseSet implements SparseDenseSet {
    * @see {@link ReallocableCollection.fit}
    */
   public fit(): void {
-    const max: number = this.max()
-    this._dense.reallocate(max + 1)
-    this._sparse.reallocate(max + 1)
+    const nextCapacity = this.max() + 1
+    
+    this._dense.reallocate(nextCapacity)
+    this._sparse.reallocate(nextCapacity)
+    this._sparse.size = nextCapacity
   }
 
   /**

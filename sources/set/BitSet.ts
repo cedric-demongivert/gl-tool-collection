@@ -1,18 +1,14 @@
 import { Pack } from '../pack/Pack'
 import { createUint32Pack } from '../pack/BufferPack'
-import { SequenceCursor } from '../sequence/SequenceCursor'
 
+import { Set } from '../set/Set'
 import { Group } from '../group/Group'
-import { OrderedGroup } from '../group/OrderedGroup'
-
-import { RandomAccessCursor } from '../cursor/RandomAccessCursor'
 
 import { OrderedSet } from './OrderedSet'
-import { createOrderedGroupView } from '../group/OrderedGroupView'
-import { IllegalArgumentsError } from '../error/IllegalArgumentsError'
-import { IllegalSubsequenceError } from '../sequence/error/IllegalSubsequenceError'
-import { Comparator } from '@cedric-demongivert/gl-tool-utils'
 import { join } from '../algorithm'
+import { createGroupView } from '../group'
+import { NativeCursor } from '../native/NativeCursor'
+import { ForwardCursor } from '../cursor'
 
 // SWAR Algorithm [SIMD Within A Register]
 function countBits(bits: number): number {
@@ -33,7 +29,7 @@ for (let index = 0; index < 32; ++index) {
 /**
  * 
  */
-export class BitSet implements OrderedSet<number>
+export class BitSet implements Set<number>
 {
   /**
    *
@@ -49,7 +45,8 @@ export class BitSet implements OrderedSet<number>
    *
    */
   public constructor(capacity: number = 32) {
-    this._elements = createUint32Pack(capacity >> 5 + (capacity % 32 === 0 ? 0 : 1))
+    this._elements = createUint32Pack(Math.ceil(capacity / 32))
+    this._elements.size = this._elements.capacity
     this._size = 0
   }
 
@@ -70,89 +67,17 @@ export class BitSet implements OrderedSet<number>
   /**
    * @see {@link OrderedSet.has}
    */
-  public has(element: number, startOrEnd: number = 0, endOrStart = this.size): boolean {
-    if (startOrEnd === 0 && endOrStart === this.size || endOrStart === 0 && startOrEnd === this.size) {
-      const elements: Pack<number> = this._elements
-      const cell: number = element >> 5
-      const mask: number = 0b1 << (element % 32)
-
-      return cell < elements.size && (elements.get(cell) & mask) > 0
-    } else {
-      return this.indexOf(element, startOrEnd, endOrStart) > -1
-    }    
-  }
-
-  /**
-   * @see {@link Sequence.indexOf}
-   */
-  public indexOf(element: number, startOrEnd: number = 0, endOrStart = this.size): number {
-    const size = this._size
-    const start = startOrEnd < endOrStart ? startOrEnd : endOrStart
-    const end = startOrEnd < endOrStart ? endOrStart : startOrEnd
-
-    if (start < 0 || start > size || end > size) {
-      throw new IllegalArgumentsError({ startOrEnd, endOrStart }, new IllegalSubsequenceError(this, startOrEnd, endOrStart))
-    }
-
+  public has(element: number): boolean {
     const elements: Pack<number> = this._elements
     const cell: number = element >> 5
     const mask: number = 0b1 << (element % 32)
 
-    if (cell < elements.size && (elements.get(cell) & mask) > 0) {
-      let offset: number = 0
-
-      for (let index = 0; index < cell; ++index) {
-        offset += countBits(elements.get(index))
-      }
-
-      const result = offset + countBits(elements.get(cell) & ~(0xFFFFFFFF << element % 32)) - 1
-
-      return result >= start && result < end ? result : -1
-    } else {
-      return -1
-    }
+    return cell < elements.size && (elements.get(cell) & mask) > 0  
   }
 
   /**
-   * 
+   * @see {@link Set.add}
    */
-  public search<Key>(key: Key, comparator: Comparator<Key, number>, startOrEnd: number = 0, endOrStart: number = this.size): number {
-    const size = this.size
-    const start = startOrEnd < endOrStart ? startOrEnd : endOrStart
-    const end = startOrEnd < endOrStart ? endOrStart : startOrEnd
-
-    if (start < 0 || start > size || end > size) {
-      throw new IllegalArgumentsError({ startOrEnd, endOrStart }, new IllegalSubsequenceError(this, startOrEnd, endOrStart))
-    }
-
-    const elements: Pack<number> = this._elements
-    let skipped: number = 0
-
-    for (let cell = 0; cell < elements.size; ++cell) {
-      const base: number = cell * 32
-
-      for (let index = 0; index < 32; ++index) {
-        if ((elements.get(cell) & (0b1 << index)) > 0) {
-          if (skipped >= start) {
-            if (skipped < end) {
-              if (comparator(key, base + index) === 0) return skipped
-            } else {
-              return -1
-            }
-          }
-
-          skipped += 1
-        }
-      }
-    }
-
-    return -1
-  }
-  
-
-  /**
-  * @see {@link Set.add}
-  */
   public add(element: number): void {
     const elements: Pack<number> = this._elements
     const cell: number = element >> 5
@@ -174,8 +99,8 @@ export class BitSet implements OrderedSet<number>
   }
 
   /**
-  * @see {@link Set.delete}
-  */
+   * @see {@link Set.delete}
+   */
   public delete(element: number): void {
     const elements: Pack<number> = this._elements
     const cell: number = element >> 5
@@ -196,8 +121,8 @@ export class BitSet implements OrderedSet<number>
   }
 
   /**
-  * @see {@link Sequence.get}
-  */
+   * @see {@link Sequence.get}
+   */
   public get(index: number): number {
     if (index > this._size) return 0
 
@@ -280,22 +205,26 @@ export class BitSet implements OrderedSet<number>
   }
 
   /**
-  * 
-  */
+   * 
+   */
   public reallocate(capacity: number): void {
-    this._elements.reallocate(capacity)
+    this._elements.reallocate(Math.ceil(capacity / 32))
+    this._elements.size = capacity
   }
 
   /**
-  * 
-  */
+   * 
+   */
   public fit(): void {
-    this._elements.fit()
+    const max = this.max + 1
+    const nextCapacity = Math.ceil(max / 32)
+    this._elements.reallocate(nextCapacity)
+    this._elements.size = nextCapacity
   }
 
   /**
-  * @see {@link OrderedSet.copy}
-  */
+   * @see {@link OrderedSet.copy}
+   */
   public copy(toCopy: Group<number>): void {
     this.clear()
 
@@ -305,8 +234,8 @@ export class BitSet implements OrderedSet<number>
   }
 
   /**
-  * @see {@link OrderedSet.clone}
-  */
+   * @see {@link OrderedSet.clone}
+   */
   public clone(): BitSet {
     const result: BitSet = new BitSet(this.capacity)
     result.copy(this)
@@ -314,24 +243,24 @@ export class BitSet implements OrderedSet<number>
   }
 
   /**
-  * @see {@link OrderedSet.clear}
-  */
+   * @see {@link OrderedSet.clear}
+   */
   public clear(): void {
     this._elements.clear()
     this._size = 0
   }
 
   /**
-  * @see {@link OrderedSet.first}
-  */
-  public get first(): number {
+   * 
+   */
+  public get min(): number {
     return this.get(0)
   }
 
   /**
-  * @see {@link OrderedSet.last}
-  */
-  public get last(): number {
+   * 
+   */
+  public get max(): number {
     // optimizable
     return this.get(this._size - 1)
   }
@@ -339,15 +268,15 @@ export class BitSet implements OrderedSet<number>
   /**
   * @see {@link OrderedSet.view}
   */
-  public view(): OrderedGroup<number> {
-    return createOrderedGroupView(this)
+  public view(): Group<number> {
+    return createGroupView(this)
   }
 
   /**
   * @see {@link OrderedSet.forward}
   */
-  public forward(): RandomAccessCursor<number> {
-    return new SequenceCursor(this, 0)
+  public forward(): ForwardCursor<number> {
+    return new NativeCursor(this.values.bind(this))
   }
 
   /**
